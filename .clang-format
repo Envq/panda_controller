@@ -1,0 +1,43 @@
+Language: Cpp
+IndentWidth: 4
+UseTab: Never
+ColumnLimit: 80
+
+# includes
+SortIncludes: true
+
+
+# Comments
+AlignTrailingComments: true
+FixNamespaceComments: true
+MaxEmptyLinesToKeep: 3
+KeepEmptyLinesAtTheStartOfBlocks: false
+
+
+# Brackets
+BraceWrapping:
+  AfterClass: false
+  AfterControlStatement: false
+  AfterEnum: false
+  AfterFunction: false
+  AfterNamespace: false
+  AfterStruct: false
+  AfterUnion: false
+  AfterExternBlock: false
+  BeforeCatch: false
+  BeforeElse: false
+
+
+# SPACE
+SpaceAfterCStyleCast: false
+SpaceAfterTemplateKeyword: false
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeParens: ControlStatements
+SpaceInEmptyParentheses: false
+SpacesBeforeTrailingComments: 2
+SpacesInAngles: false
+SpacesInCStyleCastParentheses: false
+SpacesInContainerLiterals: false
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+Standard: Cpp11

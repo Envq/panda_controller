@@ -1,0 +1,108 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "simulation",
+            "type": "shell",
+            "command": "roslaunch",
+            "args": [
+                "${workspaceFolderBasename}",
+                "simulation.launch"
+            ],
+            "problemMatcher": [],
+            "group": "none",
+            "presentation": {
+                "focus": true
+            }
+        },
+        {
+            "label": "demo",
+            "type": "shell",
+            "command": "roslaunch",
+            "args": [
+                "${workspaceFolderBasename}",
+                "demo.launch"
+            ],
+            "problemMatcher": [],
+            "group": "none",
+            "presentation": {
+                "focus": true
+            }
+        },
+        {
+            "label": "buildAndRun",
+            "type": "shell",
+            "command": "roslaunch",
+            "args": [
+                "${workspaceFolderBasename}",
+                "demo.launch"
+            ],
+            "problemMatcher": [],
+            "group": "build",
+            "presentation": {
+                "focus": true
+            },
+            "dependsOn": [
+                "build"
+            ]
+        },
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "catkin",
+            "args": [
+                "build",
+                "${workspaceFolderBasename}"
+            ],
+            "problemMatcher": [],
+            "group": "build",
+            "presentation": {
+                "focus": true
+            }
+        },
+        {
+            "label": "format",
+            "type": "shell",
+            "command": "clang-format",
+            "args": [
+                "-i",
+                "${workspaceFolder}/src/*.cpp",
+                "${workspaceFolder}/src/my_libs/*.cpp",
+                "${workspaceFolder}/include/*.hpp"
+            ],
+            "problemMatcher": [],
+            "group": "none",
+            "presentation": {
+                "reveal": "never"
+            }
+        },
+        {
+            "label": "build_all",
+            "type": "shell",
+            "command": "catkin",
+            "args": [
+                "build"
+            ],
+            "problemMatcher": [],
+            "group": "build",
+            "presentation": {
+                "focus": true
+            }
+        },
+        {
+            "label": "clean_all",
+            "type": "shell",
+            "command": "catkin",
+            "args": [
+                "clean"
+            ],
+            "problemMatcher": [],
+            "group": "none",
+            "presentation": {
+                "focus": true
+            }
+        }
+    ]
+}

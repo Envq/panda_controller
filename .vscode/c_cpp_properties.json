@@ -1,0 +1,25 @@
+{
+    "configurations": [
+        {
+            "browse": {
+                "databaseFilename": "",
+                "limitSymbolsToIncludedHeaders": true
+            },
+            "includePath": [
+                "/opt/ros/melodic/include/**",
+                "${HOME}/panda_ws/devel/include/**",
+                "${HOME}/panda_ws/src/franka_ros/franka_control/include/**",
+                "${HOME}/panda_ws/src/franka_ros/franka_gripper/include/**",
+                "${HOME}/panda_ws/src/franka_ros/franka_hw/include/**",
+                "${HOME}/panda_ws/src/panda_controller/include/**",
+                "/usr/include/**"
+            ],
+            "name": "ROS",
+            "intelliSenseMode": "gcc-x64",
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 4
+}
