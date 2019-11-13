@@ -18,6 +18,20 @@
             }
         },
         {
+            "label": "obj_pose",
+            "type": "shell",
+            "command": "roslaunch",
+            "args": [
+                "${workspaceFolderBasename}",
+                "obj_pose.launch"
+            ],
+            "problemMatcher": [],
+            "group": "none",
+            "presentation": {
+                "focus": true
+            }
+        },
+        {
             "label": "demo",
             "type": "shell",
             "command": "roslaunch",

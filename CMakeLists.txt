@@ -7,7 +7,9 @@ set(CMAKE_CXX_STANDARD 14)
 
 find_package(catkin REQUIRED COMPONENTS
     roscpp
-    std_msgs
+    geometry_msgs
+    moveit_core
+    moveit_ros_planning_interface
 )
 # find_package(Boost REQUIRED COMPONENTS filesystem)
 
@@ -17,7 +19,9 @@ find_package(catkin REQUIRED COMPONENTS
 ###################################
 catkin_package(
     # INCLUDE_DIRS include
-    # CATKIN_DEPENDS 
+    CATKIN_DEPENDS 
+        moveit_core
+        moveit_ros_planning_interface
 )
 
 
@@ -34,3 +38,6 @@ set(MY_LIBS ${PROJECT_SOURCE_DIR}/src/my_libs)
 
 add_executable(demo  src/demo.cpp)
 target_link_libraries(demo ${catkin_LIBRARIES})
+
+add_executable(obj_pose  src/obj_pose.cpp)
+target_link_libraries(obj_pose ${catkin_LIBRARIES})

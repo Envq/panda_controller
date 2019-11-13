@@ -11,6 +11,8 @@ This is a task for the the Panda arm (Franka Emika) using ROS
   * [Building from source](#building-from-source)
 * [Nodes](#nodes)
   * [simulation](#simulation)
+  * [obj_pose](#obj_pose)
+  * [demo](#demo)
 * [VSCode](#vscode)
 * [Author](#author)
 * [License](#license)
@@ -24,7 +26,6 @@ This package was written for ROS melodic running under Ubuntu 18.04.
 
 
 
----
 ## Dependencies:
 
 - Install ROS:
@@ -86,7 +87,6 @@ cmake --build .
 
 
 
----
 ## Building from source
 
 ### Create Workspace
@@ -125,7 +125,7 @@ catkin init
 ~~~
 
 
-### Build Workspace
+## Build Workspace
 ~~~
 catkin build
 ~~~
@@ -134,12 +134,20 @@ catkin build
 
 ---
 ## Nodes
-A brief description of the nodes
+A brief description of the nodes:
 
-### simulation
+ ### **simulation**
 ![simulation](screenshot/simulation.png?raw=true "simulation")
 
 This node launch rviz with the panda arm
+
+ ### **obj_pose**
+
+This node get current pose of panda and publish it on /obj_pose topic
+
+ ### **demo**
+
+This node move the panda on the pose readed on /obj_pose topic
 
 
 ---
@@ -173,7 +181,7 @@ The following commands are available:
 
 **Enrico Sgarbanti** [@**Envq**](https://github.com/Envq)
 
----
+
 ## License
 
 This project is licensed under the GPL v3 License - see the [LICENSE.md](LICENSE.md) file for details
