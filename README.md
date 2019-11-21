@@ -91,15 +91,17 @@ cmake --build .
 
 ### Create Workspace
 ~~~
-mkdir -p ~/panda_ws/src
+mkdir -p ~/workspace/panda_ws/src
 
-cd ~/panda_ws/src
-
-git clone https://github.com/ros-planning/panda_moveit_config.git -b melodic-devel
-
-git clone https://github.com/frankaemika/franka_ros.git -b melodic-devel
+cd ~/workspace/panda_ws/src
 
 git clone https://github.com/Envq/panda_controller.git
+
+git clone https://github.com/frankaemika/franka_ros.git
+
+cd franka_ros
+
+git checkout 0.6.0
 ~~~
 
 
@@ -111,11 +113,11 @@ echo 'export ROS_OS_OVERRIDE=ubuntu:18.04:bionic' >> ~/.bashrc
 # To fix a bug with move-it
 echo 'export LC_NUMERIC="en_US.UTF-8"' >> ~/.bashrc
 
-echo 'source ~/panda_ws/devel/setup.bash' >> ~/.bashrc
+echo 'source ~/workspace/panda_ws/devel/setup.bash' >> ~/.bashrc
 
 source ~/.bashrc
 
-cd ~/panda_ws/
+cd ~/workspace/panda_ws/
 
 rosdep install -y --from-paths src --ignore-src --rosdistro melodic --skip-keys libfranka
 

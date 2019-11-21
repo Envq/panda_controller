@@ -7,12 +7,11 @@
             },
             "includePath": [
                 "/opt/ros/melodic/include/**",
-                "${HOME}/panda_ws/devel/include/**",
-                "${HOME}/panda_ws/src/franka_ros/franka_control/include/**",
-                "${HOME}/panda_ws/src/franka_ros/franka_gripper/include/**",
-                "${HOME}/panda_ws/src/franka_ros/franka_hw/include/**",
-                "${HOME}/panda_ws/src/panda_controller/include/**",
-                "/usr/include/**"
+                "/usr/include/**",     
+                "${workspaceFolder}/../../devel/include/**",
+                "${workspaceFolder}/../franka_ros/franka_control/include/**",
+                "${workspaceFolder}/../franka_ros/franka_hw/include/**",
+                "${workspaceFolder}/../panda_controller/include/**"
             ],
             "name": "ROS",
             "intelliSenseMode": "gcc-x64",
