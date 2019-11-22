@@ -41,3 +41,6 @@ target_link_libraries(demo ${catkin_LIBRARIES})
 
 add_executable(obj_pose  src/obj_pose.cpp)
 target_link_libraries(obj_pose ${catkin_LIBRARIES})
+
+add_executable(current_pose  src/current_pose.cpp)
+target_link_libraries(current_pose ${catkin_LIBRARIES})

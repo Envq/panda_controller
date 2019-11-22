@@ -1,0 +1,3 @@
+<launch>
+    <node name="current_pose" pkg="panda_controller" type="current_pose" respawn="false" output="screen"/>
+</launch>
