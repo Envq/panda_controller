@@ -27,9 +27,10 @@ std::string getPath() {
 
 
 //#############################################################################
-// GLOBAL FUNCTIONS
-void poses_manager::save_pose(const std::string NAME,
-                              const geometry_msgs::Pose pose) {
+// PUBLIC FUNCTIONS IMPLEMENTATION
+namespace poses_manager {
+
+void save_pose(const std::string &NAME, const geometry_msgs::Pose &pose) {
     std::fstream file;
     Json::Value root;
     Json::StyledStreamWriter writer;
@@ -61,5 +62,43 @@ void poses_manager::save_pose(const std::string NAME,
 
     } catch (Json::RuntimeError &e) {
         throw poses_manager_error("Json ill-writted");
+        file.close();
     }
 }
+
+
+geometry_msgs::Pose get_pose(const std::string &NAME) {
+    std::ifstream file;
+    Json::Value root;
+    // Open file
+    file.open(getPath(), std::ios::in);
+
+    // Check if the file is correctly opened
+    if (!file.is_open())
+        throw poses_manager_error("can't open:" + getPath());
+
+
+    // Get pose
+    geometry_msgs::Pose pose;
+
+    try {
+        file >> root;
+        pose.orientation.x = root[NAME]["orientation"]["x"].asDouble();
+        pose.orientation.y = root[NAME]["orientation"]["y"].asDouble();
+        pose.orientation.z = root[NAME]["orientation"]["z"].asDouble();
+        pose.orientation.w = root[NAME]["orientation"]["w"].asDouble();
+        pose.position.x = root[NAME]["position"]["x"].asDouble();
+        pose.position.y = root[NAME]["position"]["y"].asDouble();
+        pose.position.z = root[NAME]["position"]["z"].asDouble();
+
+        file.close();
+
+    } catch (Json::RuntimeError &e) {
+        throw poses_manager_error("Json ill-writted");
+        file.close();
+    }
+    return pose;
+}
+
+
+}  // namespace poses_manager

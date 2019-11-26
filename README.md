@@ -143,16 +143,16 @@ A brief description of the launch files available:
  ### **controller**
 ![controller](screenshot/controller.png?raw=true "controller")
 
-This node launch rviz with the panda arm
+This node launches rviz with the panda arm
 
  ### **current_pose**
 ![current_pose](screenshot/current_pose.png?raw=true "current_pose")
 
-This node get current pose of the panda arm and save it on poses.json. You can use argument "name:=text" to specify the name where save the pose (default is 'current')
+This node takes current pose of the panda arm and saves it on poses.json. You can use argument "name:=text" to specify the name where save the pose (default is 'current')
 
  ### **pick_place**
 
-This node read object-pose and target-pose on json and execute the pick and place task
+This node reads the "object" and "target" poses on JSON and performs the pick and place task
 
 
 ---
@@ -177,7 +177,7 @@ The following commands are available:
 - **buildAndRun**: build this package and run the actual developing node
 - **controller**: run the node that launch rviz
 - **current_pose**: run the node that save current pose
-- **pick:place**: run the node that execute pick-and-place task
+- **pick_place**: run the node that execute pick-and-place task
 - **format**: format sources with clang-format
 - **build_all**: build all packages
 - **clean_all**: clean all packages

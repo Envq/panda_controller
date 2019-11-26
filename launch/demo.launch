@@ -1,3 +1,0 @@
-<launch>
-    <node name="demo" pkg="panda_controller" type="demo" respawn="false" output="screen"/>
-</launch>

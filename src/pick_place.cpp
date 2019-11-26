@@ -1,38 +1,10 @@
+// MY LIBS
+#include "arm.hpp"
+#include "my_exceptions.hpp"
+#include "poses_manager.hpp"
+
 // ROS
-#include <geometry_msgs/Pose.h>
 #include <ros/ros.h>
-
-// MOVEIT
-#include <moveit/move_group_interface/move_group_interface.h>
-
-
-
-//#############################################################################
-// CALLBACK
-void obj_pose_callback(const geometry_msgs::Pose &pose) {
-    static const std::string PLANNING_GROUP = "panda_arm";
-    moveit::planning_interface::MoveGroupInterface move_group(PLANNING_GROUP);
-    moveit::planning_interface::MoveGroupInterface::Plan my_plan;
-
-    // Print Pose readed
-    ROS_INFO_STREAM(pose);
-
-    // Set the target Pose
-    move_group.setPoseTarget(pose);
-
-    // Perform the planning and then make the move if successful
-    bool success = (move_group.plan(my_plan) ==
-                    moveit::planning_interface::MoveItErrorCode::SUCCESS);
-
-    if (success) {
-        move_group.move();
-        ROS_INFO("Panda pose goal: SUCCESS");
-    } else {
-        ROS_ERROR("Panda pose goal: FAILURE");
-    }
-
-    ROS_INFO("FINISHED TASK");
-}
 
 
 
@@ -46,17 +18,54 @@ int main(int argc, char **argv) {
 
     // Setup ROS
     ros::init(argc, argv, NAME);
-    ros::NodeHandle node;
-    ros::AsyncSpinner spinner(2);
+    ros::NodeHandle node("~");
+    ros::AsyncSpinner spinner(1);
     spinner.start();
-    ROS_INFO_STREAM("START: " << NAME);
+    ROS_INFO_STREAM(">> START: " << NAME);
 
 
-    // Subscriber to get the object position
-    ros::Subscriber sub = node.subscribe("obj_pose", 1000, obj_pose_callback);
+    // Extract the parameters
+    int SPEED;
+    if (!node.getParam("speed", SPEED)) {
+        ROS_FATAL_STREAM(
+            ">> Can't get parameters. (Don't use rosrun. Use roslaunch)!");
+        ros::shutdown();
+        exit(1);
+    }
+
+
+
+    // Task
+    try {
+        // Create class to manage the Panda arm
+        auto panda = arm::Panda("panda_arm");
+
+        // TODO: INIT SCENE
+
+        // Get current pose
+        auto start_pose = panda.getCurrentPose();
+
+        // Test gripper
+        // panda.moveGripper();
+
+        // Pick object
+        panda.pick(poses_manager::get_pose("object"));
+
+        // Place Object
+        panda.place(poses_manager::get_pose("target"));
+
+        // Return to start_pose
+        panda.moveToPosition(start_pose, SPEED, true);
+
+    } catch (poses_manager_error &e) {
+        ROS_FATAL_STREAM(">> " << e.what());
+
+    } catch (arm_error &e) {
+        ROS_FATAL_STREAM(">> " << e.what());
+    }
 
 
     // Finish
-    ros::waitForShutdown();
+    ros::shutdown();
     return 0;
 }

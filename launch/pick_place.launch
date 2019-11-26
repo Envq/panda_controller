@@ -1,0 +1,7 @@
+<launch>
+    <arg name="name" default="current"/>
+    <node name="pick_place" pkg="panda_controller" 
+    type="pick_place" respawn="false" output="screen">
+        <param name="speed" value="1"/>
+    </node>
+</launch>

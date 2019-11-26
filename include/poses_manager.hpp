@@ -17,6 +17,8 @@
 // FUNCTIONS
 namespace poses_manager {
 
-void save_pose(const std::string NAME, const geometry_msgs::Pose pose);
+void save_pose(const std::string &NAME, const geometry_msgs::Pose &pose);
+
+geometry_msgs::Pose get_pose(const std::string &NAME);
 
 }  // namespace poses_manager
