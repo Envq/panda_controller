@@ -2,7 +2,6 @@
     <arg name="name" default="current"/>
     <node name="current_pose" pkg="panda_controller" 
     type="current_pose" respawn="false" output="screen">
-        <param name="poses_path" value="$(find panda_controller)/db/poses.json"/>
         <param name="name" value="$(arg name)"/>
     </node>
 </launch>
