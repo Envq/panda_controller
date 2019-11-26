@@ -1,3 +1,7 @@
+// C++
+#include <fstream>
+#include <jsoncpp/json/json.h>
+
 // ROS
 #include <geometry_msgs/Pose.h>
 #include <ros/ros.h>
@@ -5,23 +9,18 @@
 // MOVEIT
 #include <moveit/move_group_interface/move_group_interface.h>
 
-// C++
-#include <fstream>
-#include <jsoncpp/json/json.h>
-
 
 
 //#############################################################################
 // GLOBAL VARIABLE
 static const std::string PANDA_GROUP = "panda_arm";
-const std::string PATH_POSES =
-    "/home/envq/panda_ws/src/panda_controller/db/poses.json";
 
 
 
 //#############################################################################
 // PRIVATE FUNCTIONS
-void save_pose(const geometry_msgs::Pose pose, const std::string name);
+void save_pose(const std::string PATH, const std::string NAME,
+               const geometry_msgs::Pose pose);
 
 
 
@@ -41,10 +40,13 @@ int main(int argc, char **argv) {
     ROS_INFO_STREAM(">> START: " << NAME);
 
 
-    // Extract the parameter
-    std::string pose_name;
-    if (!node.getParam("name", pose_name)) {
-        ROS_FATAL_STREAM(">> Use launch file!");
+    // Extract the parameters
+    std::string POSE_NAME;
+    std::string POSES_PATH;
+    if (!node.getParam("name", POSE_NAME) ||
+        !node.getParam("poses_path", POSES_PATH)) {
+        ROS_FATAL_STREAM(
+            ">> Can't get parameters. (Don't use rosrun. Use roslaunch)!");
         ros::shutdown();
         exit(1);
     }
@@ -58,26 +60,21 @@ int main(int argc, char **argv) {
         // Get current pose
         geometry_msgs::Pose pose;
         pose = move_group.getCurrentPose().pose;
-        // DEBUG
-        // pose.orientation.x = 0.0;
-        // pose.orientation.y = 0.0;
-        // pose.orientation.z = 0.0;
-        // pose.orientation.w = 0.0;
-        // pose.position.x = 0.0;
-        // pose.position.y = 0.5;
-        // pose.position.z = 0.0;
 
         // Print current pose
-        ROS_INFO_STREAM(pose);
+        ROS_INFO_STREAM("CURRENT POSE:\n" << pose);
 
         // Save pose in json file
-        save_pose(pose, pose_name);
+        save_pose(POSES_PATH, POSE_NAME, pose);
 
     } catch (const std::runtime_error &e) {
         ROS_FATAL(">> Impossible get current position");
 
     } catch (Json::RuntimeError &e) {
         ROS_FATAL(">> Json ill-writted");
+
+    } catch (std::invalid_argument &e) {
+        ROS_FATAL_STREAM(">> " << e.what());
     }
 
 
@@ -90,29 +87,33 @@ int main(int argc, char **argv) {
 
 //#############################################################################
 // IMPLEMENTATIONS
-void save_pose(const geometry_msgs::Pose pose, const std::string name) {
+void save_pose(const std::string PATH, const std::string NAME,
+               const geometry_msgs::Pose pose) {
     std::fstream file;
     Json::Value root;
     Json::StyledStreamWriter writer;
 
     // Init root
-    file.open(PATH_POSES, std::ios::in);
+    file.open(PATH, std::ios::in);
     if (file.is_open()) {
         file >> root;
         file.close();
     }
 
     // Update root
-    root[name]["orientation"]["x"] = pose.orientation.x;
-    root[name]["orientation"]["y"] = pose.orientation.y;
-    root[name]["orientation"]["z"] = pose.orientation.z;
-    root[name]["orientation"]["w"] = pose.orientation.w;
-    root[name]["position"]["x"] = pose.position.x;
-    root[name]["position"]["y"] = pose.position.y;
-    root[name]["position"]["z"] = pose.position.z;
+    root[NAME]["orientation"]["x"] = pose.orientation.x;
+    root[NAME]["orientation"]["y"] = pose.orientation.y;
+    root[NAME]["orientation"]["z"] = pose.orientation.z;
+    root[NAME]["orientation"]["w"] = pose.orientation.w;
+    root[NAME]["position"]["x"] = pose.position.x;
+    root[NAME]["position"]["y"] = pose.position.y;
+    root[NAME]["position"]["z"] = pose.position.z;
 
     // Save the pose
-    file.open(PATH_POSES, std::ios::out);
+    file.open(PATH, std::ios::out);
+    if (!file.is_open())
+        throw std::invalid_argument("Can't write on path selected");
+
     writer.write(file, root);
     file.close();
 }
