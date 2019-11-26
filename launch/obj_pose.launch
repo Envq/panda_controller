@@ -1,3 +1,0 @@
-<launch>
-    <node name="obj_pose" pkg="panda_controller" type="obj_pose" respawn="false" output="screen"/>
-</launch>

@@ -22,7 +22,9 @@ This is a task for the the Panda arm (Franka Emika) using ROS
 ---
 ## Getting Started
 
-This package was written for ROS melodic running under Ubuntu 18.04.
+This package was tested in:
+- ROS melodic running under Linux Mint Tina (compatible with Ubuntu Bionic)
+- ROS kinetic running under Ubuntu Xenial
 
 
 
@@ -136,20 +138,21 @@ catkin build
 
 ---
 ## Nodes
-A brief description of the nodes:
+A brief description of the launch files available:
 
  ### **simulation**
 ![simulation](screenshot/simulation.png?raw=true "simulation")
 
 This node launch rviz with the panda arm
 
- ### **obj_pose**
+ ### **current_pose**
+![current_pose](screenshot/current_pose.png?raw=true "current_pose")
 
-This node get current pose of panda and publish it on /obj_pose topic
+This node get current pose of the panda arm and save it on poses.json. You can use argument "name:=text" to specify the name where save the pose (default is 'current')
 
  ### **demo**
 
-This node move the panda on the pose readed on /obj_pose topic
+This node move the panda on the pose readed on poses.json
 
 
 ---
@@ -173,6 +176,7 @@ The following commands are available:
 - **build** : build this package
 - **buildAndRun**: build this package and run the actual developing node
 - **simulation**: run the node that launch rviz
+- **current_pose**: run the node that save current pose
 - **format**: format sources with clang-format
 - **build_all**: build all packages
 - **clean_all**: clean all packages
