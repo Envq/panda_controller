@@ -4,12 +4,12 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "simulation",
+            "label": "controller",
             "type": "shell",
             "command": "roslaunch",
             "args": [
-                "panda_moveit_config",
-                "demo.launch"
+                "${workspaceFolderBasename}",
+                "controller.launch"
             ],
             "problemMatcher": [],
             "group": "none",
@@ -32,12 +32,12 @@
             }
         },
         {
-            "label": "demo",
+            "label": "pick_place",
             "type": "shell",
             "command": "roslaunch",
             "args": [
                 "${workspaceFolderBasename}",
-                "demo.launch"
+                "pick_place.launch"
             ],
             "problemMatcher": [],
             "group": "none",
@@ -51,7 +51,7 @@
             "command": "roslaunch",
             "args": [
                 "${workspaceFolderBasename}",
-                "demo.launch"
+                "pick_place.launch"
             ],
             "problemMatcher": [],
             "group": "build",

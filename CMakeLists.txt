@@ -47,8 +47,8 @@ include_directories(
 ## My libs directory
 set(MY_LIBS ${PROJECT_SOURCE_DIR}/src/my_libs)
 
-add_executable(demo  src/demo.cpp)
-target_link_libraries(demo ${catkin_LIBRARIES})
-
 add_executable(current_pose  src/current_pose.cpp)
 target_link_libraries(current_pose ${catkin_LIBRARIES} ${JSONCPP_LIBRARIES})
+
+add_executable(pick_place  src/pick_place.cpp)
+target_link_libraries(pick_place ${catkin_LIBRARIES})

@@ -10,9 +10,9 @@ This is a task for the the Panda arm (Franka Emika) using ROS
   * [Dependencies](#dependencies)
   * [Building from source](#building-from-source)
 * [Nodes](#nodes)
-  * [simulation](#simulation)
-  * [obj_pose](#obj_pose)
-  * [demo](#demo)
+  * [controller](#controller)
+  * [current_pose](#current_pose)
+  * [pick_place](#pick_place)
 * [VSCode](#vscode)
 * [Author](#author)
 * [License](#license)
@@ -140,8 +140,8 @@ catkin build
 ## Nodes
 A brief description of the launch files available:
 
- ### **simulation**
-![simulation](screenshot/simulation.png?raw=true "simulation")
+ ### **controller**
+![controller](screenshot/controller.png?raw=true "controller")
 
 This node launch rviz with the panda arm
 
@@ -150,9 +150,9 @@ This node launch rviz with the panda arm
 
 This node get current pose of the panda arm and save it on poses.json. You can use argument "name:=text" to specify the name where save the pose (default is 'current')
 
- ### **demo**
+ ### **pick_place**
 
-This node move the panda on the pose readed on poses.json
+This node read object-pose and target-pose on json and execute the pick and place task
 
 
 ---
@@ -175,8 +175,9 @@ I used these extensions:
 The following commands are available:
 - **build** : build this package
 - **buildAndRun**: build this package and run the actual developing node
-- **simulation**: run the node that launch rviz
+- **controller**: run the node that launch rviz
 - **current_pose**: run the node that save current pose
+- **pick:place**: run the node that execute pick-and-place task
 - **format**: format sources with clang-format
 - **build_all**: build all packages
 - **clean_all**: clean all packages
