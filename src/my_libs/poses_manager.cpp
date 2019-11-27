@@ -55,7 +55,8 @@ void save_pose(const std::string &NAME, const geometry_msgs::Pose &pose) {
         // Save the pose
         file.open(getPath(), std::ios::out);
         if (!file.is_open())
-            throw my_exceptions::poses_manager_error("Can't write on path selected");
+            throw my_exceptions::poses_manager_error(
+                "Can't write on path selected");
 
         writer.write(file, root);
         file.close();

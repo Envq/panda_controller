@@ -4,12 +4,43 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "controller",
+            "label": "buildAndRun",
             "type": "shell",
             "command": "roslaunch",
             "args": [
                 "${workspaceFolderBasename}",
-                "controller.launch"
+                "relative_move.launch"
+            ],
+            "problemMatcher": [],
+            "group": "build",
+            "presentation": {
+                "focus": true
+            },
+            "dependsOn": [
+                "build"
+            ]
+        },
+        {
+            "label": "pick_place",
+            "type": "shell",
+            "command": "roslaunch",
+            "args": [
+                "${workspaceFolderBasename}",
+                "pick_place.launch"
+            ],
+            "problemMatcher": [],
+            "group": "none",
+            "presentation": {
+                "focus": true
+            }
+        },
+        {
+            "label": "relative_move",
+            "type": "shell",
+            "command": "roslaunch",
+            "args": [
+                "${workspaceFolderBasename}",
+                "relative_move.launch"
             ],
             "problemMatcher": [],
             "group": "none",
@@ -32,35 +63,18 @@
             }
         },
         {
-            "label": "pick_place",
+            "label": "controller",
             "type": "shell",
             "command": "roslaunch",
             "args": [
                 "${workspaceFolderBasename}",
-                "pick_place.launch"
+                "controller.launch"
             ],
             "problemMatcher": [],
             "group": "none",
             "presentation": {
                 "focus": true
             }
-        },
-        {
-            "label": "buildAndRun",
-            "type": "shell",
-            "command": "roslaunch",
-            "args": [
-                "${workspaceFolderBasename}",
-                "pick_place.launch"
-            ],
-            "problemMatcher": [],
-            "group": "build",
-            "presentation": {
-                "focus": true
-            },
-            "dependsOn": [
-                "build"
-            ]
         },
         {
             "label": "build",

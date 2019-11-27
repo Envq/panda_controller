@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
         ROS_FATAL_STREAM(
             ">> Can't get parameters. (Don't use rosrun. Use roslaunch)!");
         ros::shutdown();
-        exit(1);
+        return 0;
     }
 
 

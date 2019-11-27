@@ -1,0 +1,14 @@
+<launch>
+    <arg name="x" default="0.0"/>
+    <arg name="y" default="0.0"/>
+    <arg name="z" default="0.0"/>
+    <arg name="speed" default="0.0"/>
+
+    <node name="relative_move" pkg="panda_controller" 
+    type="relative_move" respawn="false" output="screen">
+        <param name="x" value="$(arg x)"/>
+        <param name="y" value="$(arg y)"/>
+        <param name="z" value="$(arg z)"/>
+        <param name="speed" value="$(arg speed)"/>
+    </node>
+</launch>

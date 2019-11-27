@@ -8,8 +8,13 @@
 namespace arm {
 
 Panda::Panda(const std::string &panda_group) {
-    move_group_ptr.reset(
-        new moveit::planning_interface::MoveGroupInterface(panda_group));
+    try {
+        move_group_ptr.reset(
+            new moveit::planning_interface::MoveGroupInterface(panda_group));
+
+    } catch (const std::runtime_error &e) {
+        throw my_exceptions::arm_error("Impossible initialize moveGroupInterface");
+    }
 }
 
 
@@ -59,9 +64,9 @@ void Panda::setGripper(trajectory_msgs::JointTrajectory &posture, bool open) {
 
 
 void Panda::pick(const geometry_msgs::Pose &pose) {
-    // Create a vector of grasps to be attempted, currently only creating single
-    // grasp. This is essentially useful when using a grasp generator to
-    // generate and test multiple grasps.
+    // Create a vector of grasps to be attempted, currently only creating
+    // single grasp. This is essentially useful when using a grasp generator
+    // to generate and test multiple grasps.
     std::vector<moveit_msgs::Grasp> grasps;
     grasps.resize(1);
 

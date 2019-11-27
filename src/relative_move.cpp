@@ -1,12 +1,9 @@
 // MY LIBS
+#include "arm.hpp"
 #include "my_exceptions.hpp"
-#include "poses_manager.hpp"
 
 // ROS
 #include <ros/ros.h>
-
-// MOVEIT
-#include <moveit/move_group_interface/move_group_interface.h>
 
 
 
@@ -32,8 +29,9 @@ int main(int argc, char **argv) {
 
 
     // Extract the parameters
-    std::string POSE_NAME;
-    if (!node.getParam("name", POSE_NAME)) {
+    float X, Y, Z, SPEED;
+    if (!node.getParam("x", X) || !node.getParam("y", Y) ||
+        !node.getParam("z", Z) || !node.getParam("speed", SPEED)) {
         ROS_FATAL_STREAM(
             ">> Can't get parameters. (Don't use rosrun. Use roslaunch)!");
         ros::shutdown();
@@ -42,24 +40,20 @@ int main(int argc, char **argv) {
 
     // Task
     try {
-        // Create panda interface
-        moveit::planning_interface::MoveGroupInterface move_group(PANDA_GROUP);
+        // Create class to manage the Panda arm
+        auto panda = arm::Panda("panda_arm");
 
-        // Get current pose
-        geometry_msgs::Pose pose;
-        pose = move_group.getCurrentPose().pose;
+        // Create new pose
+        auto pose = panda.getCurrentPose();
+        pose.position.x += X;
+        pose.position.y += Y;
+        pose.position.z += Z;
 
-        // Print current pose
-        ROS_INFO_STREAM("CURRENT POSE:\n" << pose);
+        // Move arm
+        panda.moveToPosition(pose, SPEED, true);
 
-        // Save pose in json file
-        poses_manager::save_pose(POSE_NAME, pose);
-
-    } catch (const my_exceptions::poses_manager_error &e) {
+    } catch (const my_exceptions::arm_error &e) {
         ROS_FATAL_STREAM(">> " << e.what());
-
-    } catch (const std::runtime_error &e) {
-        ROS_FATAL(">> Impossible initialize moveGroupInterface");
     }
 
 

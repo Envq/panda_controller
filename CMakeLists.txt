@@ -52,7 +52,13 @@ add_executable(current_pose  src/current_pose.cpp
 target_link_libraries(current_pose ${catkin_LIBRARIES} ${JSONCPP_LIBRARIES})
 
 
+add_executable(relative_move  src/relative_move.cpp
+    ${MY_LIBS}/arm.cpp)
+target_link_libraries(relative_move ${catkin_LIBRARIES})
+
+
 add_executable(pick_place  src/pick_place.cpp
     ${MY_LIBS}/poses_manager.cpp
     ${MY_LIBS}/arm.cpp)
 target_link_libraries(pick_place ${catkin_LIBRARIES} ${JSONCPP_LIBRARIES})
+
