@@ -17,7 +17,7 @@ std::string getPath() {
         auto PACKAGE_PATH = ros::package::getPath(PACKAGE_NAME);
 
         if (PACKAGE_PATH.empty())
-            throw poses_manager_error("Package path not found");
+            throw my_exceptions::poses_manager_error("Package path not found");
 
         POSES_PATH = PACKAGE_PATH + RELATIVE_POSES;
     }
@@ -55,13 +55,13 @@ void save_pose(const std::string &NAME, const geometry_msgs::Pose &pose) {
         // Save the pose
         file.open(getPath(), std::ios::out);
         if (!file.is_open())
-            throw poses_manager_error("Can't write on path selected");
+            throw my_exceptions::poses_manager_error("Can't write on path selected");
 
         writer.write(file, root);
         file.close();
 
-    } catch (Json::RuntimeError &e) {
-        throw poses_manager_error("Json ill-writted");
+    } catch (const Json::RuntimeError &e) {
+        throw my_exceptions::poses_manager_error("Json ill-writted");
         file.close();
     }
 }
@@ -75,7 +75,7 @@ geometry_msgs::Pose get_pose(const std::string &NAME) {
 
     // Check if the file is correctly opened
     if (!file.is_open())
-        throw poses_manager_error("can't open:" + getPath());
+        throw my_exceptions::poses_manager_error("can't open:" + getPath());
 
 
     // Get pose
@@ -93,8 +93,8 @@ geometry_msgs::Pose get_pose(const std::string &NAME) {
 
         file.close();
 
-    } catch (Json::RuntimeError &e) {
-        throw poses_manager_error("Json ill-writted");
+    } catch (const Json::RuntimeError &e) {
+        throw my_exceptions::poses_manager_error("Json ill-writted");
         file.close();
     }
     return pose;

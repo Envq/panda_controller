@@ -57,10 +57,10 @@ int main(int argc, char **argv) {
         // Return to start_pose
         panda.moveToPosition(start_pose, SPEED, true);
 
-    } catch (poses_manager_error &e) {
+    } catch (const my_exceptions::poses_manager_error &e) {
         ROS_FATAL_STREAM(">> " << e.what());
 
-    } catch (arm_error &e) {
+    } catch (const my_exceptions::arm_error &e) {
         ROS_FATAL_STREAM(">> " << e.what());
     }
 

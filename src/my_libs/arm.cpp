@@ -31,7 +31,7 @@ void Panda::moveToPosition(const geometry_msgs::Pose &pose, const float &speed,
 
     // Check the state of plainning
     if (res != moveit::planning_interface::MoveItErrorCode::SUCCESS)
-        throw arm_error("Planning failure");
+        throw my_exceptions::arm_error("Planning failure");
 
     // Execute the move
     if (active_moving)
@@ -40,9 +40,7 @@ void Panda::moveToPosition(const geometry_msgs::Pose &pose, const float &speed,
 
 
 void moveGripper(const double len, const float &speed,
-                 const bool &active_moving) {
-                     
-                 }
+                 const bool &active_moving) {}
 
 
 void Panda::setGripper(trajectory_msgs::JointTrajectory &posture, bool open) {
