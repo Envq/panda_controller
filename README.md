@@ -13,6 +13,7 @@ This is a task for the the Panda arm (Franka Emika) using ROS
   * [controller](#controller)
   * [current_pose](#current_pose)
   * [pick_place](#pick_place)
+  * [relative_pose](#relative_pose)
 * [VSCode](#vscode)
 * [Author](#author)
 * [License](#license)
@@ -153,6 +154,11 @@ This node takes current pose of the panda arm and saves it on poses.json. You ca
  ### **pick_place**
 
 This node reads the "object" and "target" poses on JSON and performs the pick and place task
+
+
+### **relative_pose**
+
+this node moves the arm along the x, y and z directions of what is referred to as argument (meters)
 
 
 ---

@@ -35,20 +35,6 @@
             }
         },
         {
-            "label": "relative_move",
-            "type": "shell",
-            "command": "roslaunch",
-            "args": [
-                "${workspaceFolderBasename}",
-                "relative_move.launch"
-            ],
-            "problemMatcher": [],
-            "group": "none",
-            "presentation": {
-                "focus": true
-            }
-        },
-        {
             "label": "current_pose",
             "type": "shell",
             "command": "roslaunch",
