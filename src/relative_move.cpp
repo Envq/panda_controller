@@ -8,11 +8,6 @@
 
 
 //#############################################################################
-// GLOBAL VARIABLE
-static const std::string PANDA_GROUP = "panda_arm";
-
-
-//#############################################################################
 int main(int argc, char **argv) {
     // Get the file name
     std::string file_path = argv[0];
@@ -30,8 +25,10 @@ int main(int argc, char **argv) {
 
     // Extract the parameters
     float X, Y, Z, SPEED;
+    bool PLAN_ONLY;
     if (!node.getParam("x", X) || !node.getParam("y", Y) ||
-        !node.getParam("z", Z) || !node.getParam("speed", SPEED)) {
+        !node.getParam("z", Z) || !node.getParam("speed", SPEED) ||
+        !node.getParam("plan_only", PLAN_ONLY)) {
         ROS_FATAL_STREAM(
             ">> Can't get parameters. (Don't use rosrun. Use roslaunch)!");
         ros::shutdown();
@@ -41,7 +38,10 @@ int main(int argc, char **argv) {
     // Task
     try {
         // Create class to manage the Panda arm
-        auto panda = arm::Panda("panda_arm");
+        auto panda = arm::Panda();
+
+        // Set speed
+        panda.setSpeed(SPEED);
 
         // Create new pose
         auto pose = panda.getCurrentPose();
@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
         pose.position.z += Z;
 
         // Move arm
-        panda.moveToPosition(pose, SPEED, true);
+        panda.moveToPosition(pose, PLAN_ONLY);
 
     } catch (const my_exceptions::arm_error &e) {
         ROS_FATAL_STREAM(">> " << e.what());

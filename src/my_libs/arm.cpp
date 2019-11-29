@@ -3,17 +3,68 @@
 
 
 //#############################################################################
-// PUBLIC METHODS IMPLEMENTATIONS
+// PRIVATE FUNCTIONS AND ENUMERATIONS
 
+trajectory_msgs::JointTrajectory
+get_gripper_trajectory(const float &WIDTH, const float &SPEED = 1.0);
+
+
+
+//#############################################################################
+// PUBLIC FUNCTIONS IMPLEMENTATIONS
+namespace arm {
+geometry_msgs::Vector3 get_vector_with(const std::string &type) {
+    geometry_msgs::Vector3 vector;
+
+    if (type == "pos_x") {
+        vector.x = 1.0;
+
+    } else if (type == "neg_x") {
+        vector.x = -1.0;
+
+    } else if (type == "pos_y") {
+        vector.y = 1.0;
+
+    } else if (type == "neg_y") {
+        vector.y = -1.0;
+
+    } else if (type == "pos_z") {
+        vector.z = 1.0;
+
+    } else if (type == "neg_z") {
+        vector.z = -1.0;
+    }
+
+    return std::move(vector);
+}
+
+}  // namespace arm
+
+
+
+//#############################################################################
+// PUBLIC METHODS IMPLEMENTATIONS
 namespace arm {
 
-Panda::Panda(const std::string &panda_group) {
+Panda::Panda(const std::string &PANDA_GROUP) {
+    // Init MoveGroupInterface
     try {
         move_group_ptr.reset(
-            new moveit::planning_interface::MoveGroupInterface(panda_group));
+            new moveit::planning_interface::MoveGroupInterface(PANDA_GROUP));
 
     } catch (const std::runtime_error &e) {
-        throw my_exceptions::arm_error("Impossible initialize moveGroupInterface");
+        throw my_exceptions::arm_error(
+            "Impossible initialize MoveGroupInterface");
+    }
+
+    // Init PlanningSceneInterface
+    try {
+        planning_scene_ptr.reset(
+            new moveit::planning_interface::PlanningSceneInterface);
+
+    } catch (const std::runtime_error &e) {
+        throw my_exceptions::arm_error(
+            "Impossible initialize PlanningSceneInterface");
     }
 }
 
@@ -23,15 +74,29 @@ geometry_msgs::Pose Panda::getCurrentPose() {
 }
 
 
-void Panda::moveToPosition(const geometry_msgs::Pose &pose, const float &speed,
-                           const bool &active_moving) {
-    // Set the target Pose
-    move_group_ptr->setPoseTarget(pose);
+void Panda::setSpeed(const float &SPEED) {
+    move_group_ptr->setMaxVelocityScalingFactor(SPEED);
+    speed = SPEED;
+}
 
-    // Set the speed
-    move_group_ptr->setMaxVelocityScalingFactor(speed);
+
+void Panda::setScene(const moveit_msgs::PlanningScene &SCENE) {
+    planning_scene_ptr->applyPlanningScene(SCENE);
+}
+
+
+void Panda::resetScene() {
+    moveit_msgs::PlanningScene empy_scene;
+    planning_scene_ptr->applyPlanningScene(empy_scene);
+}
+
+void Panda::moveToPosition(const geometry_msgs::Pose &POSE,
+                           const bool &PLAN_ONLY) {
+    // Set the target Pose
+    move_group_ptr->setPoseTarget(POSE);
 
     // Perform the planning
+    moveit::planning_interface::MoveGroupInterface::Plan plan;
     auto res = move_group_ptr->plan(plan);
 
     // Check the state of plainning
@@ -39,124 +104,124 @@ void Panda::moveToPosition(const geometry_msgs::Pose &pose, const float &speed,
         throw my_exceptions::arm_error("Planning failure");
 
     // Execute the move
-    if (active_moving)
+    if (!PLAN_ONLY)
         move_group_ptr->move();
 }
 
 
-void moveGripper(const double len, const float &speed,
-                 const bool &active_moving) {}
+void Panda::pick(const std::string &OBJECT_NAME,
+                 const std::string &PICK_SURFACE,
+                 const geometry_msgs::Vector3 &pre_vector,
+                 const geometry_msgs::Vector3 &post_vector,
+                 const geometry_msgs::Pose &POSE, const bool &PLAN_ONLY) {
+    // Init grasp pose
+    geometry_msgs::PoseStamped grasp_pose;
+    grasp_pose.header.frame_id = arm::FRAME_REF;
+    grasp_pose.pose = POSE;
 
+    // Init pre-grasp approach
+    moveit_msgs::GripperTranslation pre;
+    pre.direction.header.frame_id = arm::FRAME_REF;
+    pre.direction.vector = pre_vector;
+    pre.min_distance = 0.095;
+    pre.desired_distance = 0.115;
 
-void Panda::setGripper(trajectory_msgs::JointTrajectory &posture, bool open) {
-    // Add both finger joints of panda robot
-    posture.joint_names.resize(2);
-    posture.joint_names[0] = "panda_finger_joint1";
-    posture.joint_names[1] = "panda_finger_joint2";
+    // Init post-grasp retreat
+    moveit_msgs::GripperTranslation post;
+    post.direction.header.frame_id = arm::FRAME_REF;
+    post.direction.vector = post_vector;
+    post.min_distance = 0.1;
+    post.desired_distance = 0.25;
 
-    // Set them as open, wide enough for the object to fit
-    posture.points.resize(1);
-    posture.points[0].positions.resize(2);
-    posture.points[0].positions[0] = open ? 0.04 : 0.00;
-    posture.points[0].positions[1] = open ? 0.04 : 0.00;
-    posture.points[0].time_from_start = ros::Duration(0.5);
-}
+    // Init grasp
+    moveit_msgs::Grasp grasp;
+    grasp.grasp_pose = grasp_pose;
+    grasp.pre_grasp_approach = pre;
+    grasp.post_grasp_retreat = post;
+    grasp.pre_grasp_posture = get_gripper_trajectory(
+        GRIPPER_MAX_WIDTH, Panda::speed);  // Open gripper
+    grasp.grasp_posture = get_gripper_trajectory(
+        0.01 - arm::DELTA_GRASP, Panda::speed);  // Close gripper
 
-
-void Panda::pick(const geometry_msgs::Pose &pose) {
-    // Create a vector of grasps to be attempted, currently only creating
-    // single grasp. This is essentially useful when using a grasp generator
-    // to generate and test multiple grasps.
-    std::vector<moveit_msgs::Grasp> grasps;
-    grasps.resize(1);
-
-
-    //** Setting grasp pose
-    grasps[0].grasp_pose.header.frame_id = "panda_link0";
-    tf2::Quaternion orientation;
-    orientation.setRPY(-M_PI / 2, -M_PI / 4, -M_PI / 2);
-    grasps[0].grasp_pose.pose.orientation = tf2::toMsg(orientation);
-    grasps[0].grasp_pose.pose.position.x = pose.position.x;
-    grasps[0].grasp_pose.pose.position.y = pose.position.y;
-    grasps[0].grasp_pose.pose.position.z = pose.position.z;
-
-
-    //** Setting pre-grasp approach
-    // Defined with respect to frame_id
-    grasps[0].pre_grasp_approach.direction.header.frame_id = "panda_link0";
-    // Direction is set as positive x axis
-    grasps[0].pre_grasp_approach.direction.vector.x = 1.0;
-    grasps[0].pre_grasp_approach.min_distance = 0.095;
-    grasps[0].pre_grasp_approach.desired_distance = 0.115;
-
-
-    //** Setting post-grasp retreat
-    // Defined with respect to frame_id
-    grasps[0].post_grasp_retreat.direction.header.frame_id = "panda_link0";
-    // Direction is set as positive z axis
-    grasps[0].post_grasp_retreat.direction.vector.z = 1.0;
-    grasps[0].post_grasp_retreat.min_distance = 0.1;
-    grasps[0].post_grasp_retreat.desired_distance = 0.25;
-
-
-    // Setting posture of eef before grasp
-    setGripper(grasps[0].pre_grasp_posture, 1);
-    // Setting posture of eef during grasp
-    setGripper(grasps[0].grasp_posture, 0);
+    auto obj = planning_scene_ptr->getObjects().find(OBJECT_NAME);
 
 
     // Set support surface
-    // move_group_ptr->setSupportSurfaceName("table1");
+    move_group_ptr->setSupportSurfaceName(PICK_SURFACE);
 
     // Call pick to pick up the object using the grasps given
-    move_group_ptr->pick("object", grasps);
+    move_group_ptr->pick(OBJECT_NAME, grasp, PLAN_ONLY);
 }
 
 
-void Panda::place(const geometry_msgs::Pose &pose) {
-    std::vector<moveit_msgs::PlaceLocation> place_location;
-    place_location.resize(1);
+void Panda::place(const std::string &OBJECT_NAME,
+                  const std::string &PLACE_SURFACE,
+                  const geometry_msgs::Vector3 &PRE_VECTOR,
+                  const geometry_msgs::Vector3 &POST_VECTOR,
+                  const geometry_msgs::Pose &POSE, const bool &PLAN_ONLY) {
+    // Init place pose
+    geometry_msgs::PoseStamped place_pose;
+    place_pose.header.frame_id = arm::FRAME_REF;
+    place_pose.pose = POSE;
 
-    // Setting place location pose
-    place_location[0].place_pose.header.frame_id = "panda_link0";
-    tf2::Quaternion orientation;
-    orientation.setRPY(0, 0, M_PI / 2);
-    place_location[0].place_pose.pose.orientation = tf2::toMsg(orientation);
+    // Init pre-place approach
+    moveit_msgs::GripperTranslation pre;
+    pre.direction.header.frame_id = arm::FRAME_REF;
+    pre.direction.vector = PRE_VECTOR;
+    pre.min_distance = 0.095;
+    pre.desired_distance = 0.115;
 
-    // While placing it is the exact location of the center of the object
-    place_location[0].place_pose.pose.position.x = pose.position.x;
-    place_location[0].place_pose.pose.position.y = pose.position.y;
-    place_location[0].place_pose.pose.position.z = pose.position.z;
+    // Init post-place retreat
+    moveit_msgs::GripperTranslation post;
+    post.direction.header.frame_id = arm::FRAME_REF;
+    post.direction.vector = POST_VECTOR;
+    post.min_distance = 0.1;
+    post.desired_distance = 0.25;
 
-
-    // Setting pre-place approach
-    // Defined with respect to frame_id
-    place_location[0].pre_place_approach.direction.header.frame_id =
-        "panda_link0";
-    // Direction is set as negative z axis
-    place_location[0].pre_place_approach.direction.vector.z = -1.0;
-    place_location[0].pre_place_approach.min_distance = 0.095;
-    place_location[0].pre_place_approach.desired_distance = 0.115;
-
-    // Setting post-grasp retreat
-    // Defined with respect to frame_id
-    place_location[0].post_place_retreat.direction.header.frame_id =
-        "panda_link0";
-    // Direction is set as negative y axis
-    place_location[0].post_place_retreat.direction.vector.y = -1.0;
-    place_location[0].post_place_retreat.min_distance = 0.1;
-    place_location[0].post_place_retreat.desired_distance = 0.25;
-
-
-    // Setting posture of eef after placing object
-    setGripper(place_location[0].post_place_posture, 1);
-
+    // Init place
+    moveit_msgs::PlaceLocation place;
+    place.place_pose = place_pose;
+    place.pre_place_approach = pre;
+    place.post_place_retreat = post;
+    place.post_place_posture = get_gripper_trajectory(
+        GRIPPER_MAX_WIDTH, Panda::speed);  // Open gripper
 
     // Set support surface
-    // move_group_ptr->setSupportSurfaceName("table2");
+    move_group_ptr->setSupportSurfaceName(PLACE_SURFACE);
 
     // Call place to place the object using the place locations given
-    move_group_ptr->place("object", place_location);
+    move_group_ptr->place(OBJECT_NAME, place_pose, PLAN_ONLY);
 }
 
 }  // namespace arm
+
+
+
+//#############################################################################
+// PRIVATE FUNCTIONS IMPLEMENTATIONS
+trajectory_msgs::JointTrajectory get_gripper_trajectory(const float &WIDTH,
+                                                        const float &SPEED) {
+    // Create trajectory
+    trajectory_msgs::JointTrajectory posture;
+
+    // Insert the finger joints of panda robot
+    posture.joint_names.push_back(arm::FINGER_SX);
+    posture.joint_names.push_back(arm::FINGER_DX);
+
+    // Create point of trajectory
+    trajectory_msgs::JointTrajectoryPoint point;
+    point.time_from_start = ros::Duration(0.5);
+    // -- Add info for FINGER1
+    point.positions.push_back(WIDTH);
+    point.velocities.push_back(SPEED);
+    // -- Add info for FINGER2
+    point.positions.push_back(WIDTH);
+    point.velocities.push_back(SPEED);
+
+    // Add trajectory point on posture
+    posture.points.push_back(point);
+
+    // TODO: there is MIMIC in urdf!
+
+    return std::move(posture);
+}

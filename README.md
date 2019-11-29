@@ -9,6 +9,7 @@ This is a task for the the Panda arm (Franka Emika) using ROS
 * [Getting started](#getting-started)
   * [Dependencies](#dependencies)
   * [Building from source](#building-from-source)
+* [DB](#DB)
 * [Nodes](#nodes)
   * [controller](#controller)
   * [current_pose](#current_pose)
@@ -135,6 +136,12 @@ catkin init
 catkin build
 ~~~
 
+
+---
+## DB
+This folder contains:
+- poses.json: A Collection of pose and orientation of the link before Panda's arm
+- scenes.json: A collection of Scene
 
 
 ---

@@ -1,10 +1,21 @@
 // MY LIBS
 #include "arm.hpp"
+#include "data_manager.hpp"
 #include "my_exceptions.hpp"
-#include "poses_manager.hpp"
 
 // ROS
 #include <ros/ros.h>
+
+
+
+//#############################################################################
+// PARAMETERS
+const auto &SCENE_NAME = "pick_place";
+const auto &OBJECT_NAME = "object";
+const auto &PICK_POSE_NAME = "pick";
+const auto &PICK_SURFACE = "table1";
+const auto &PLACE_POSE_NAME = "place";
+const auto &PLACE_SURFACE = "table2";
 
 
 
@@ -25,7 +36,7 @@ int main(int argc, char **argv) {
 
 
     // Extract the parameters
-    int SPEED;
+    float SPEED;
     if (!node.getParam("speed", SPEED)) {
         ROS_FATAL_STREAM(
             ">> Can't get parameters. (Don't use rosrun. Use roslaunch)!");
@@ -38,26 +49,41 @@ int main(int argc, char **argv) {
     // Task
     try {
         // Create class to manage the Panda arm
-        auto panda = arm::Panda("panda_arm");
+        ROS_INFO(">> INIT PANDA CONTROLLER");
+        auto panda = arm::Panda();
 
-        // TODO: INIT SCENE
+        // Set robot speed
+        // TODO: FIX -> not work in pick_place
+        ROS_INFO_STREAM(">> SET SPEED: " << SPEED);
+        panda.setSpeed(SPEED);
+
+        // Init scene
+        ROS_INFO(">> INIT SCENE");
+        auto scene = data_manager::get_scene(SCENE_NAME);
+        panda.setScene(scene);
 
         // Get current pose
+        ROS_INFO(">> GET CURRENT POSE");
         auto start_pose = panda.getCurrentPose();
 
-        // Test gripper
-        // panda.moveGripper();
-
         // Pick object
-        panda.pick(poses_manager::get_pose("object"));
+        ROS_INFO(">> PICK OBJECT");
+        panda.pick(OBJECT_NAME, PICK_SURFACE, arm::get_vector_with("pos_x"),
+                   arm::get_vector_with("pos_z"),
+                   data_manager::get_pose(PICK_POSE_NAME));
 
         // Place Object
-        panda.place(poses_manager::get_pose("target"));
+        ROS_INFO(">> PLACE OBJECT");
+        panda.place(OBJECT_NAME, PLACE_SURFACE, arm::get_vector_with("neg_z"),
+                    arm::get_vector_with("neg_z"),
+                    data_manager::get_pose(PLACE_POSE_NAME));
 
         // Return to start_pose
-        panda.moveToPosition(start_pose, SPEED, true);
+        ROS_INFO(">> RETURN TO START POSE");
+        panda.moveToPosition(start_pose);
 
-    } catch (const my_exceptions::poses_manager_error &e) {
+
+    } catch (const my_exceptions::data_manager_error &e) {
         ROS_FATAL_STREAM(">> " << e.what());
 
     } catch (const my_exceptions::arm_error &e) {

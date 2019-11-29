@@ -9,7 +9,7 @@
             "command": "roslaunch",
             "args": [
                 "${workspaceFolderBasename}",
-                "relative_move.launch"
+                "pick_place.launch"
             ],
             "problemMatcher": [],
             "group": "build",

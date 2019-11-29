@@ -48,7 +48,8 @@ include_directories(
 set(MY_LIBS ${PROJECT_SOURCE_DIR}/src/my_libs)
 
 add_executable(current_pose  src/current_pose.cpp
-    ${MY_LIBS}/poses_manager.cpp)
+    ${MY_LIBS}/data_manager.cpp
+)
 target_link_libraries(current_pose ${catkin_LIBRARIES} ${JSONCPP_LIBRARIES})
 
 
@@ -58,7 +59,6 @@ target_link_libraries(relative_move ${catkin_LIBRARIES})
 
 
 add_executable(pick_place  src/pick_place.cpp
-    ${MY_LIBS}/poses_manager.cpp
+    ${MY_LIBS}/data_manager.cpp
     ${MY_LIBS}/arm.cpp)
 target_link_libraries(pick_place ${catkin_LIBRARIES} ${JSONCPP_LIBRARIES})
-

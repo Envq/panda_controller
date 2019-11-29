@@ -1,6 +1,6 @@
 // MY LIBS
+#include "data_manager.hpp"
 #include "my_exceptions.hpp"
-#include "poses_manager.hpp"
 
 // ROS
 #include <ros/ros.h>
@@ -53,9 +53,9 @@ int main(int argc, char **argv) {
         ROS_INFO_STREAM("CURRENT POSE:\n" << pose);
 
         // Save pose in json file
-        poses_manager::save_pose(POSE_NAME, pose);
+        data_manager::save_pose(POSE_NAME, pose);
 
-    } catch (const my_exceptions::poses_manager_error &e) {
+    } catch (const my_exceptions::data_manager_error &e) {
         ROS_FATAL_STREAM(">> " << e.what());
 
     } catch (const std::runtime_error &e) {
