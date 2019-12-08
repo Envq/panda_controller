@@ -193,7 +193,7 @@ std::string getPath(const std::string &RELATIVE_PATH) {
 
 scene_object create_scene_object(const Json::Value &OBJECT) {
     // Get informations
-    const auto &NAME = OBJECT["name"].asString();
+    const auto &NAME = OBJECT["name"];
     const auto &TYPE = OBJECT["type"];
     const auto &COLOR = OBJECT["color"];
     const auto &DIMENSIONS = OBJECT["dimensions"];
@@ -212,7 +212,7 @@ scene_object create_scene_object(const Json::Value &OBJECT) {
     auto &collision_object = object.collision_part;
 
     // Define color object
-    color_object.id = NAME;
+    color_object.id = NAME.asString();
     color_object.color.r = COLOR["r"].asFloat();
     color_object.color.g = COLOR["g"].asFloat();
     color_object.color.b = COLOR["b"].asFloat();
@@ -220,11 +220,18 @@ scene_object create_scene_object(const Json::Value &OBJECT) {
 
     // Define collision object
     collision_object.header.frame_id = "panda_link0";
-    collision_object.id = NAME;
+    collision_object.id = NAME.asString();
 
     // Define object in the world
     shape_msgs::SolidPrimitive primitive;
     if (TYPE == "box") {
+        // Check if there is empty field
+        if (DIMENSIONS["x"].empty() || DIMENSIONS["y"].empty() ||
+            DIMENSIONS["z"].empty())
+            throw my_exceptions::data_manager_error(
+                "Object of type BOX have some empty field");
+
+        // Init object
         primitive.type = primitive.BOX;
         primitive.dimensions.resize(3);
         primitive.dimensions[0] = DIMENSIONS["x"].asDouble();
@@ -232,17 +239,35 @@ scene_object create_scene_object(const Json::Value &OBJECT) {
         primitive.dimensions[2] = DIMENSIONS["z"].asDouble();
 
     } else if (TYPE == "sphere") {
+        // Check if there is empty field
+        if (DIMENSIONS["r"].empty())
+            throw my_exceptions::data_manager_error(
+                "Object of type SPHERE have some empty field");
+
+        // Init object
         primitive.type = primitive.SPHERE;
-        primitive.dimensions.resize(2);
+        primitive.dimensions.resize(1);
         primitive.dimensions[0] = DIMENSIONS["r"].asDouble();
 
     } else if (TYPE == "cylinder") {
+        // Check if there is empty field
+        if (DIMENSIONS["h"].empty() || DIMENSIONS["r"].empty())
+            throw my_exceptions::data_manager_error(
+                "Object of type CYLINDER have some empty field");
+
+        // Init object
         primitive.type = primitive.CYLINDER;
         primitive.dimensions.resize(2);
         primitive.dimensions[0] = DIMENSIONS["h"].asDouble();
         primitive.dimensions[1] = DIMENSIONS["r"].asDouble();
 
     } else if (TYPE == "cone") {
+        // Check if there is empty field
+        if (DIMENSIONS["h"].empty() || DIMENSIONS["r"].empty())
+            throw my_exceptions::data_manager_error(
+                "Object of type CONE have some empty field");
+
+        // Init object
         primitive.type = primitive.CONE;
         primitive.dimensions.resize(2);
         primitive.dimensions[0] = DIMENSIONS["h"].asDouble();

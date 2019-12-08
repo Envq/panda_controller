@@ -12,6 +12,7 @@
     <depend>roscpp</depend>
     <depend>std_msg</depend>
     <depend>geometry_msgs</depend>
+    <depend>shape_msgs</depend>
     <depend>moveit_core</depend>
     <depend>moveit_ros_planning_interface</depend>
 

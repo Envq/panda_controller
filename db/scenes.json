@@ -1,5 +1,83 @@
 {
-    "pick_place": [
+    "altair": [
+        {
+            "name": "table",
+            "type": "box",
+            "color": {
+                "r": 0.6,
+                "g": 0.4,
+                "b": 0.2,
+                "a": 1.0
+            },
+            "dimensions": {
+                "x": 1.5,
+                "y": 1.5,
+                "z": 0.03
+            },
+            "position": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": -0.015
+            },
+            "orientation": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        {
+            "name": "surface",
+            "type": "cylinder",
+            "color": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 1.0
+            },
+            "dimensions": {
+                "h": 0.04,
+                "r": 0.40
+            },
+            "position": {
+                "x": 0.5,
+                "y": 0.0,
+                "z": 0.02
+            },
+            "orientation": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        {
+            "name": "object",
+            "type": "cylinder",
+            "color": {
+                "r": 1.0,
+                "g": 0.2,
+                "b": 0.0,
+                "a": 1.0
+            },
+            "dimensions": {
+                "h": 0.2,
+                "r": 0.01
+            },
+            "position": {
+                "x": 0.5,
+                "y": -0.2,
+                "z": 0.14
+            },
+            "orientation": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        }
+    ],
+    "pick_place_tutorial": [
         {
             "name": "table1",
             "type": "box",

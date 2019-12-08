@@ -10,6 +10,7 @@
 
 // ROS
 #include <geometry_msgs/Pose.h>
+#include <shape_msgs/SolidPrimitive.h>
 #include <ros/package.h>
 
 // MOVEIT

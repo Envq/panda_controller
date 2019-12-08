@@ -10,6 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
     roscpp
     std_msgs
     geometry_msgs
+    shape_msgs
     moveit_core
     moveit_ros_planning_interface
 )

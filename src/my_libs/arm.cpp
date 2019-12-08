@@ -143,10 +143,8 @@ void Panda::pick(const std::string &OBJECT_NAME,
     grasp.grasp_posture = get_gripper_trajectory(
         0.01 - arm::DELTA_GRASP, Panda::speed);  // Close gripper
 
-    auto obj = planning_scene_ptr->getObjects().find(OBJECT_NAME);
 
-
-    // Set support surface
+    // Set support surface to prevent collision with surface
     move_group_ptr->setSupportSurfaceName(PICK_SURFACE);
 
     // Call pick to pick up the object using the grasps given
@@ -185,12 +183,16 @@ void Panda::place(const std::string &OBJECT_NAME,
     place.post_place_retreat = post;
     place.post_place_posture = get_gripper_trajectory(
         GRIPPER_MAX_WIDTH, Panda::speed);  // Open gripper
+    
+    // Init places vector
+    std::vector<moveit_msgs::PlaceLocation> places;
+    places.push_back(place);
 
-    // Set support surface
+    // Set support surface to prevent collision with surface
     move_group_ptr->setSupportSurfaceName(PLACE_SURFACE);
 
     // Call place to place the object using the place locations given
-    move_group_ptr->place(OBJECT_NAME, place_pose, PLAN_ONLY);
+    move_group_ptr->place(OBJECT_NAME, places, PLAN_ONLY);
 }
 
 }  // namespace arm
