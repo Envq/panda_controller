@@ -59,6 +59,12 @@ add_executable(relative_move  src/relative_move.cpp
 target_link_libraries(relative_move ${catkin_LIBRARIES})
 
 
+add_executable(absolute_move  src/absolute_move.cpp
+    ${MY_LIBS}/data_manager.cpp
+    ${MY_LIBS}/arm.cpp)
+target_link_libraries(absolute_move ${catkin_LIBRARIES} ${JSONCPP_LIBRARIES})
+
+
 add_executable(pick_place  src/pick_place.cpp
     ${MY_LIBS}/data_manager.cpp
     ${MY_LIBS}/arm.cpp)
