@@ -14,7 +14,7 @@ const auto &SCENE_NAME = "altair";
 const auto &OBJECT_NAME = "object";
 const auto &PICK_POSE_NAME = "pick";
 const auto &PICK_SURFACE = "surface";
-const auto &PLACE_POSE_NAME = "place";
+const auto &PLACE_POSE_NAME = "place_tutorial";
 const auto &PLACE_SURFACE = "surface";
 
 
