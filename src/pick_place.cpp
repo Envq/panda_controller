@@ -10,12 +10,6 @@
 
 //#############################################################################
 // PARAMETERS
-const auto &SCENE_NAME = "altair";
-const auto &OBJECT_NAME = "object";
-const auto &PICK_POSE_NAME = "pick";
-const auto &PICK_SURFACE = "surface";
-const auto &PLACE_POSE_NAME = "place_tutorial";
-const auto &PLACE_SURFACE = "surface";
 
 
 
@@ -37,13 +31,16 @@ int main(int argc, char **argv) {
 
     // Extract the parameters
     float SPEED;
-    if (!node.getParam("speed", SPEED)) {
+    std::string OBJECT_NAME, SCENE_NAME, PICK_POSE_NAME, PLACE_POSE_NAME;
+    if (!node.getParam("speed", SPEED) || !node.getParam("scene", SCENE_NAME) ||
+        !node.getParam("object", OBJECT_NAME) ||
+        !node.getParam("pick_pose", PICK_POSE_NAME) ||
+        !node.getParam("place_pose", PLACE_POSE_NAME)) {
         ROS_FATAL_STREAM(
             ">> Can't get parameters. (Don't use rosrun. Use roslaunch)!");
         ros::shutdown();
         return 0;
     }
-
 
 
     // Task
@@ -53,7 +50,6 @@ int main(int argc, char **argv) {
         auto panda = arm::Panda();
 
         // Set robot speed
-        // TODO: FIX -> not work in pick_place
         ROS_INFO_STREAM(">> SET SPEED: " << SPEED);
         panda.setSpeed(SPEED);
 
@@ -62,29 +58,15 @@ int main(int argc, char **argv) {
         panda.setScene(data_manager::get_scene(SCENE_NAME));
         ros::WallDuration(1.0).sleep();
 
-        // Get current pose
-        // ROS_INFO(">> GET CURRENT POSE");
-        // auto start_pose = panda.getCurrentPose();
-        // ros::WallDuration(1.0).sleep();
-
         // Pick object
         ROS_INFO(">> PICK OBJECT");
-        panda.pick(OBJECT_NAME, PICK_SURFACE, arm::get_vector_with("neg_z"),
-                   arm::get_vector_with("pos_z"),
-                   data_manager::get_pose(PICK_POSE_NAME));
+        panda.pick(data_manager::get_pose(PICK_POSE_NAME), OBJECT_NAME);
         ros::WallDuration(1.0).sleep();
 
         // Place Object
         ROS_INFO(">> PLACE OBJECT");
-        panda.place(OBJECT_NAME, PLACE_SURFACE, arm::get_vector_with("neg_z"),
-                    arm::get_vector_with("pos_z"),
-                    data_manager::get_pose(PLACE_POSE_NAME));
+        panda.place(data_manager::get_pose(PLACE_POSE_NAME), OBJECT_NAME);
         ros::WallDuration(1.0).sleep();
-
-        // Return to start_pose
-        // ROS_INFO(">> RETURN TO START POSE");
-        // panda.moveToPosition(start_pose);
-        // ros::WallDuration(1.0).sleep();
 
 
     } catch (const my_exceptions::data_manager_error &e) {

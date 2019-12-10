@@ -1,8 +1,16 @@
 <launch>
+    <arg name="scene" default="altair"/>
+    <arg name="object" default="object"/>
+    <arg name="pick_pose" default="pick"/>
+    <arg name="place_pose" default="place"/>
     <arg name="speed" default="1.0"/>
 
     <node name="pick_place" pkg="panda_controller" 
     type="pick_place" respawn="false" output="screen">
+        <param name="scene" value="$(arg scene)"/>
+        <param name="object" value="$(arg object)"/>
+        <param name="pick_pose" value="$(arg pick_pose)"/>
+        <param name="place_pose" value="$(arg place_pose)"/>
         <param name="speed" value="$(arg speed)"/>
     </node>
 </launch>

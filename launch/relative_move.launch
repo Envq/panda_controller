@@ -2,7 +2,7 @@
     <arg name="x" default="0.0"/>
     <arg name="y" default="0.0"/>
     <arg name="z" default="0.0"/>
-    <arg name="speed" default="0.0"/>
+    <arg name="speed" default="1.0"/>
     <arg name="plan_only" default="false"/>
 
     <node name="relative_move" pkg="panda_controller" 
