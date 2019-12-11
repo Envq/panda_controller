@@ -56,13 +56,15 @@ void save_pose(const std::string &NAME, const geometry_msgs::Pose &POSE) {
         // Save the pose
         file.open(PATH, std::ios::out);
         if (!file.is_open())
-            throw my_exceptions::data_manager_error("Can't write on: " + PATH);
+            throw my_exceptions::data_manager_error(
+                "save_pose() >> Can't write on: " + PATH);
 
         writer.write(file, root);
         file.close();
 
     } catch (const Json::RuntimeError &e) {
-        throw my_exceptions::data_manager_error("Json ill-writted");
+        throw my_exceptions::data_manager_error(
+            "save_pose() >> Json ill-writted");
         file.close();
     }
 }
@@ -81,7 +83,8 @@ geometry_msgs::Pose get_pose(const std::string &NAME) {
 
     // Check if the file is correctly opened
     if (!file.is_open())
-        throw my_exceptions::data_manager_error("can't open:" + PATH);
+        throw my_exceptions::data_manager_error("get_pose() >> Can't open:" +
+                                                PATH);
 
     // Get pose
     try {
@@ -89,7 +92,7 @@ geometry_msgs::Pose get_pose(const std::string &NAME) {
 
         // Check if root have member NAME
         if (!root.isMember(NAME))
-            throw my_exceptions::data_manager_error("'" + NAME +
+            throw my_exceptions::data_manager_error("get_pose() >> '" + NAME +
                                                     "' pose not exist");
 
         // Get informations
@@ -107,7 +110,8 @@ geometry_msgs::Pose get_pose(const std::string &NAME) {
         file.close();
 
     } catch (const Json::RuntimeError &e) {
-        throw my_exceptions::data_manager_error("Json ill-writted");
+        throw my_exceptions::data_manager_error(
+            "get_pose() >> Json ill-writted");
         file.close();
     }
 
@@ -128,16 +132,19 @@ moveit_msgs::PlanningScene get_scene(const std::string &NAME) {
 
     // Check if the file is correctly opened
     if (!file.is_open())
-        throw my_exceptions::data_manager_error("can't open:" + PATH);
+        throw my_exceptions::data_manager_error("get_scene() >> Can't open:" +
+                                                PATH);
 
     // Get Scene
     try {
         file >> root;
 
         // Check if root have member NAME
-        if (!root.isMember(NAME))
-            throw my_exceptions::data_manager_error("'" + NAME +
-                                                    "' scene not exist");
+        if (!root.isMember(NAME)) {
+            file.close();
+            throw my_exceptions::data_manager_error("get_scene() >> '" + NAME +
+                                                    "' pose not exist");
+        }
 
         // Get Objects
         for (const auto &object : root[NAME]) {
@@ -161,13 +168,14 @@ moveit_msgs::PlanningScene get_scene(const std::string &NAME) {
         return std::move(scene);
 
     } catch (const Json::RuntimeError &e) {
-        throw my_exceptions::data_manager_error("Json ill-writted");
         file.close();
+        throw my_exceptions::data_manager_error(
+            "get_scene() >> Json ill-writted");
 
     } catch (const Json::LogicError &e) {
-        throw my_exceptions::data_manager_error("Json ill-typed: " +
-                                                std::string(e.what()));
         file.close();
+        throw my_exceptions::data_manager_error(
+            "get_scene() >> Json ill-typed: " + std::string(e.what()));
     }
 
     file.close();
@@ -184,7 +192,8 @@ std::string getPath(const std::string &RELATIVE_PATH) {
     auto PACKAGE_PATH = ros::package::getPath(PACKAGE_NAME);
 
     if (PACKAGE_PATH.empty())
-        throw my_exceptions::data_manager_error("Package path not found");
+        throw my_exceptions::data_manager_error(
+            "getPath() >> Package path not found");
 
     // Return absolute path
     return PACKAGE_PATH + RELATIVE_PATH;
@@ -203,7 +212,8 @@ scene_object create_scene_object(const Json::Value &OBJECT) {
     // Check fields correctness:
     if (NAME.empty() || TYPE.empty() || COLOR.empty() || DIMENSIONS.empty() ||
         POSITION.empty() || ORIENTATION.empty()) {
-        throw my_exceptions::data_manager_error("missing some json field");
+        throw my_exceptions::data_manager_error(
+            "create_scene_object() >> Missing some json field");
     }
 
     // Create scene object
@@ -229,7 +239,8 @@ scene_object create_scene_object(const Json::Value &OBJECT) {
         if (DIMENSIONS["x"].empty() || DIMENSIONS["y"].empty() ||
             DIMENSIONS["z"].empty())
             throw my_exceptions::data_manager_error(
-                "Object of type BOX have some empty field");
+                "create_scene_object() >> Object of type BOX have some empty "
+                "field");
 
         // Init object
         primitive.type = primitive.BOX;
@@ -242,7 +253,8 @@ scene_object create_scene_object(const Json::Value &OBJECT) {
         // Check if there is empty field
         if (DIMENSIONS["r"].empty())
             throw my_exceptions::data_manager_error(
-                "Object of type SPHERE have some empty field");
+                "create_scene_object() >> Object of type SPHERE have some "
+                "empty field");
 
         // Init object
         primitive.type = primitive.SPHERE;
@@ -253,7 +265,8 @@ scene_object create_scene_object(const Json::Value &OBJECT) {
         // Check if there is empty field
         if (DIMENSIONS["h"].empty() || DIMENSIONS["r"].empty())
             throw my_exceptions::data_manager_error(
-                "Object of type CYLINDER have some empty field");
+                "create_scene_object() >> Object of type CYLINDER have some "
+                "empty field");
 
         // Init object
         primitive.type = primitive.CYLINDER;
@@ -265,7 +278,8 @@ scene_object create_scene_object(const Json::Value &OBJECT) {
         // Check if there is empty field
         if (DIMENSIONS["h"].empty() || DIMENSIONS["r"].empty())
             throw my_exceptions::data_manager_error(
-                "Object of type CONE have some empty field");
+                "create_scene_object() >> Object of type CONE have some empty "
+                "field");
 
         // Init object
         primitive.type = primitive.CONE;
@@ -275,7 +289,8 @@ scene_object create_scene_object(const Json::Value &OBJECT) {
 
     } else {
         throw my_exceptions::data_manager_error(
-            "In scenes.json there is a not valid type specified");
+            "create_scene_object() >> In this json file there is a not valid "
+            "type specified");
     }
 
     // Define a pose (specified relative to frame_id)

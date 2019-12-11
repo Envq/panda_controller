@@ -36,9 +36,4 @@ geometry_msgs::Pose get_pose(const std::string &NAME);
 moveit_msgs::PlanningScene get_scene(const std::string &NAME);
 
 
-// Initialize the scene indicated
-std::vector<moveit_msgs::CollisionObject>
-get_collision_objects(const std::string &NAME);
-
-
 }  // namespace data_manager

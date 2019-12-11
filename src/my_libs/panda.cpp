@@ -1,4 +1,4 @@
-#include "arm.hpp"
+#include "panda.hpp"
 
 
 
@@ -13,7 +13,7 @@ float get_size_object(
 
 //#############################################################################
 // PUBLIC METHODS IMPLEMENTATIONS
-namespace arm {
+namespace robot {
 
 Panda::Panda() {
     // Init MoveGroupInterface with arm
@@ -22,8 +22,9 @@ Panda::Panda() {
             new moveit::planning_interface::MoveGroupInterface("panda_arm"));
 
     } catch (const std::runtime_error &e) {
-        throw my_exceptions::arm_error("[Panda::Panda()] Impossible initialize "
-                                       "MoveGroupInterface with 'panda_arm'");
+        throw my_exceptions::panda_error(
+            "Panda::Panda() >> Impossible initialize MoveGroupInterface with "
+            "'panda_arm'");
     }
 
     // Init MoveGroupInterface with hand
@@ -32,8 +33,9 @@ Panda::Panda() {
             new moveit::planning_interface::MoveGroupInterface("hand"));
 
     } catch (const std::runtime_error &e) {
-        throw my_exceptions::arm_error("[Panda::Panda()] Impossible initialize "
-                                       "MoveGroupInterface with 'hand'");
+        throw my_exceptions::panda_error(
+            "Panda::Panda() >> Impossible initialize MoveGroupInterface with "
+            "'hand'");
     }
 
     // Init PlanningSceneInterface
@@ -42,8 +44,8 @@ Panda::Panda() {
             new moveit::planning_interface::PlanningSceneInterface);
 
     } catch (const std::runtime_error &e) {
-        throw my_exceptions::arm_error(
-            "[Panda::Panda()] Impossible initialize PlanningSceneInterface");
+        throw my_exceptions::panda_error(
+            "Panda::Panda() >> Impossible initialize PlanningSceneInterface");
     }
 
     // set default speed
@@ -83,8 +85,8 @@ void Panda::moveToPosition(const geometry_msgs::Pose &POSE,
 
     // State of planning check
     if (res != moveit::planning_interface::MoveItErrorCode::SUCCESS)
-        throw my_exceptions::arm_error(
-            "[Panda::moveToPosition()] Planning failure");
+        throw my_exceptions::panda_error(
+            "Panda::moveToPosition() >> Planning failure");
 
     // Execute the move
     if (!PLAN_ONLY)
@@ -93,9 +95,9 @@ void Panda::moveToPosition(const geometry_msgs::Pose &POSE,
 
 void Panda::moveGripper(const float &WIDTH, const bool &PLAN_ONLY) {
     // Value correctness check
-    if (WIDTH > arm::GRIPPER_MAX_WIDTH || WIDTH < 0.0)
-        throw my_exceptions::arm_error(
-            "[panda::moveGripper] WIDTH must be between 0.00 and 0.04");
+    if (WIDTH > robot::GRIPPER_MAX_WIDTH || WIDTH < 0.0)
+        throw my_exceptions::panda_error(
+            "Panda::moveGripper() >> WIDTH must be between 0.00 and 0.04");
 
     // Set new joints value
     std::vector<double> gripper_joints;
@@ -111,7 +113,8 @@ void Panda::moveGripper(const float &WIDTH, const bool &PLAN_ONLY) {
 
     // State of planning check
     if (result != moveit::planning_interface::MoveItErrorCode::SUCCESS)
-        throw my_exceptions::arm_error("[Panda::moveGripper] Planning failure");
+        throw my_exceptions::panda_error(
+            "Panda::moveGripper() >> Planning failure");
 
     // Execute the move
     if (!PLAN_ONLY)
@@ -123,7 +126,7 @@ void Panda::pick(const geometry_msgs::Pose &POSE,
                  const std::string &OBJECT_NAME, const bool &PLAN_ONLY) {
     try {
         // Open gripper
-        moveGripper(arm::GRIPPER_MAX_WIDTH);
+        moveGripper(robot::GRIPPER_MAX_WIDTH);
 
         // Move arm
         moveToPosition(POSE);
@@ -135,11 +138,11 @@ void Panda::pick(const geometry_msgs::Pose &POSE,
         float size = get_size_object(planning_scene_ptr, OBJECT_NAME);
 
         // Close gripper
-        moveGripper(size + arm::EPSILON_GRASP);
+        moveGripper(size + robot::EPSILON_GRASP);
 
-    } catch (my_exceptions::arm_error &e) {
-        throw my_exceptions::arm_error("[Panda::pick()]" +
-                                       std::string(e.what()));
+    } catch (my_exceptions::panda_error &e) {
+        throw my_exceptions::panda_error("Panda::pick() >> " +
+                                         std::string(e.what()));
     }
 }
 
@@ -156,13 +159,13 @@ void Panda::place(const geometry_msgs::Pose &POSE,
         // Detach object
         arm_group_ptr->detachObject(OBJECT_NAME);
 
-    } catch (my_exceptions::arm_error &e) {
-        throw my_exceptions::arm_error("[Panda::place()]" +
-                                       std::string(e.what()));
+    } catch (my_exceptions::panda_error &e) {
+        throw my_exceptions::panda_error("Panda::place() >>" +
+                                         std::string(e.what()));
     }
 }
 
-}  // namespace arm
+}  // namespace robot
 
 
 

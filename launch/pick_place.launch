@@ -1,5 +1,5 @@
 <launch>
-    <arg name="scene" default="altair"/>
+    <arg name="scene" default="pick_place"/>
     <arg name="object" default="object"/>
     <arg name="pick_pose" default="pick"/>
     <arg name="place_pose" default="place"/>

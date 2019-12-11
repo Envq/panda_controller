@@ -1,5 +1,5 @@
 {
-    "altair": [
+    "pick_place": [
         {
             "name": "table",
             "type": "box",
@@ -146,86 +146,6 @@
                 "x": 0.5,
                 "y": -0.2,
                 "z": 0.14
-            },
-            "orientation": {
-                "w": 1.0,
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-            }
-        }
-    ],
-    "pick_place_tutorial": [
-        {
-            "name": "table1",
-            "type": "box",
-            "color": {
-                "r": 0.6,
-                "g": 0.4,
-                "b": 0.2,
-                "a": 1.0
-            },
-            "dimensions": {
-                "x": 0.2,
-                "y": 0.4,
-                "z": 0.4
-            },
-            "position": {
-                "x": 0.5,
-                "y": 0.0,
-                "z": 0.2
-            },
-            "orientation": {
-                "w": 1.0,
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-            }
-        },
-        {
-            "name": "table2",
-            "type": "box",
-            "color": {
-                "r": 0.6,
-                "g": 0.4,
-                "b": 0.2,
-                "a": 1.0
-            },
-            "dimensions": {
-                "x": 0.4,
-                "y": 0.2,
-                "z": 0.4
-            },
-            "position": {
-                "x": 0.0,
-                "y": 0.5,
-                "z": 0.2
-            },
-            "orientation": {
-                "w": 1.0,
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-            }
-        },
-        {
-            "name": "object",
-            "type": "box",
-            "color": {
-                "r": 1.0,
-                "g": 0.2,
-                "b": 0.0,
-                "a": 1.0
-            },
-            "dimensions": {
-                "x": 0.02,
-                "y": 0.02,
-                "z": 0.2
-            },
-            "position": {
-                "x": 0.5,
-                "y": 0.0,
-                "z": 0.5
             },
             "orientation": {
                 "w": 1.0,

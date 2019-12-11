@@ -1,6 +1,7 @@
 // MY LIBS
 #include "data_manager.hpp"
 #include "my_exceptions.hpp"
+#include "panda.hpp"
 
 // ROS
 #include <ros/ros.h>
@@ -28,38 +29,39 @@ int main(int argc, char **argv) {
     ros::NodeHandle node("~");
     ros::AsyncSpinner spinner(1);
     spinner.start();
-    ROS_INFO_STREAM(">> START: " << NAME);
+    ROS_INFO_STREAM("## START: " << NAME);
 
 
     // Extract the parameters
     std::string POSE_NAME;
     if (!node.getParam("name", POSE_NAME)) {
-        ROS_FATAL_STREAM(
-            ">> Can't get parameters. (Don't use rosrun. Use roslaunch)!");
+        ROS_FATAL_STREAM(">> [" << NAME << "] Can't get parameters");
         ros::shutdown();
         return 0;
     }
 
     // Task
     try {
-        // Create panda interface
-        moveit::planning_interface::MoveGroupInterface move_group(PANDA_GROUP);
+        // Create class to manage the Panda arm
+        ROS_INFO("## INIT PANDA CONTROLLER");
+        auto panda = robot::Panda();
 
         // Get current pose
-        geometry_msgs::Pose pose;
-        pose = move_group.getCurrentPose().pose;
-
-        // Print current pose
-        ROS_INFO_STREAM("CURRENT POSE:\n" << pose);
+        ROS_INFO("## GET CURRENT POSE");
+        auto pose = panda.getCurrentPose();
+        ROS_INFO_STREAM("## POSE: \n" << pose);
 
         // Save pose in json file
+        ROS_INFO("## SAVE POSE");
         data_manager::save_pose(POSE_NAME, pose);
 
-    } catch (const my_exceptions::data_manager_error &e) {
-        ROS_FATAL_STREAM(">> " << e.what());
 
-    } catch (const std::runtime_error &e) {
-        ROS_FATAL(">> Impossible initialize moveGroupInterface");
+    } catch (const my_exceptions::panda_error &e) {
+        ROS_FATAL_STREAM(">> [" << NAME << "] >> panda_error >> " << e.what());
+
+    } catch (const my_exceptions::data_manager_error &e) {
+        ROS_FATAL_STREAM(">> [" << NAME << "] >> data_manager_error >> "
+                                << e.what());
     }
 
 

@@ -14,7 +14,7 @@
 
 //#############################################################################
 // CLASSES
-namespace arm {
+namespace robot {
 
 
 // Constants
@@ -63,4 +63,4 @@ class Panda {
     void moveGripper(const float &WIDTH, const bool &PLAN_ONLY = false);
 };
 
-}  // namespace arm
+}  // namespace robot
