@@ -1,8 +1,3 @@
-- better *_move node interface
-- in gripper_move -> use param MODE
-
-
-NOTE:
-- homing: every task
-- do width bound: 7cm max
-- width value is between black fingers: yes
+- convert PLAN_ONLY in PREVIEW -> you see plan and then use topic for move it or not
+- gif in README
+- create correct rviz-robot launcher

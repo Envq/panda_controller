@@ -1,6 +1,6 @@
 <launch>
     <arg name="pose"/>
-    <arg name="speed" default="0.0"/>
+    <arg name="speed" default="1.0"/>
     <arg name="plan_only" default="false"/>
 
     <node name="absolute_move" pkg="panda_controller" 

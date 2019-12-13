@@ -57,7 +57,10 @@ Panda::Panda() {
     }
 
     // Set default arm speed
-    setArmSpeed(1.0);
+    setArmSpeed(robot::DEFAULT_ARM_SPEED);
+
+    // Homing gripper
+    gripperHoming();
 }
 
 

@@ -32,6 +32,8 @@ namespace robot {
 // Constants
 const auto FRAME_REF = "panda_link0";
 const float GRIPPER_MAX_WIDTH = 0.08;
+const float DEFAULT_ARM_SPEED = 1.0;
+const float DEFAULT_GRIPPER_SPEED = 0.5;
 
 
 // Typedef
@@ -84,10 +86,12 @@ class Panda {
     void gripperHoming();
 
     // Move gripper
-    void gripperMove(const float &WIDTH, const float &SPEED = 1.0);
+    void gripperMove(const float &WIDTH,
+                     const float &SPEED = robot::DEFAULT_GRIPPER_SPEED);
 
     // Grasp gripper
-    void gripperGrasp(const float &WIDTH, const float &SPEED = 0.5,
+    void gripperGrasp(const float &WIDTH,
+                      const float &SPEED = robot::DEFAULT_GRIPPER_SPEED,
                       const float &FORCE = 20.0,
                       const float &EPSILON_INNER = 0.002,
                       const float &EPSILON_OUTER = 0.002);

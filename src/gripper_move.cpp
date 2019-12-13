@@ -24,10 +24,9 @@ int main(int argc, char **argv) {
 
 
     // Extract the parameters
-    bool HOMING, MOVE, GRASP;
+    std::string MODE;
     float WIDTH, SPEED, FORCE, EPSILON_INNER, EPSILON_OUTER;
-    if (!(node.getParam("homing", HOMING) && node.getParam("move", MOVE) &&
-          node.getParam("grasp", GRASP) && node.getParam("width", WIDTH) &&
+    if (!(node.getParam("mode", MODE) && node.getParam("width", WIDTH) &&
           node.getParam("speed", SPEED) && node.getParam("force", FORCE) &&
           node.getParam("epsilon_inner", EPSILON_INNER) &&
           node.getParam("epsilon_outer", EPSILON_OUTER))) {
@@ -42,24 +41,32 @@ int main(int argc, char **argv) {
         ROS_INFO("## INIT PANDA CONTROLLER");
         auto panda = robot::Panda();
 
-        // Execute gripper homing
-        if (HOMING) {
+
+        // Execute homing
+        if (MODE == "homing") {
             ROS_INFO_STREAM("## GRIPPER HOMING");
             panda.gripperHoming();
-        }
 
-        // Execute gripper move
-        if (MOVE) {
+            // Execute gripper move
+        } else if (MODE == "move") {
             ROS_INFO_STREAM("## GRIPPER MOVE:\n"
                             << "Width: " << WIDTH << "\nSpeed: " << SPEED);
             panda.gripperMove(WIDTH, SPEED);
-        }
 
-        // Execute gripper grasp
-        if (GRASP) {
+            // Execute gripper grasp
+        } else if (MODE == "grasp") {
             ROS_INFO_STREAM("## GRIPPER MOVE:\n"
                             << "Width: " << WIDTH << "\nSpeed: " << SPEED);
-            panda.gripperMove(WIDTH, SPEED);
+            panda.gripperGrasp(WIDTH, SPEED, FORCE, EPSILON_INNER, EPSILON_OUTER);
+
+            // Default case
+        } else {
+            ROS_FATAL_STREAM(">> Invalid mode: " << MODE);
+            ROS_WARN_STREAM(
+                "Mode available are:\n"
+                "- homing\n"
+                "- move(width, speed)\n"
+                "- grasp(width, speed, force, epsilon_inner, epsilon_outer");
         }
 
     } catch (const my_exceptions::panda_error &e) {
