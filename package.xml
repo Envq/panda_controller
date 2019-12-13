@@ -15,6 +15,9 @@
     <depend>shape_msgs</depend>
     <depend>moveit_core</depend>
     <depend>moveit_ros_planning_interface</depend>
+    <depend>actionlib_msgs</depend>
+    <depend>actionlib</depend>
+    <depend>franka_gripper</depend>
 
     <!-- The export tag contains other, unspecified, tags -->
     <export>

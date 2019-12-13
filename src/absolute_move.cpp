@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
 
         // Set robot speed
         ROS_INFO_STREAM("## SET SPEED: " << SPEED);
-        panda.setSpeed(SPEED);
+        panda.setArmSpeed(SPEED);
 
         // Extract pose
         ROS_INFO_STREAM("## GET POSE");

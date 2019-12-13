@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
 
         // Set robot speed
         ROS_INFO_STREAM("## SET SPEED: " << SPEED);
-        panda.setSpeed(SPEED);
+        panda.setArmSpeed(SPEED);
 
         // Init scene
         ROS_INFO("## INIT SCENE");

@@ -11,8 +11,11 @@ find_package(catkin REQUIRED COMPONENTS
     std_msgs
     geometry_msgs
     shape_msgs
+    actionlib_msgs
+    actionlib
     moveit_core
     moveit_ros_planning_interface
+    franka_gripper
 )
 
 
@@ -34,6 +37,7 @@ catkin_package(
     CATKIN_DEPENDS 
         moveit_core
         moveit_ros_planning_interface
+        actionlib_msgs
 )
 
 
@@ -63,6 +67,11 @@ add_executable(absolute_move  src/absolute_move.cpp
     ${MY_LIBS}/data_manager.cpp
     ${MY_LIBS}/panda.cpp)
 target_link_libraries(absolute_move ${catkin_LIBRARIES} ${JSONCPP_LIBRARIES})
+
+
+add_executable(gripper_move  src/gripper_move.cpp
+    ${MY_LIBS}/panda.cpp)
+target_link_libraries(gripper_move ${catkin_LIBRARIES} ${JSONCPP_LIBRARIES})
 
 
 add_executable(pick_place  src/pick_place.cpp

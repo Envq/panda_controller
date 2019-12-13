@@ -27,17 +27,6 @@ Panda::Panda() {
             "'panda_arm'");
     }
 
-    // Init MoveGroupInterface with hand
-    try {
-        hand_group_ptr.reset(
-            new moveit::planning_interface::MoveGroupInterface("hand"));
-
-    } catch (const std::runtime_error &e) {
-        throw my_exceptions::panda_error(
-            "Panda::Panda() >> Impossible initialize MoveGroupInterface with "
-            "'hand'");
-    }
-
     // Init PlanningSceneInterface
     try {
         planning_scene_ptr.reset(
@@ -48,8 +37,27 @@ Panda::Panda() {
             "Panda::Panda() >> Impossible initialize PlanningSceneInterface");
     }
 
-    // set default speed
-    speed = 1.0;
+    // Init Gripper
+    try {
+        // Create action client for homing
+        gripper_homing_client_ptr.reset(
+            new GripperHomingClient("franka_gripper/homing", true));
+
+        // Create action client for move
+        gripper_move_client_ptr.reset(
+            new GripperMoveClient("franka_gripper/move", true));
+
+        // Create action client for grasp
+        gripper_grasp_client_ptr.reset(
+            new GripperGraspClient("franka_gripper/grasp", true));
+
+    } catch (const std::runtime_error &e) {
+        throw my_exceptions::panda_error("Panda::Panda() >> Impossible create "
+                                         "action clients for franka_gripper");
+    }
+
+    // Set default arm speed
+    setArmSpeed(1.0);
 }
 
 
@@ -58,9 +66,8 @@ geometry_msgs::Pose Panda::getCurrentPose() {
 }
 
 
-void Panda::setSpeed(const float &SPEED) {
+void Panda::setArmSpeed(const float &SPEED) {
     arm_group_ptr->setMaxVelocityScalingFactor(SPEED);
-    speed = SPEED;
 }
 
 
@@ -73,6 +80,7 @@ void Panda::resetScene() {
     moveit_msgs::PlanningScene scene_empty;
     planning_scene_ptr->applyPlanningScene(scene_empty);
 }
+
 
 void Panda::moveToPosition(const geometry_msgs::Pose &POSE,
                            const bool &PLAN_ONLY) {
@@ -93,40 +101,12 @@ void Panda::moveToPosition(const geometry_msgs::Pose &POSE,
         arm_group_ptr->move();
 }
 
-void Panda::moveGripper(const float &WIDTH, const bool &PLAN_ONLY) {
-    // Value correctness check
-    if (WIDTH > robot::GRIPPER_MAX_WIDTH || WIDTH < 0.0)
-        throw my_exceptions::panda_error(
-            "Panda::moveGripper() >> WIDTH must be between 0.00 and 0.04");
-
-    // Set new joints value
-    std::vector<double> gripper_joints;
-    gripper_joints.push_back(WIDTH / 2.0);
-    gripper_joints.push_back(WIDTH / 2.0);  // mimic
-
-    // Set the new joints state
-    hand_group_ptr->setJointValueTarget(gripper_joints);
-
-    // Perform the planning
-    moveit::planning_interface::MoveGroupInterface::Plan plan;
-    auto result = hand_group_ptr->plan(plan);
-
-    // State of planning check
-    if (result != moveit::planning_interface::MoveItErrorCode::SUCCESS)
-        throw my_exceptions::panda_error(
-            "Panda::moveGripper() >> Planning failure");
-
-    // Execute the move
-    if (!PLAN_ONLY)
-        hand_group_ptr->move();
-}
-
 
 void Panda::pick(const geometry_msgs::Pose &POSE,
                  const std::string &OBJECT_NAME, const bool &PLAN_ONLY) {
     try {
         // Open gripper
-        moveGripper(robot::GRIPPER_MAX_WIDTH);
+        gripperMove(robot::GRIPPER_MAX_WIDTH);
 
         // Move arm
         moveToPosition(POSE);
@@ -138,7 +118,7 @@ void Panda::pick(const geometry_msgs::Pose &POSE,
         float size = get_size_object(planning_scene_ptr, OBJECT_NAME);
 
         // Close gripper
-        moveGripper(size + robot::EPSILON_GRASP);
+        gripperGrasp(size);
 
     } catch (my_exceptions::panda_error &e) {
         throw my_exceptions::panda_error("Panda::pick() >> " +
@@ -154,7 +134,7 @@ void Panda::place(const geometry_msgs::Pose &POSE,
         moveToPosition(POSE);
 
         // Open gripper
-        moveGripper(GRIPPER_MAX_WIDTH);
+        gripperMove(robot::GRIPPER_MAX_WIDTH);
 
         // Detach object
         arm_group_ptr->detachObject(OBJECT_NAME);
@@ -162,6 +142,71 @@ void Panda::place(const geometry_msgs::Pose &POSE,
     } catch (my_exceptions::panda_error &e) {
         throw my_exceptions::panda_error("Panda::place() >>" +
                                          std::string(e.what()));
+    }
+}
+
+
+void Panda::gripperHoming() {
+    // Wait for action server
+    if (!gripper_homing_client_ptr->waitForServer()) {
+        throw my_exceptions::panda_error(
+            "Panda::gripperHoming() >> waitForServer() >> Timeout");
+    }
+
+    // Create homing goal
+    auto goal = franka_gripper::HomingGoal();
+    gripper_homing_client_ptr->sendGoal(goal);
+
+    // Wait for result
+    if (!gripper_homing_client_ptr->waitForResult()) {
+        throw my_exceptions::panda_error(
+            "Panda::gripperHoming() >> waitForResult() >> Timeout");
+    }
+}
+
+
+void Panda::gripperMove(const float &WIDTH, const float &SPEED) {
+    // Wait for action server
+    if (!gripper_move_client_ptr->waitForServer()) {
+        throw my_exceptions::panda_error(
+            "Panda::gripperMove() >> waitForServer() >> Timeout");
+    }
+
+    // Create move goal
+    auto goal = franka_gripper::MoveGoal();
+    goal.width = WIDTH;
+    goal.speed = SPEED;
+    gripper_move_client_ptr->sendGoal(goal);
+
+    // Wait for result
+    if (!gripper_move_client_ptr->waitForResult()) {
+        throw my_exceptions::panda_error(
+            "Panda::gripperMove() >> waitForResult() >> Timeout");
+    }
+}
+
+
+void Panda::gripperGrasp(const float &WIDTH, const float &SPEED, const float &FORCE,
+                  const float &EPSILON_INNER, const float &EPSILON_OUTER) {
+    // Wait for action server
+    if (!gripper_grasp_client_ptr->waitForServer()) {
+        throw my_exceptions::panda_error(
+            "Panda::gripperGrasp() >> waitForServer() >> Timeout");
+    }
+
+    // Create move goal
+    auto goal = franka_gripper::GraspGoal();
+    goal.width = WIDTH;
+    goal.speed = SPEED;
+    goal.force = FORCE;
+    goal.epsilon.inner = EPSILON_INNER;
+    goal.epsilon.outer = EPSILON_OUTER;
+    gripper_grasp_client_ptr->sendGoal(goal);
+
+    // Wait for result
+    if (!gripper_move_client_ptr->waitForResult()) {
+        throw my_exceptions::panda_error(
+            "Panda::gripperGrasp() >> waitForResult() >> Timeout");
     }
 }
 

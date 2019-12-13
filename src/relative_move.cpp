@@ -24,10 +24,10 @@ int main(int argc, char **argv) {
 
 
     // Extract the parameters
-    float X, Y, Z, GRIPPER, SPEED;
+    float X, Y, Z, SPEED;
     bool PLAN_ONLY;
     if (!(node.getParam("x", X) && node.getParam("y", Y) &&
-          node.getParam("z", Z) && node.getParam("gripper", GRIPPER) &&
+          node.getParam("z", Z) &&
           node.getParam("speed", SPEED) &&
           node.getParam("plan_only", PLAN_ONLY))) {
         ROS_FATAL_STREAM(">> [" << NAME << "] Can't get parameters");
@@ -43,11 +43,8 @@ int main(int argc, char **argv) {
 
         // Set robot speed
         ROS_INFO_STREAM("## SET SPEED: " << SPEED);
-        panda.setSpeed(SPEED);
-
-        // Move gripper
-        panda.moveGripper(GRIPPER);
-
+        panda.setArmSpeed(SPEED);
+        
         // Create new pose
         ROS_INFO_STREAM("## NEW POSE: ");
         auto target_pose = panda.getCurrentPose();

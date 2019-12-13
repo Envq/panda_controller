@@ -2,7 +2,6 @@
     <arg name="x" default="0.0"/>
     <arg name="y" default="0.0"/>
     <arg name="z" default="0.0"/>
-    <arg name="gripper" default="0.04"/>
     <arg name="speed" default="1.0"/>
     <arg name="plan_only" default="false"/>
 
@@ -11,7 +10,6 @@
         <param name="x" value="$(arg x)"/>
         <param name="y" value="$(arg y)"/>
         <param name="z" value="$(arg z)"/>
-        <param name="gripper" value="$(arg gripper)"/>
         <param name="speed" value="$(arg speed)"/>
         <param name="plan_only" value="$(arg plan_only)"/>
     </node>

@@ -1,0 +1,8 @@
+- better *_move node interface
+- in gripper_move -> use param MODE
+
+
+NOTE:
+- homing: every task
+- do width bound: 7cm max
+- width value is between black fingers: yes
