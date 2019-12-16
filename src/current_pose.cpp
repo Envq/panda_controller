@@ -10,12 +10,6 @@
 #include <moveit/move_group_interface/move_group_interface.h>
 
 
-
-//#############################################################################
-// GLOBAL VARIABLE
-static const std::string PANDA_GROUP = "panda_arm";
-
-
 //#############################################################################
 int main(int argc, char **argv) {
     // Get the file name
@@ -56,8 +50,8 @@ int main(int argc, char **argv) {
         data_manager::save_pose(POSE_NAME, pose);
 
 
-    } catch (const my_exceptions::panda_error &e) {
-        ROS_FATAL_STREAM(">> [" << NAME << "] >> panda_error >> " << e.what());
+    } catch (const my_exceptions::panda_arm_error &e) {
+        ROS_FATAL_STREAM(">> [" << NAME << "] >> panda_arm_error >> " << e.what());
 
     } catch (const my_exceptions::data_manager_error &e) {
         ROS_FATAL_STREAM(">> [" << NAME << "] >> data_manager_error >> "

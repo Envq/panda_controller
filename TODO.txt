@@ -1,3 +1,5 @@
 - convert PLAN_ONLY in PREVIEW -> you see plan and then use topic for move it or not
 - gif in README
 - create correct rviz-robot launcher
+- add control from topic in nodes
+- improve constants in data_manager.hpp

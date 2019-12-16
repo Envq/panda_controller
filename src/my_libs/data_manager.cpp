@@ -3,15 +3,6 @@
 
 
 //#############################################################################
-// GLOBAL VARIABLES
-const std::string PACKAGE_NAME = "panda_controller";
-const std::string FOLDER_NAME = "/db/";
-const std::string POSES_RELATIVE = "/db/poses.json";
-const std::string SCENES_RELATIVE = "/db/scenes.json";
-
-
-
-//#############################################################################
 // PRIVATE FUNCTIONS and STRUCTURES
 struct scene_object {
     moveit_msgs::CollisionObject collision_part;
@@ -34,7 +25,7 @@ void save_pose(const std::string &NAME, const geometry_msgs::Pose &POSE) {
     Json::StyledStreamWriter writer;
 
     // Get path
-    const std::string PATH = getPath(POSES_RELATIVE);
+    const std::string PATH = getPath(data_manager::POSES_RELATIVE);
 
     try {
         // Init root
@@ -76,7 +67,7 @@ geometry_msgs::Pose get_pose(const std::string &NAME) {
     geometry_msgs::Pose pose;
 
     // Get path
-    const std::string PATH = getPath(POSES_RELATIVE);
+    const std::string PATH = getPath(data_manager::POSES_RELATIVE);
 
     // Open file
     file.open(PATH, std::ios::in);
@@ -125,7 +116,7 @@ moveit_msgs::PlanningScene get_scene(const std::string &NAME) {
     moveit_msgs::PlanningScene scene;
 
     // Get path
-    const std::string PATH = getPath(SCENES_RELATIVE);
+    const std::string PATH = getPath(data_manager::SCENES_RELATIVE);
 
     // Open file
     file.open(PATH, std::ios::in);
@@ -189,7 +180,7 @@ moveit_msgs::PlanningScene get_scene(const std::string &NAME) {
 // PRIVATE FUNCTIONS IMPLEMENTATIONS
 std::string getPath(const std::string &RELATIVE_PATH) {
     // Get package path
-    auto PACKAGE_PATH = ros::package::getPath(PACKAGE_NAME);
+    auto PACKAGE_PATH = ros::package::getPath(data_manager::PACKAGE_NAME);
 
     if (PACKAGE_PATH.empty())
         throw my_exceptions::data_manager_error(

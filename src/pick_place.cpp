@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
     try {
         // Create class to manage the Panda arm
         ROS_INFO("## INIT PANDA CONTROLLER");
-        auto panda = robot::Panda();
+        auto panda = robot::Panda(true);
 
         // Set robot speed
         ROS_INFO_STREAM("## SET SPEED: " << SPEED);
@@ -53,18 +53,21 @@ int main(int argc, char **argv) {
         ros::WallDuration(1.0).sleep();
 
         // Pick object
-        ROS_INFO("## PICK OBJECT");
-        panda.pick(data_manager::get_pose(PICK_POSE_NAME), OBJECT_NAME);
+        ROS_INFO_STREAM("## PICK OBJECT to pose: " << PICK_POSE_NAME);
+        panda.pick(data_manager::get_pose(PICK_POSE_NAME), 0.02);
         ros::WallDuration(1.0).sleep();
 
         // Place Object
         ROS_INFO("## PLACE OBJECT");
-        panda.place(data_manager::get_pose(PLACE_POSE_NAME), OBJECT_NAME);
+        panda.place(data_manager::get_pose(PLACE_POSE_NAME));
         ros::WallDuration(1.0).sleep();
 
 
-    } catch (const my_exceptions::panda_error &e) {
-        ROS_FATAL_STREAM(">> [" << NAME << "] >> panda_error >> " << e.what());
+    } catch (const my_exceptions::panda_arm_error &e) {
+        ROS_FATAL_STREAM(">> [" << NAME << "] >> panda_arm_error >> " << e.what());
+
+    } catch (const my_exceptions::panda_gripper_error &e) {
+        ROS_FATAL_STREAM(">> [" << NAME << "] >> panda_gripper_error >> " << e.what());
 
     } catch (const my_exceptions::data_manager_error &e) {
         ROS_FATAL_STREAM(">> [" << NAME << "] >> data_manager_error >> "

@@ -19,12 +19,22 @@ class data_manager_error : public std::runtime_error {
 
 
 // Execeptions for arm
-class panda_error : public std::runtime_error {
+class panda_arm_error : public std::runtime_error {
   public:
-    panda_error(const std::string &msg = "Panda error")
+    panda_arm_error(const std::string &msg = "Panda arm error")
         : std::runtime_error(msg) {
     }
 };
+
+
+// Execeptions for gripper
+class panda_gripper_error : public std::runtime_error {
+  public:
+    panda_gripper_error(const std::string &msg = "Panda gripper error")
+        : std::runtime_error(msg) {
+    }
+};
+
 
 
 }  // namespace my_exceptions

@@ -1,7 +1,7 @@
 <launch>
     <arg name="mode"/>
     <arg name="width" default="0.08"/>
-    <arg name="speed" default="0.5"/>
+    <arg name="speed" default="0.1"/>
     <arg name="force" default="20.0"/>
     <arg name="epsilon_inner" default="0.002"/>
     <arg name="epsilon_outer" default="0.002"/>

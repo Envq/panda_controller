@@ -69,8 +69,8 @@ int main(int argc, char **argv) {
                 "- grasp(width, speed, force, epsilon_inner, epsilon_outer");
         }
 
-    } catch (const my_exceptions::panda_error &e) {
-        ROS_FATAL_STREAM(">> [" << NAME << "] >> panda_error >> " << e.what());
+    } catch (const my_exceptions::panda_gripper_error &e) {
+        ROS_FATAL_STREAM(">> [" << NAME << "] >> panda_gripper_error >> " << e.what());
     }
 
 

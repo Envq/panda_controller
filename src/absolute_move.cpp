@@ -54,8 +54,8 @@ int main(int argc, char **argv) {
         panda.moveToPosition(target_pose, PLAN_ONLY);
 
 
-    } catch (const my_exceptions::panda_error &e) {
-        ROS_FATAL_STREAM(">> [" << NAME << "] >> panda_error >> " << e.what());
+    } catch (const my_exceptions::panda_arm_error &e) {
+        ROS_FATAL_STREAM(">> [" << NAME << "] >> panda_arm_error >> " << e.what());
 
     } catch (const my_exceptions::data_manager_error &e) {
         ROS_FATAL_STREAM(">> [" << NAME << "] >> data_manager_error >> "

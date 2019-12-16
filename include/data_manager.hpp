@@ -20,9 +20,20 @@
 
 
 //#############################################################################
-// FUNCTIONS
 namespace data_manager {
 
+
+
+// CONSTANTS
+const std::string PACKAGE_NAME = "panda_controller";
+const std::string FOLDER_NAME = "/database/";
+const std::string POSES_RELATIVE = "/database/poses.json";
+const std::string SCENES_RELATIVE = "/database/scenes.json";
+
+
+
+//#############################################################################
+// FUNCTIONS
 
 // Save the pose with name
 void save_pose(const std::string &NAME, const geometry_msgs::Pose &POSE);

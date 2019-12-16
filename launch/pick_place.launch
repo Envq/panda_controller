@@ -3,7 +3,7 @@
     <arg name="object" default="object"/>
     <arg name="pick_pose" default="pick"/>
     <arg name="place_pose" default="place"/>
-    <arg name="speed" default="1.0"/>
+    <arg name="speed" default="0.2"/>
 
     <node name="pick_place" pkg="panda_controller" 
     type="pick_place" respawn="false" output="screen">

@@ -25,15 +25,17 @@
 
 
 //#############################################################################
-// CLASSES
 namespace robot {
+
 
 
 // Constants
 const auto FRAME_REF = "panda_link0";
 const float GRIPPER_MAX_WIDTH = 0.08;
 const float DEFAULT_ARM_SPEED = 1.0;
-const float DEFAULT_GRIPPER_SPEED = 0.5;
+const float DEFAULT_GRIPPER_SPEED = 0.1;
+const float DEFAULT_GRIPPER_FORCE = 10.0;
+
 
 
 // Typedef
@@ -44,6 +46,10 @@ typedef actionlib::SimpleActionClient<franka_gripper::MoveAction>
 typedef actionlib::SimpleActionClient<franka_gripper::GraspAction>
     GripperGraspClient;
 
+
+
+//#############################################################################
+// CLASSES
 
 // Class to easily manage the Panda arm with moveit
 class Panda {
@@ -56,7 +62,7 @@ class Panda {
 
   public:
     // Constructors
-    explicit Panda();
+    explicit Panda(const bool &HOMING_STARTUP = false);
 
     // Get current pose
     geometry_msgs::Pose getCurrentPose();
@@ -75,12 +81,11 @@ class Panda {
                         const bool &PLAN_ONLY = false);
 
     // Execute pick
-    void pick(const geometry_msgs::Pose &POSE, const std::string &OBJECT_NAME,
-              const bool &PLAN_ONLY = false);
+    void pick(const geometry_msgs::Pose &POSE, const float &WIDTH,
+                     const bool &PLAN_ONLY = false);
 
     // Execute place
-    void place(const geometry_msgs::Pose &POSE, const std::string &OBJECT_NAME,
-               const bool &PLAN_ONLY = false);
+    void place(const geometry_msgs::Pose &POSE, const bool &PLAN_ONLY = false);
 
     // Homing gripper
     void gripperHoming();
@@ -92,7 +97,7 @@ class Panda {
     // Grasp gripper
     void gripperGrasp(const float &WIDTH,
                       const float &SPEED = robot::DEFAULT_GRIPPER_SPEED,
-                      const float &FORCE = 20.0,
+                      const float &FORCE = robot::DEFAULT_GRIPPER_FORCE,
                       const float &EPSILON_INNER = 0.002,
                       const float &EPSILON_OUTER = 0.002);
 };
