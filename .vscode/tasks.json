@@ -9,7 +9,7 @@
             "command": "roslaunch",
             "args": [
                 "${workspaceFolderBasename}",
-                "pick_place.launch"
+                "console.launch"
             ],
             "problemMatcher": [],
             "group": "build",
@@ -19,6 +19,20 @@
             "dependsOn": [
                 "build"
             ]
+        },
+        {
+            "label": "console",
+            "type": "shell",
+            "command": "roslaunch",
+            "args": [
+                "${workspaceFolderBasename}",
+                "console.launch"
+            ],
+            "problemMatcher": [],
+            "group": "none",
+            "presentation": {
+                "focus": true
+            }
         },
         {
             "label": "pick_place",
@@ -35,26 +49,12 @@
             }
         },
         {
-            "label": "current_pose",
+            "label": "simulation",
             "type": "shell",
             "command": "roslaunch",
             "args": [
                 "${workspaceFolderBasename}",
-                "current_pose.launch"
-            ],
-            "problemMatcher": [],
-            "group": "none",
-            "presentation": {
-                "focus": true
-            }
-        },
-        {
-            "label": "controller",
-            "type": "shell",
-            "command": "roslaunch",
-            "args": [
-                "${workspaceFolderBasename}",
-                "controller.launch"
+                "simulation.launch"
             ],
             "problemMatcher": [],
             "group": "none",
@@ -77,7 +77,7 @@
             }
         },
         {
-            "label": "format",
+            "label": "format-all",
             "type": "shell",
             "command": "clang-format",
             "args": [
@@ -93,7 +93,7 @@
             }
         },
         {
-            "label": "build_all",
+            "label": "build-all",
             "type": "shell",
             "command": "catkin",
             "args": [
@@ -106,7 +106,7 @@
             }
         },
         {
-            "label": "clean_all",
+            "label": "clean-all",
             "type": "shell",
             "command": "catkin",
             "args": [

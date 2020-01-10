@@ -52,29 +52,15 @@ include_directories(
 ## My libs directory
 set(MY_LIBS ${PROJECT_SOURCE_DIR}/src/my_libs)
 
-add_executable(current_pose  src/current_pose.cpp
+set(TASK1_NAME console)
+add_executable(${TASK1_NAME}  src/${TASK1_NAME}.cpp
     ${MY_LIBS}/data_manager.cpp
     ${MY_LIBS}/panda.cpp)
-target_link_libraries(current_pose ${catkin_LIBRARIES} ${JSONCPP_LIBRARIES})
+target_link_libraries(${TASK1_NAME} ${catkin_LIBRARIES} ${JSONCPP_LIBRARIES})
 
 
-add_executable(relative_move  src/relative_move.cpp
-    ${MY_LIBS}/panda.cpp)
-target_link_libraries(relative_move ${catkin_LIBRARIES})
-
-
-add_executable(absolute_move  src/absolute_move.cpp
+set(TASK2_NAME pick_place)
+add_executable(${TASK2_NAME}  src/${TASK2_NAME}.cpp
     ${MY_LIBS}/data_manager.cpp
     ${MY_LIBS}/panda.cpp)
-target_link_libraries(absolute_move ${catkin_LIBRARIES} ${JSONCPP_LIBRARIES})
-
-
-add_executable(gripper_move  src/gripper_move.cpp
-    ${MY_LIBS}/panda.cpp)
-target_link_libraries(gripper_move ${catkin_LIBRARIES} ${JSONCPP_LIBRARIES})
-
-
-add_executable(pick_place  src/pick_place.cpp
-    ${MY_LIBS}/data_manager.cpp
-    ${MY_LIBS}/panda.cpp)
-target_link_libraries(pick_place ${catkin_LIBRARIES} ${JSONCPP_LIBRARIES})
+target_link_libraries(${TASK2_NAME} ${catkin_LIBRARIES} ${JSONCPP_LIBRARIES})

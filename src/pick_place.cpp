@@ -63,7 +63,6 @@ int main(int argc, char **argv) {
         panda.place(data_manager::get_pose(PLACE_POSE_NAME));
         ros::WallDuration(1.0).sleep();
 
-
     } catch (const my_exceptions::panda_error &e) {
         ROS_FATAL_STREAM(my_exceptions::get_err_msg(NAME, e.what()));
 
