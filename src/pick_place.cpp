@@ -31,7 +31,8 @@ int main(int argc, char **argv) {
           node.getParam("object", OBJECT_NAME) &&
           node.getParam("pick_pose", PICK_POSE_NAME) &&
           node.getParam("place_pose", PLACE_POSE_NAME))) {
-        ROS_FATAL_STREAM(">> [" << NAME << "] Can't get parameters");
+        ROS_FATAL_STREAM(
+            my_exceptions::get_err_msg(NAME, "Can't get parameters"));
         ros::shutdown();
         return 0;
     }
@@ -63,15 +64,11 @@ int main(int argc, char **argv) {
         ros::WallDuration(1.0).sleep();
 
 
-    } catch (const my_exceptions::panda_arm_error &e) {
-        ROS_FATAL_STREAM(">> [" << NAME << "] >> panda_arm_error >> " << e.what());
-
-    } catch (const my_exceptions::panda_gripper_error &e) {
-        ROS_FATAL_STREAM(">> [" << NAME << "] >> panda_gripper_error >> " << e.what());
+    } catch (const my_exceptions::panda_error &e) {
+        ROS_FATAL_STREAM(my_exceptions::get_err_msg(NAME, e.what()));
 
     } catch (const my_exceptions::data_manager_error &e) {
-        ROS_FATAL_STREAM(">> [" << NAME << "] >> data_manager_error >> "
-                                << e.what());
+        ROS_FATAL_STREAM(my_exceptions::get_err_msg(NAME, e.what()));
     }
 
 

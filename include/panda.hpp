@@ -82,7 +82,7 @@ class Panda {
 
     // Execute pick
     void pick(const geometry_msgs::Pose &POSE, const float &WIDTH,
-                     const bool &PLAN_ONLY = false);
+              const bool &PLAN_ONLY = false);
 
     // Execute place
     void place(const geometry_msgs::Pose &POSE, const bool &PLAN_ONLY = false);

@@ -27,10 +27,10 @@ int main(int argc, char **argv) {
     float X, Y, Z, SPEED;
     bool PLAN_ONLY;
     if (!(node.getParam("x", X) && node.getParam("y", Y) &&
-          node.getParam("z", Z) &&
-          node.getParam("speed", SPEED) &&
+          node.getParam("z", Z) && node.getParam("speed", SPEED) &&
           node.getParam("plan_only", PLAN_ONLY))) {
-        ROS_FATAL_STREAM(">> [" << NAME << "] Can't get parameters");
+        ROS_FATAL_STREAM(
+            my_exceptions::get_err_msg(NAME, "Can't get parameters"));
         ros::shutdown();
         return 0;
     }
@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
         // Set robot speed
         ROS_INFO_STREAM("## SET SPEED: " << SPEED);
         panda.setArmSpeed(SPEED);
-        
+
         // Create new pose
         ROS_INFO_STREAM("## NEW POSE: ");
         auto target_pose = panda.getCurrentPose();
@@ -58,8 +58,8 @@ int main(int argc, char **argv) {
         panda.moveToPosition(target_pose, PLAN_ONLY);
 
 
-    } catch (const my_exceptions::panda_arm_error &e) {
-        ROS_FATAL_STREAM(">> [" << NAME << "] >> panda_arm_error >> " << e.what());
+    } catch (const my_exceptions::panda_error &e) {
+        ROS_FATAL_STREAM(my_exceptions::get_err_msg(NAME, e.what()));
     }
 
 

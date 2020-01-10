@@ -30,7 +30,8 @@ int main(int argc, char **argv) {
           node.getParam("speed", SPEED) && node.getParam("force", FORCE) &&
           node.getParam("epsilon_inner", EPSILON_INNER) &&
           node.getParam("epsilon_outer", EPSILON_OUTER))) {
-        ROS_FATAL_STREAM(">> [" << NAME << "] Can't get parameters");
+        ROS_FATAL_STREAM(
+            my_exceptions::get_err_msg(NAME, "Can't get parameters"));
         ros::shutdown();
         return 0;
     }
@@ -40,6 +41,8 @@ int main(int argc, char **argv) {
         // Create class to manage the Panda arm
         ROS_INFO("## INIT PANDA CONTROLLER");
         auto panda = robot::Panda();
+
+        throw my_exceptions::panda_arm_error("err");
 
 
         // Execute homing
@@ -57,7 +60,8 @@ int main(int argc, char **argv) {
         } else if (MODE == "grasp") {
             ROS_INFO_STREAM("## GRIPPER MOVE:\n"
                             << "Width: " << WIDTH << "\nSpeed: " << SPEED);
-            panda.gripperGrasp(WIDTH, SPEED, FORCE, EPSILON_INNER, EPSILON_OUTER);
+            panda.gripperGrasp(WIDTH, SPEED, FORCE, EPSILON_INNER,
+                               EPSILON_OUTER);
 
             // Default case
         } else {
@@ -69,8 +73,8 @@ int main(int argc, char **argv) {
                 "- grasp(width, speed, force, epsilon_inner, epsilon_outer");
         }
 
-    } catch (const my_exceptions::panda_gripper_error &e) {
-        ROS_FATAL_STREAM(">> [" << NAME << "] >> panda_gripper_error >> " << e.what());
+    } catch (const my_exceptions::panda_error &e) {
+        ROS_FATAL_STREAM(my_exceptions::get_err_msg(NAME, e.what()));
     }
 
 
