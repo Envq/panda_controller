@@ -31,13 +31,17 @@ namespace robot {
 
 
 //#############################################################################
-// CONSTANTS AND TYPEDEF ######################################################
+// CONSTANTS ##################################################################
 const auto FRAME_REF = "panda_link0";
 const float GRIPPER_MAX_WIDTH = 0.08;
 const float DEFAULT_ARM_SPEED = 1.0;
 const float DEFAULT_GRIPPER_SPEED = 0.1;
 const float DEFAULT_GRIPPER_FORCE = 10.0;
 
+
+
+//#############################################################################
+// TYPEDEF ####################################################################
 typedef actionlib::SimpleActionClient<franka_gripper::HomingAction>
     GripperHomingClient;
 typedef actionlib::SimpleActionClient<franka_gripper::MoveAction>
@@ -52,11 +56,11 @@ typedef actionlib::SimpleActionClient<franka_gripper::GraspAction>
 // Class to easily manage the Panda arm with moveit
 class Panda {
   private:
-    moveit::planning_interface::MoveGroupInterfacePtr arm_group_ptr;
-    moveit::planning_interface::PlanningSceneInterfacePtr planning_scene_ptr;
-    boost::shared_ptr<GripperHomingClient> gripper_homing_client_ptr;
-    boost::shared_ptr<GripperMoveClient> gripper_move_client_ptr;
-    boost::shared_ptr<GripperGraspClient> gripper_grasp_client_ptr;
+    moveit::planning_interface::MoveGroupInterfacePtr arm_group_ptr_;
+    moveit::planning_interface::PlanningSceneInterfacePtr planning_scene_ptr_;
+    boost::shared_ptr<GripperHomingClient> gripper_homing_client_ptr_;
+    boost::shared_ptr<GripperMoveClient> gripper_move_client_ptr_;
+    boost::shared_ptr<GripperGraspClient> gripper_grasp_client_ptr_;
 
   public:
     // Constructors
@@ -78,12 +82,23 @@ class Panda {
     void moveToPosition(const geometry_msgs::Pose &POSE,
                         const bool &PLAN_ONLY = false);
 
-    // Execute pick
+    // Perfom pick without constraints
     void pick(const geometry_msgs::Pose &POSE, const float &WIDTH,
               const bool &PLAN_ONLY = false);
 
-    // Execute place
+    // Perform pick with pre and post approch
+    void pick(const geometry_msgs::Pose &POSE, const float &WIDTH,
+              const geometry_msgs::Vector3 &PRE_GRASP_APPROCH,
+              const bool &PLAN_ONLY = false);
+
+    // Perform place without constraints
     void place(const geometry_msgs::Pose &POSE, const bool &PLAN_ONLY = false);
+
+    // Perform place with pre and post approch
+    void place(const geometry_msgs::Pose &POSE,
+               const geometry_msgs::Vector3 &POST_GRASP_RETREAT,
+               const geometry_msgs::Vector3 &POST_PLACE_RETREAT,
+               const bool &PLAN_ONLY = false);
 
     // Homing gripper
     void gripperHoming();

@@ -18,7 +18,7 @@ namespace robot {
 Panda::Panda(const bool &HOMING_STARTUP) {
     // Init MoveGroupInterface with arm
     try {
-        arm_group_ptr.reset(
+        arm_group_ptr_.reset(
             new moveit::planning_interface::MoveGroupInterface("panda_arm"));
 
     } catch (const std::runtime_error &e) {
@@ -30,7 +30,7 @@ Panda::Panda(const bool &HOMING_STARTUP) {
 
     // Init PlanningSceneInterface
     try {
-        planning_scene_ptr.reset(
+        planning_scene_ptr_.reset(
             new moveit::planning_interface::PlanningSceneInterface);
 
     } catch (const std::runtime_error &e) {
@@ -42,15 +42,15 @@ Panda::Panda(const bool &HOMING_STARTUP) {
     // Init Gripper
     try {
         // Create action client for homing
-        gripper_homing_client_ptr.reset(
+        gripper_homing_client_ptr_.reset(
             new GripperHomingClient("franka_gripper/homing", true));
 
         // Create action client for move
-        gripper_move_client_ptr.reset(
+        gripper_move_client_ptr_.reset(
             new GripperMoveClient("franka_gripper/move", true));
 
         // Create action client for grasp
-        gripper_grasp_client_ptr.reset(
+        gripper_grasp_client_ptr_.reset(
             new GripperGraspClient("franka_gripper/grasp", true));
 
     } catch (const std::runtime_error &e) {
@@ -69,34 +69,34 @@ Panda::Panda(const bool &HOMING_STARTUP) {
 
 
 geometry_msgs::Pose Panda::getCurrentPose() {
-    return arm_group_ptr->getCurrentPose().pose;
+    return arm_group_ptr_->getCurrentPose().pose;
 }
 
 
 void Panda::setArmSpeed(const float &SPEED) {
-    arm_group_ptr->setMaxVelocityScalingFactor(SPEED);
+    arm_group_ptr_->setMaxVelocityScalingFactor(SPEED);
 }
 
 
 void Panda::setScene(const moveit_msgs::PlanningScene &SCENE) {
-    planning_scene_ptr->applyPlanningScene(SCENE);
+    planning_scene_ptr_->applyPlanningScene(SCENE);
 }
 
 
 void Panda::resetScene() {
     moveit_msgs::PlanningScene scene_empty;
-    planning_scene_ptr->applyPlanningScene(scene_empty);
+    planning_scene_ptr_->applyPlanningScene(scene_empty);
 }
 
 
 void Panda::moveToPosition(const geometry_msgs::Pose &POSE,
                            const bool &PLAN_ONLY) {
     // Set the target Pose
-    arm_group_ptr->setPoseTarget(POSE);
+    arm_group_ptr_->setPoseTarget(POSE);
 
     // Perform the planning
     moveit::planning_interface::MoveGroupInterface::Plan plan;
-    auto res = arm_group_ptr->plan(plan);
+    auto res = arm_group_ptr_->plan(plan);
 
     // State of planning check
     if (res != moveit::planning_interface::MoveItErrorCode::SUCCESS)
@@ -105,7 +105,7 @@ void Panda::moveToPosition(const geometry_msgs::Pose &POSE,
 
     // Execute the move
     if (!PLAN_ONLY)
-        arm_group_ptr->move();
+        arm_group_ptr_->move();
 }
 
 
@@ -121,10 +121,38 @@ void Panda::pick(const geometry_msgs::Pose &POSE, const float &WIDTH,
         // Close gripper
         gripperGrasp(WIDTH);
 
-        // Post grasp
-        auto target_pose = getCurrentPose();
-        target_pose.position.z += 0.10;
-        moveToPosition(target_pose);
+    } catch (PCEXC::panda_arm_error &e) {
+        throw PCEXC::panda_arm_error("Panda::pick()" + PCEXC::DIVISOR + "" +
+                                     std::string(e.what()));
+
+    } catch (PCEXC::panda_gripper_error &e) {
+        throw PCEXC::panda_gripper_error("Panda::place() >>" +
+                                         std::string(e.what()));
+    }
+}
+
+
+void Panda::pick(const geometry_msgs::Pose &POSE, const float &WIDTH,
+                 const geometry_msgs::Vector3 &PRE_GRASP_APPROCH,
+                 const bool &PLAN_ONLY) {
+    try {
+        // Open gripper
+        // gripperMove(robot::GRIPPER_MAX_WIDTH);
+
+        // Get pre-grasp-approch pose
+        auto pre_pose = POSE;
+        pre_pose.position.x += PRE_GRASP_APPROCH.x;
+        pre_pose.position.y += PRE_GRASP_APPROCH.y;
+        pre_pose.position.z += PRE_GRASP_APPROCH.z;
+
+        // Move to pre-grasp-approch pose
+        moveToPosition(pre_pose);
+
+        // Move to pose
+        moveToPosition(POSE);  // MoveLinear()
+
+        // Close gripper
+        // gripperGrasp(WIDTH);
 
     } catch (PCEXC::panda_arm_error &e) {
         throw PCEXC::panda_arm_error("Panda::pick()" + PCEXC::DIVISOR + "" +
@@ -145,8 +173,45 @@ void Panda::place(const geometry_msgs::Pose &POSE, const bool &PLAN_ONLY) {
         // Open gripper
         gripperMove(robot::GRIPPER_MAX_WIDTH);
 
-        // Detach object
-        // arm_group_ptr->detachObject(OBJECT_NAME);
+    } catch (PCEXC::panda_arm_error &e) {
+        throw PCEXC::panda_arm_error("Panda::place() >>" +
+                                     std::string(e.what()));
+
+    } catch (PCEXC::panda_gripper_error &e) {
+        throw PCEXC::panda_gripper_error("Panda::place() >>" +
+                                         std::string(e.what()));
+    }
+}
+
+
+void Panda::place(const geometry_msgs::Pose &POSE,
+                  const geometry_msgs::Vector3 &POST_GRASP_RETREAT,
+                  const geometry_msgs::Vector3 &POST_PLACE_RETREAT,
+                  const bool &PLAN_ONLY) {
+    try {
+        // Get post-grasp-retrait pose
+        auto PGR_pose = getCurrentPose();
+        PGR_pose.position.x += POST_GRASP_RETREAT.x;
+        PGR_pose.position.y += POST_GRASP_RETREAT.y;
+        PGR_pose.position.z += POST_GRASP_RETREAT.z;
+
+        // Move to post-grasp-retrait pose
+        moveToPosition(PGR_pose);  // MoveLinear()
+
+        // Move arm
+        moveToPosition(POSE);
+
+        // Open gripper
+        // gripperMove(robot::GRIPPER_MAX_WIDTH);
+
+        // Get post-place-retrait pose
+        auto PPR_pose = getCurrentPose();
+        PPR_pose.position.x += POST_PLACE_RETREAT.x;
+        PPR_pose.position.y += POST_PLACE_RETREAT.y;
+        PPR_pose.position.z += POST_PLACE_RETREAT.z;
+
+        // Move to post-place-retrait pose
+        moveToPosition(PPR_pose);  // MoveLinear()
 
     } catch (PCEXC::panda_arm_error &e) {
         throw PCEXC::panda_arm_error("Panda::place() >>" +
@@ -161,14 +226,14 @@ void Panda::place(const geometry_msgs::Pose &POSE, const bool &PLAN_ONLY) {
 
 void Panda::gripperHoming() {
     // Check if server is connected
-    if (!gripper_homing_client_ptr->isServerConnected()) {
+    if (!gripper_homing_client_ptr_->isServerConnected()) {
         throw PCEXC::panda_gripper_error(
             "Panda::gripperHoming()" + PCEXC::DIVISOR + "isServerConnected()" +
             PCEXC::DIVISOR + "Server is not connected");
     }
 
     // Wait for action server
-    if (!gripper_homing_client_ptr->waitForServer()) {
+    if (!gripper_homing_client_ptr_->waitForServer()) {
         throw PCEXC::panda_gripper_error("Panda::gripperHoming()" +
                                          PCEXC::DIVISOR + "waitForServer()" +
                                          PCEXC::DIVISOR + "Timeout");
@@ -176,10 +241,10 @@ void Panda::gripperHoming() {
 
     // Create homing goal
     auto goal = franka_gripper::HomingGoal();
-    gripper_homing_client_ptr->sendGoal(goal);
+    gripper_homing_client_ptr_->sendGoal(goal);
 
     // Wait for result
-    if (!gripper_homing_client_ptr->waitForResult()) {
+    if (!gripper_homing_client_ptr_->waitForResult()) {
         throw PCEXC::panda_gripper_error("Panda::gripperHoming()" +
                                          PCEXC::DIVISOR + "waitForResult()" +
                                          PCEXC::DIVISOR + "Timeout");
@@ -189,14 +254,14 @@ void Panda::gripperHoming() {
 
 void Panda::gripperMove(const float &WIDTH, const float &SPEED) {
     // Check if server is connected
-    if (!gripper_homing_client_ptr->isServerConnected()) {
+    if (!gripper_homing_client_ptr_->isServerConnected()) {
         throw PCEXC::panda_gripper_error(
             "Panda::gripperHoming()" + PCEXC::DIVISOR + "isServerConnected()" +
             PCEXC::DIVISOR + "Server is not connected");
     }
 
     // Wait for action server
-    if (!gripper_move_client_ptr->waitForServer()) {
+    if (!gripper_move_client_ptr_->waitForServer()) {
         throw PCEXC::panda_gripper_error("Panda::gripperMove()" +
                                          PCEXC::DIVISOR + "waitForServer()" +
                                          PCEXC::DIVISOR + "Timeout");
@@ -206,10 +271,10 @@ void Panda::gripperMove(const float &WIDTH, const float &SPEED) {
     auto goal = franka_gripper::MoveGoal();
     goal.width = WIDTH;
     goal.speed = SPEED;
-    gripper_move_client_ptr->sendGoal(goal);
+    gripper_move_client_ptr_->sendGoal(goal);
 
     // Wait for result
-    if (!gripper_move_client_ptr->waitForResult()) {
+    if (!gripper_move_client_ptr_->waitForResult()) {
         throw PCEXC::panda_gripper_error("Panda::gripperMove()" +
                                          PCEXC::DIVISOR + "waitForResult()" +
                                          PCEXC::DIVISOR + "Timeout");
@@ -221,14 +286,14 @@ void Panda::gripperGrasp(const float &WIDTH, const float &SPEED,
                          const float &FORCE, const float &EPSILON_INNER,
                          const float &EPSILON_OUTER) {
     // Check if server is connected
-    if (!gripper_homing_client_ptr->isServerConnected()) {
+    if (!gripper_homing_client_ptr_->isServerConnected()) {
         throw PCEXC::panda_gripper_error(
             "Panda::gripperHoming()" + PCEXC::DIVISOR + "isServerConnected()" +
             PCEXC::DIVISOR + "Server is not connected");
     }
 
     // Wait for action server
-    if (!gripper_grasp_client_ptr->waitForServer()) {
+    if (!gripper_grasp_client_ptr_->waitForServer()) {
         throw PCEXC::panda_gripper_error("Panda::gripperGrasp()" +
                                          PCEXC::DIVISOR + "waitForServer()" +
                                          PCEXC::DIVISOR + "Timeout");
@@ -241,10 +306,10 @@ void Panda::gripperGrasp(const float &WIDTH, const float &SPEED,
     goal.force = FORCE;
     goal.epsilon.inner = EPSILON_INNER;
     goal.epsilon.outer = EPSILON_OUTER;
-    gripper_grasp_client_ptr->sendGoal(goal);
+    gripper_grasp_client_ptr_->sendGoal(goal);
 
     // Wait for result
-    if (!gripper_grasp_client_ptr->waitForResult()) {
+    if (!gripper_grasp_client_ptr_->waitForResult()) {
         throw PCEXC::panda_gripper_error("Panda::gripperGrasp()" +
                                          PCEXC::DIVISOR + "waitForResult()" +
                                          PCEXC::DIVISOR + "Timeout");

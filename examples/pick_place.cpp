@@ -55,17 +55,43 @@ int main(int argc, char **argv) {
 
         // Set robot speed
         ROS_INFO_STREAM("## GRIPPER HOMING: ");
-        panda.gripperHoming();
+        // panda.gripperHoming();
 
-        // Pick object
-        ROS_INFO_STREAM("## PICK OBJECT to pose: " << PICK_POSE_NAME);
-        panda.pick(data_manager::get_pose(PICK_POSE_NAME), 0.02);
+
+        // Pick and place
+        // METHOD1 ************************************************************
+        // ROS_INFO_STREAM("## PICK OBJECT to pose: " << PICK_POSE_NAME);
+        // panda.pick(data_manager::get_pose(PICK_POSE_NAME), 0.02);
+        // ros::WallDuration(1.0).sleep();
+
+        // ROS_INFO("## PLACE OBJECT");
+        // panda.place(data_manager::get_pose(PLACE_POSE_NAME));
+        // ros::WallDuration(1.0).sleep();
+
+
+        // METHOD2 ************************************************************
+        ROS_INFO_STREAM("## PICK OBJECT TO POSE: " << PICK_POSE_NAME);
+        geometry_msgs::Vector3 PRE_GRASP_APPROCH;
+        PRE_GRASP_APPROCH.x = 0.0;
+        PRE_GRASP_APPROCH.y = 0.0;
+        PRE_GRASP_APPROCH.z = 0.1;
+        panda.pick(data_manager::get_pose(PICK_POSE_NAME), 0.02,
+                   PRE_GRASP_APPROCH);
         ros::WallDuration(1.0).sleep();
 
-        // Place Object
-        ROS_INFO("## PLACE OBJECT");
-        panda.place(data_manager::get_pose(PLACE_POSE_NAME));
+        ROS_INFO_STREAM("## PLACE OBJECT TO POSE:" << PLACE_POSE_NAME);
+        geometry_msgs::Vector3 POST_GRASP_RETREAT;
+        POST_GRASP_RETREAT.x = 0.0;
+        POST_GRASP_RETREAT.y = 0.0;
+        POST_GRASP_RETREAT.z = 0.1;
+        geometry_msgs::Vector3 POST_PLACE_RETREAT;
+        POST_PLACE_RETREAT.x = -0.1;
+        POST_PLACE_RETREAT.y = 0.0;
+        POST_PLACE_RETREAT.z = 0.0;
+        panda.place(data_manager::get_pose(PLACE_POSE_NAME), POST_GRASP_RETREAT,
+                    POST_PLACE_RETREAT);
         ros::WallDuration(1.0).sleep();
+
 
     } catch (const PCEXC::panda_error &e) {
         ROS_FATAL_STREAM(PCEXC::get_err_msg(NAME, e.what()));

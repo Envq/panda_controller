@@ -2,3 +2,10 @@
 - gif in README
 - create correct rviz-robot launcher
 - in panda.cpp get_size_object(): now get r of cylinder. Extend it
+
+in Panda:
+- pick() and place() with collision object
+
+in console:
+- colorprint()
+- history
