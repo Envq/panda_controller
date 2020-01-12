@@ -1,4 +1,4 @@
-// MY LIBS
+// PANDA CONTROLLER
 #include "data_manager.hpp"
 #include "my_exceptions.hpp"
 #include "panda.hpp"
@@ -16,13 +16,97 @@
 
 
 //#############################################################################
-// DEFAULT VALUES
+// DEFAULT VALUES #############################################################
 std::string POSE_NAME_DFLT;
-float GRIPPER_SPEED_DFLT, GRIPPER_FORCE_DFLT, GRIPPER_EPSILON_INNER_DFLT, GRIPPER_EPSILON_OUTER_DFLT;
+float GRIPPER_SPEED_DFLT, GRIPPER_FORCE_DFLT, GRIPPER_EPSILON_INNER_DFLT,
+    GRIPPER_EPSILON_OUTER_DFLT;
+
 
 
 //#############################################################################
-// PRIVATE FUNCTIONS
+// PRIVATE FUNCTIONS ##########################################################
+// Check if a string is a number
+bool is_number(const std::string &str);
+
+// Perform parsing of readed command and run it
+void run_command(robot::Panda &panda, const std::string &command);
+
+
+
+//#############################################################################
+// MAIN #######################################################################
+int main(int argc, char **argv) {
+    // Get the file name
+    std::string file_path = argv[0];
+    const std::string NAME =
+        file_path.substr(file_path.find_last_of("/\\") + 1);
+
+
+    // Setup ROS
+    ros::init(argc, argv, NAME);
+    ros::NodeHandle node("~");
+    ros::AsyncSpinner spinner(1);
+    spinner.start();
+    ROS_INFO_STREAM("## START: " << NAME);
+
+
+    // Extract the parameters
+    if (!(node.getParam("pose_name", POSE_NAME_DFLT) &&
+          node.getParam("gripper_speed", GRIPPER_SPEED_DFLT) &&
+          node.getParam("gripper_force", GRIPPER_FORCE_DFLT) &&
+          node.getParam("gripper_epsilon_inner", GRIPPER_EPSILON_INNER_DFLT) &&
+          node.getParam("gripper_epsilon_outer", GRIPPER_EPSILON_OUTER_DFLT))) {
+        ROS_FATAL_STREAM(
+            my_exceptions::get_err_msg(NAME, "Can't get parameters"));
+        ros::shutdown();
+        return 0;
+    }
+
+
+    // Task
+    try {
+        // Create class to manage the Panda arm
+        ROS_INFO("## INIT PANDA CONTROLLER");
+        auto panda = robot::Panda();
+
+        // Read command and performe task
+        std::string command;
+        ROS_INFO("Insert commands:");
+        while (command != "quit") {
+            std::cout << "\033[1;32m"
+                      << ">> "
+                      << "\033[0m";
+
+            try {
+                std::getline(std::cin, command);  // Read stdin
+                run_command(panda, command);      // Perform task
+
+            } catch (const my_exceptions::panda_error &e) {
+                ROS_ERROR_STREAM(my_exceptions::get_err_msg(NAME, e.what()));
+
+            } catch (const my_exceptions::data_manager_error &e) {
+                ROS_ERROR_STREAM(my_exceptions::get_err_msg(NAME, e.what()));
+            }
+
+            std::cout << "\033[1;32m"
+                      << "-------------------------------------"
+                      << "\033[0m" << std::endl
+                      << std::endl;
+        }
+    } catch (const my_exceptions::panda_error &e) {
+        ROS_FATAL_STREAM(my_exceptions::get_err_msg(NAME, e.what()));
+    }
+
+
+    // Finish
+    ros::shutdown();
+    return 0;
+}
+
+
+
+//#############################################################################
+// PRIVATE FUNCTIONS IMPLEMENTATIONS
 bool is_number(const std::string &str) {
     // Check if is empty
     if (str.empty())
@@ -51,7 +135,7 @@ bool is_number(const std::string &str) {
     return true;
 }
 
-// perform parsing of command readed and run the command
+
 void run_command(robot::Panda &panda, const std::string &command) {
     // Parse of the command string
     std::vector<std::string> cmd;
@@ -227,69 +311,4 @@ void run_command(robot::Panda &panda, const std::string &command) {
     } catch (const std::invalid_argument &e) {
         ROS_WARN_STREAM("invalid command: " << e.what());
     }
-}
-
-
-//#############################################################################
-int main(int argc, char **argv) {
-    // Get the file name
-    std::string file_path = argv[0];
-    const std::string NAME =
-        file_path.substr(file_path.find_last_of("/\\") + 1);
-
-    // Setup ROS
-    ros::init(argc, argv, NAME);
-    ros::NodeHandle node("~");
-    ros::AsyncSpinner spinner(1);
-    spinner.start();
-    ROS_INFO_STREAM("## START: " << NAME);
-
-
-    // Extract the parameters
-    if (!(node.getParam("pose_name", POSE_NAME_DFLT) &&
-          node.getParam("gripper_speed", GRIPPER_SPEED_DFLT) &&
-          node.getParam("gripper_force", GRIPPER_FORCE_DFLT) &&
-          node.getParam("gripper_epsilon_inner", GRIPPER_EPSILON_INNER_DFLT) &&
-          node.getParam("gripper_epsilon_outer", GRIPPER_EPSILON_OUTER_DFLT))) {
-        ROS_FATAL_STREAM(
-            my_exceptions::get_err_msg(NAME, "Can't get parameters"));
-        ros::shutdown();
-        return 0;
-    }
-
-    // Task
-    try {
-        // Create class to manage the Panda arm
-        ROS_INFO("## INIT PANDA CONTROLLER");
-        auto panda = robot::Panda();
-
-        // Read command and performe task
-        std::string command;
-        ROS_INFO("Insert commands:");
-        while (command != "quit") {
-            std::cout << "\033[1;32m"
-                      << ">> "
-                      << "\033[0m";
-            try {
-                std::getline(std::cin, command);  // Read stdin
-                run_command(panda, command);      // Perform task
-            } catch (const my_exceptions::panda_error &e) {
-                ROS_ERROR_STREAM(my_exceptions::get_err_msg(NAME, e.what()));
-            } catch (const my_exceptions::data_manager_error &e) {
-                ROS_ERROR_STREAM(my_exceptions::get_err_msg(NAME, e.what()));
-            }
-            std::cout << "\033[1;32m"
-                      << "-------------------------------------"
-                      << "\033[0m" << std::endl
-                      << std::endl;
-        }
-    } catch (const my_exceptions::panda_error &e) {
-        ROS_FATAL_STREAM(my_exceptions::get_err_msg(NAME, e.what()));
-    }
-
-
-    // Finish
-    ros::shutdown();
-
-    return 0;
 }

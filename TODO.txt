@@ -3,3 +3,5 @@
 - create correct rviz-robot launcher
 - add control from topic in nodes
 - improve constants in data_manager.hpp
+
+- in float get_size_object(): now get r of cylinder. Extend it

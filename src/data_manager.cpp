@@ -1,22 +1,24 @@
+// PANDA CONTROLLER
 #include "data_manager.hpp"
 
 
-
 //#############################################################################
-// PRIVATE FUNCTIONS and STRUCTURES
+// PRIVATE FUNCTIONS and STRUCTURES ###########################################
 struct scene_object {
     moveit_msgs::CollisionObject collision_part;
     moveit_msgs::ObjectColor color_part;
 };
 
+// Return the absolute path from relative path
 std::string getPath(const std::string &RELATIVE_PATH);
 
+// Create a scene object from object readed in data
 scene_object create_scene_object(const Json::Value &OBJECT);
 
 
 
 //#############################################################################
-// PUBLIC FUNCTIONS IMPLEMENTATION
+// PUBLIC FUNCTIONS IMPLEMENTATION ############################################
 namespace data_manager {
 
 void save_pose(const std::string &NAME, const geometry_msgs::Pose &POSE) {
@@ -181,7 +183,7 @@ moveit_msgs::PlanningScene get_scene(const std::string &NAME) {
 
 
 //#############################################################################
-// PRIVATE FUNCTIONS IMPLEMENTATIONS
+// PRIVATE FUNCTIONS IMPLEMENTATIONS ##########################################
 std::string getPath(const std::string &RELATIVE_PATH) {
     // Get package path
     auto PACKAGE_PATH = ros::package::getPath(data_manager::PACKAGE_NAME);

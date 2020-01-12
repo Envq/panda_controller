@@ -1,11 +1,15 @@
-cmake_minimum_required(VERSION 2.8.3)
+###############################################################################
+# CMAKE CONFIG ################################################################
 project(panda_controller)
+cmake_minimum_required(VERSION 2.8.3)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED)
 
 
-set(CMAKE_CXX_STANDARD 14)
 
-
-# CATKIN
+###############################################################################
+# PACKAGES ####################################################################
+# catkin
 find_package(catkin REQUIRED COMPONENTS
     roscpp
     std_msgs
@@ -18,20 +22,17 @@ find_package(catkin REQUIRED COMPONENTS
     franka_gripper
 )
 
-
-# JSON
+# json
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(JSONCPP jsoncpp)
 
-
-# BOOST
+# boost
 # find_package(Boost REQUIRED COMPONENTS filesystem)
 
 
 
-###################################
-## catkin specific configuration ##
-###################################
+###############################################################################
+# CATKIN CONFIG ###############################################################
 catkin_package(
     # INCLUDE_DIRS include
     CATKIN_DEPENDS 
@@ -41,26 +42,25 @@ catkin_package(
 )
 
 
-###########
-## Build ##
-###########
+
+###############################################################################
+# BUILD CONFIG ################################################################
+# Add include directories 
 include_directories(
     include
     ${catkin_INCLUDE_DIRS}
 )
 
-## My libs directory
-set(MY_LIBS ${PROJECT_SOURCE_DIR}/src/my_libs)
-
-set(TASK1_NAME console)
-add_executable(${TASK1_NAME}  src/${TASK1_NAME}.cpp
-    ${MY_LIBS}/data_manager.cpp
-    ${MY_LIBS}/panda.cpp)
-target_link_libraries(${TASK1_NAME} ${catkin_LIBRARIES} ${JSONCPP_LIBRARIES})
+# Executables config
+set(TASK1 console)
+add_executable(${TASK1}  examples/${TASK1}.cpp
+    src/data_manager.cpp
+    src/panda.cpp)
+target_link_libraries(${TASK1} ${catkin_LIBRARIES} ${JSONCPP_LIBRARIES})
 
 
-set(TASK2_NAME pick_place)
-add_executable(${TASK2_NAME}  src/${TASK2_NAME}.cpp
-    ${MY_LIBS}/data_manager.cpp
-    ${MY_LIBS}/panda.cpp)
-target_link_libraries(${TASK2_NAME} ${catkin_LIBRARIES} ${JSONCPP_LIBRARIES})
+set(TASK2 pick_place)
+add_executable(${TASK2}  examples/${TASK2}.cpp
+    src/data_manager.cpp
+    src/panda.cpp)
+target_link_libraries(${TASK2} ${catkin_LIBRARIES} ${JSONCPP_LIBRARIES})

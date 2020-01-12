@@ -1,6 +1,6 @@
 #pragma once
 
-// MY LIBS
+// PANDA CONTROLLER
 #include "my_exceptions.hpp"
 
 // C++
@@ -20,20 +20,22 @@
 
 
 //#############################################################################
+// NAMESPACE ##################################################################
 namespace data_manager {
 
 
 
-// CONSTANTS
+//#############################################################################
+// CONSTANTS ###################################################################
 const std::string PACKAGE_NAME = "panda_controller";
-const std::string FOLDER_NAME = "/database/";
-const std::string POSES_RELATIVE = "/database/poses.json";
-const std::string SCENES_RELATIVE = "/database/scenes.json";
+const std::string FOLDER_NAME = "/data/";
+const std::string POSES_RELATIVE = "/data/poses.json";
+const std::string SCENES_RELATIVE = "/data/scenes.json";
 
 
 
 //#############################################################################
-// FUNCTIONS
+// FUNCTIONS INTERFACE ########################################################
 
 // Save the pose with name
 void save_pose(const std::string &NAME, const geometry_msgs::Pose &POSE);

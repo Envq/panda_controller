@@ -6,20 +6,21 @@
 
 
 //#############################################################################
+// NAMESPACE ##################################################################
 namespace my_exceptions {
 
 
 
 //#############################################################################
-// CONSTANTS
+// CONSTANTS ##################################################################
 const std::string DIVISOR = "\n --> ";
 
 
 
 //#############################################################################
-// EXCEPTIONS
+// CLASSES ####################################################################
 
-// Execeptions for data_manager
+// Exceptions for data_manager
 class data_manager_error : public std::runtime_error {
   public:
     data_manager_error(const std::string &MSG)
@@ -28,7 +29,7 @@ class data_manager_error : public std::runtime_error {
 };
 
 
-// Execeptions for Panda
+// Exceptions for Panda
 class panda_error : public std::runtime_error {
   public:
     panda_error(const std::string &MSG)
@@ -37,7 +38,7 @@ class panda_error : public std::runtime_error {
 };
 
 
-// Execeptions for Panda arm
+// Exceptions for Panda arm
 class panda_arm_error : public panda_error {
   public:
     panda_arm_error(const std::string &MSG)
@@ -55,11 +56,13 @@ class panda_gripper_error : public panda_error {
 };
 
 
+
 //#############################################################################
-// FUNCTIONS
+// INLINE FUNCTIONS ###########################################################
 inline std::string get_err_msg(const std::string &NAME,
                                const std::string &MSG) {
     return "In: " + NAME + ".cpp" + DIVISOR + MSG;
 }
+
 
 }  // namespace my_exceptions

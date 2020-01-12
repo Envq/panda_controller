@@ -9,7 +9,7 @@
             "command": "roslaunch",
             "args": [
                 "${workspaceFolderBasename}",
-                "console.launch"
+                "pick_place.launch"
             ],
             "problemMatcher": [],
             "group": "build",
@@ -21,12 +21,12 @@
             ]
         },
         {
-            "label": "console",
+            "label": "pick_place",
             "type": "shell",
             "command": "roslaunch",
             "args": [
                 "${workspaceFolderBasename}",
-                "console.launch"
+                "pick_place.launch"
             ],
             "problemMatcher": [],
             "group": "none",
@@ -35,12 +35,12 @@
             }
         },
         {
-            "label": "pick_place",
+            "label": "console",
             "type": "shell",
             "command": "roslaunch",
             "args": [
                 "${workspaceFolderBasename}",
-                "pick_place.launch"
+                "console.launch"
             ],
             "problemMatcher": [],
             "group": "none",
@@ -82,8 +82,8 @@
             "command": "clang-format",
             "args": [
                 "-i",
+                "${workspaceFolder}/examples/*.cpp",
                 "${workspaceFolder}/src/*.cpp",
-                "${workspaceFolder}/src/my_libs/*.cpp",
                 "${workspaceFolder}/include/*.hpp"
             ],
             "problemMatcher": [],

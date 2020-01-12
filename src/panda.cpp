@@ -1,10 +1,10 @@
+// PANDA CONTROLLER
 #include "panda.hpp"
 
 
 
 //#############################################################################
-// PRIVATE FUNCTIONS AND ENUMERATIONS
-// TODO: now get r of cylinder. Extend it
+// PRIVATE FUNCTIONS ##########################################################
 float get_size_object(
     moveit::planning_interface::PlanningSceneInterfacePtr &planning_scene_ptr,
     const std::string &OBJECT_NAME);
@@ -12,7 +12,7 @@ float get_size_object(
 
 
 //#############################################################################
-// PUBLIC METHODS IMPLEMENTATIONS
+// PUBLIC METHODS IMPLEMENTATIONS #############################################
 namespace robot {
 
 Panda::Panda(const bool &HOMING_STARTUP) {

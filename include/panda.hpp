@@ -1,6 +1,6 @@
 #pragma once
 
-// MY LIBS
+// PANDA CONTROLLER
 #include "my_exceptions.hpp"
 
 // ROS
@@ -24,21 +24,20 @@
 #include <boost/shared_ptr.hpp>
 
 
+
 //#############################################################################
+// NAMESPACE ##################################################################
 namespace robot {
 
 
-
-// Constants
+//#############################################################################
+// CONSTANTS AND TYPEDEF ######################################################
 const auto FRAME_REF = "panda_link0";
 const float GRIPPER_MAX_WIDTH = 0.08;
 const float DEFAULT_ARM_SPEED = 1.0;
 const float DEFAULT_GRIPPER_SPEED = 0.1;
 const float DEFAULT_GRIPPER_FORCE = 10.0;
 
-
-
-// Typedef
 typedef actionlib::SimpleActionClient<franka_gripper::HomingAction>
     GripperHomingClient;
 typedef actionlib::SimpleActionClient<franka_gripper::MoveAction>
@@ -49,8 +48,7 @@ typedef actionlib::SimpleActionClient<franka_gripper::GraspAction>
 
 
 //#############################################################################
-// CLASSES
-
+// CLASSES ####################################################################
 // Class to easily manage the Panda arm with moveit
 class Panda {
   private:
@@ -101,5 +99,6 @@ class Panda {
                       const float &EPSILON_INNER = 0.002,
                       const float &EPSILON_OUTER = 0.002);
 };
+
 
 }  // namespace robot
