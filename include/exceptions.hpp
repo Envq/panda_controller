@@ -7,7 +7,7 @@
 
 //#############################################################################
 // NAMESPACE ##################################################################
-namespace my_exceptions {
+namespace PCEXC {
 
 
 
@@ -65,4 +65,4 @@ inline std::string get_err_msg(const std::string &NAME,
 }
 
 
-}  // namespace my_exceptions
+}  // namespace PCEXC

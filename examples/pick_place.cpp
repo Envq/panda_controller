@@ -1,6 +1,6 @@
-// MY LIBS
+// PANDA CONTROLLER
 #include "data_manager.hpp"
-#include "my_exceptions.hpp"
+#include "exceptions.hpp"  //PCEXC
 #include "panda.hpp"
 
 // ROS
@@ -9,6 +9,7 @@
 
 
 //#############################################################################
+// MAIN #######################################################################
 int main(int argc, char **argv) {
     // Get the file name
     std::string file_path = argv[0];
@@ -31,8 +32,7 @@ int main(int argc, char **argv) {
           node.getParam("object", OBJECT_NAME) &&
           node.getParam("pick_pose", PICK_POSE_NAME) &&
           node.getParam("place_pose", PLACE_POSE_NAME))) {
-        ROS_FATAL_STREAM(
-            my_exceptions::get_err_msg(NAME, "Can't get parameters"));
+        ROS_FATAL_STREAM(PCEXC::get_err_msg(NAME, "Can't get parameters"));
         ros::shutdown();
         return 0;
     }
@@ -42,16 +42,20 @@ int main(int argc, char **argv) {
     try {
         // Create class to manage the Panda arm
         ROS_INFO("## INIT PANDA CONTROLLER");
-        auto panda = robot::Panda(true);
-
-        // Set robot speed
-        ROS_INFO_STREAM("## SET SPEED: " << SPEED);
-        panda.setArmSpeed(SPEED);
+        auto panda = robot::Panda();
 
         // Init scene
         ROS_INFO("## INIT SCENE");
         panda.setScene(data_manager::get_scene(SCENE_NAME));
         ros::WallDuration(1.0).sleep();
+
+        // Set robot speed
+        ROS_INFO_STREAM("## SET ARM SPEED TO: " << SPEED);
+        panda.setArmSpeed(SPEED);
+
+        // Set robot speed
+        ROS_INFO_STREAM("## GRIPPER HOMING: ");
+        panda.gripperHoming();
 
         // Pick object
         ROS_INFO_STREAM("## PICK OBJECT to pose: " << PICK_POSE_NAME);
@@ -63,11 +67,11 @@ int main(int argc, char **argv) {
         panda.place(data_manager::get_pose(PLACE_POSE_NAME));
         ros::WallDuration(1.0).sleep();
 
-    } catch (const my_exceptions::panda_error &e) {
-        ROS_FATAL_STREAM(my_exceptions::get_err_msg(NAME, e.what()));
+    } catch (const PCEXC::panda_error &e) {
+        ROS_FATAL_STREAM(PCEXC::get_err_msg(NAME, e.what()));
 
-    } catch (const my_exceptions::data_manager_error &e) {
-        ROS_FATAL_STREAM(my_exceptions::get_err_msg(NAME, e.what()));
+    } catch (const PCEXC::data_manager_error &e) {
+        ROS_FATAL_STREAM(PCEXC::get_err_msg(NAME, e.what()));
     }
 
 

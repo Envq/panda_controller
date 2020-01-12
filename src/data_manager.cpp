@@ -51,17 +51,16 @@ void save_pose(const std::string &NAME, const geometry_msgs::Pose &POSE) {
 
         // Check if the file stream has failed
         if (file.fail())
-            throw my_exceptions::data_manager_error("save_pose()" +
-                                                    my_exceptions::DIVISOR +
-                                                    "Can't write on: " + PATH);
+            throw PCEXC::data_manager_error("save_pose()" + PCEXC::DIVISOR +
+                                            "Can't write on: " + PATH);
 
         // Save the pose
         writer.write(file, root);
         file.close();
 
     } catch (const Json::RuntimeError &e) {
-        throw my_exceptions::data_manager_error(
-            "save_pose()" + my_exceptions::DIVISOR + "Json ill-writted");
+        throw PCEXC::data_manager_error("save_pose()" + PCEXC::DIVISOR +
+                                        "Json ill-writted");
         file.close();
     }
 }
@@ -80,8 +79,8 @@ geometry_msgs::Pose get_pose(const std::string &NAME) {
 
     // Check if the file stream has failed
     if (file.fail())
-        throw my_exceptions::data_manager_error(
-            "get_pose()" + my_exceptions::DIVISOR + "Can't open:" + PATH);
+        throw PCEXC::data_manager_error("get_pose()" + PCEXC::DIVISOR +
+                                        "Can't open:" + PATH);
 
     // Get pose
     try {
@@ -89,9 +88,8 @@ geometry_msgs::Pose get_pose(const std::string &NAME) {
 
         // Check if root have member NAME
         if (!root.isMember(NAME))
-            throw my_exceptions::data_manager_error(
-                "get_pose()" + my_exceptions::DIVISOR + "'" + NAME +
-                "' pose not exist");
+            throw PCEXC::data_manager_error("get_pose()" + PCEXC::DIVISOR +
+                                            "'" + NAME + "' pose not exist");
 
         // Get informations
         const auto &POSITION = root[NAME]["position"];
@@ -108,8 +106,8 @@ geometry_msgs::Pose get_pose(const std::string &NAME) {
         file.close();
 
     } catch (const Json::RuntimeError &e) {
-        throw my_exceptions::data_manager_error(
-            "get_pose()" + my_exceptions::DIVISOR + "Json ill-writted");
+        throw PCEXC::data_manager_error("get_pose()" + PCEXC::DIVISOR +
+                                        "Json ill-writted");
         file.close();
     }
 
@@ -130,8 +128,8 @@ moveit_msgs::PlanningScene get_scene(const std::string &NAME) {
 
     // Check if the file stream has failed
     if (file.fail())
-        throw my_exceptions::data_manager_error(
-            "get_scene()" + my_exceptions::DIVISOR + "Can't open:" + PATH);
+        throw PCEXC::data_manager_error("get_scene()" + PCEXC::DIVISOR +
+                                        "Can't open:" + PATH);
 
     // Get Scene
     try {
@@ -140,9 +138,8 @@ moveit_msgs::PlanningScene get_scene(const std::string &NAME) {
         // Check if root have member NAME
         if (!root.isMember(NAME)) {
             file.close();
-            throw my_exceptions::data_manager_error(
-                "get_scene()" + my_exceptions::DIVISOR + "'" + NAME +
-                "' pose not exist");
+            throw PCEXC::data_manager_error("get_scene()" + PCEXC::DIVISOR +
+                                            "'" + NAME + "' pose not exist");
         }
 
         // Get Objects
@@ -168,13 +165,13 @@ moveit_msgs::PlanningScene get_scene(const std::string &NAME) {
 
     } catch (const Json::RuntimeError &e) {
         file.close();
-        throw my_exceptions::data_manager_error(
-            "get_scene()" + my_exceptions::DIVISOR + "Json ill-writted");
+        throw PCEXC::data_manager_error("get_scene()" + PCEXC::DIVISOR +
+                                        "Json ill-writted");
 
     } catch (const Json::LogicError &e) {
         file.close();
-        throw my_exceptions::data_manager_error(
-            "get_scene()" + my_exceptions::DIVISOR +
+        throw PCEXC::data_manager_error(
+            "get_scene()" + PCEXC::DIVISOR +
             "Json ill-typed: " + std::string(e.what()));
     }
 
@@ -192,8 +189,8 @@ std::string get_path(const std::string &RELATIVE_PATH) {
     auto PACKAGE_PATH = ros::package::getPath(data_manager::PACKAGE_NAME);
 
     if (PACKAGE_PATH.empty())
-        throw my_exceptions::data_manager_error(
-            "get_path()" + my_exceptions::DIVISOR + "Package path not found");
+        throw PCEXC::data_manager_error("get_path()" + PCEXC::DIVISOR +
+                                        "Package path not found");
 
     // Return absolute path
     return PACKAGE_PATH + RELATIVE_PATH;
@@ -212,9 +209,9 @@ scene_object create_scene_object(const Json::Value &OBJECT) {
     // Check fields correctness:
     if (NAME.empty() || TYPE.empty() || COLOR.empty() || DIMENSIONS.empty() ||
         POSITION.empty() || ORIENTATION.empty()) {
-        throw my_exceptions::data_manager_error("create_scene_object()" +
-                                                my_exceptions::DIVISOR +
-                                                "Missing some json field");
+        throw PCEXC::data_manager_error("create_scene_object()" +
+                                        PCEXC::DIVISOR +
+                                        "Missing some json field");
     }
 
     // Create scene object
@@ -239,8 +236,8 @@ scene_object create_scene_object(const Json::Value &OBJECT) {
         // Check if there is empty field
         if (DIMENSIONS["x"].empty() || DIMENSIONS["y"].empty() ||
             DIMENSIONS["z"].empty())
-            throw my_exceptions::data_manager_error(
-                "create_scene_object()" + my_exceptions::DIVISOR +
+            throw PCEXC::data_manager_error(
+                "create_scene_object()" + PCEXC::DIVISOR +
                 "Object of type BOX have some empty "
                 "field");
 
@@ -254,10 +251,10 @@ scene_object create_scene_object(const Json::Value &OBJECT) {
     } else if (TYPE == "sphere") {
         // Check if there is empty field
         if (DIMENSIONS["r"].empty())
-            throw my_exceptions::data_manager_error(
-                "create_scene_object()" + my_exceptions::DIVISOR +
-                "Object of type SPHERE have some "
-                "empty field");
+            throw PCEXC::data_manager_error("create_scene_object()" +
+                                            PCEXC::DIVISOR +
+                                            "Object of type SPHERE have some "
+                                            "empty field");
 
         // Init object
         primitive.type = primitive.SPHERE;
@@ -267,10 +264,10 @@ scene_object create_scene_object(const Json::Value &OBJECT) {
     } else if (TYPE == "cylinder") {
         // Check if there is empty field
         if (DIMENSIONS["h"].empty() || DIMENSIONS["r"].empty())
-            throw my_exceptions::data_manager_error(
-                "create_scene_object()" + my_exceptions::DIVISOR +
-                "Object of type CYLINDER have some "
-                "empty field");
+            throw PCEXC::data_manager_error("create_scene_object()" +
+                                            PCEXC::DIVISOR +
+                                            "Object of type CYLINDER have some "
+                                            "empty field");
 
         // Init object
         primitive.type = primitive.CYLINDER;
@@ -281,8 +278,8 @@ scene_object create_scene_object(const Json::Value &OBJECT) {
     } else if (TYPE == "cone") {
         // Check if there is empty field
         if (DIMENSIONS["h"].empty() || DIMENSIONS["r"].empty())
-            throw my_exceptions::data_manager_error(
-                "create_scene_object()" + my_exceptions::DIVISOR +
+            throw PCEXC::data_manager_error(
+                "create_scene_object()" + PCEXC::DIVISOR +
                 "Object of type CONE have some empty "
                 "field");
 
@@ -293,8 +290,8 @@ scene_object create_scene_object(const Json::Value &OBJECT) {
         primitive.dimensions[1] = DIMENSIONS["r"].asDouble();
 
     } else {
-        throw my_exceptions::data_manager_error(
-            "create_scene_object()" + my_exceptions::DIVISOR +
+        throw PCEXC::data_manager_error(
+            "create_scene_object()" + PCEXC::DIVISOR +
             "In this json file there is a not valid "
             "type specified");
     }

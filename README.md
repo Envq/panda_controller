@@ -1,45 +1,42 @@
-# Panda Controller
-
-This is a task for the the Panda arm (Franka Emika) using ROS
-
+# **Panda Controller**
+This is a set of utilities to control Panda Franka Emika using ROS and c++.
 
 
-## Table of Contents
 
+## **Table of Contents**
 * [Getting started](#getting-started)
-  * [Dependencies](#dependencies)
-  * [Building from source](#building-from-source)
-* [Database](#database)
-* [Nodes](#nodes)
-  * [controller](#controller)
-  * [current_pose](#current_pose)
-  * [relative_move](#relative_move)
-  * [absolute_move](#absolute_move)
-  * [gripper_move](#gripper_move)
-  * [pick_place](#pick_place)
-* [VSCode](#vscode)
+    * [FAQ](#faq)
+    * [Dependencies](#dependencies)
+    * [Building from source](#building-from-source)
+* [Files](#files)
+    * [data_manager](#data_manager)
+    * [panda](#panda)
+    * [excepions](#excepions)
+* [Data](#data)
+* [Examples](#examples)
+    * [console](#console)
+    * [pick_place](#pick_place)
+* [Visual Studio Code](#vscode)
 * [Author](#author)
 * [License](#license)
 
 
 
 ---
-## Getting Started
-
+## **Getting Started**
 This package was tested in:
-- ROS melodic running under Linux Mint Tina (compatible with Ubuntu Bionic)
-- ROS kinetic running under Ubuntu Xenial
-- with real panda arm
+- ROS melodic running under Linux Mint Tricia (compatible with Ubuntu Bionic).
+- ROS kinetic running under Ubuntu Xenial.
+- With real Panda robot.
 
-### FAQ:
-- controller vscode task not control real panda, it is used only for simulation
-- gripper use franka_gripper action server that is available only with real panda arm
-- for simulation with controller vscode task use kinetic-devel branches
+### **- FAQ**
+- The 'simulation' vscode task not control real panda, it is only used for test project.
+- Gripper use franka_gripper action server that is available only with real panda arm.
+- For simulation with the 'simulation' vscode task use the kinetic-devel branches of franka_ros and panda_moveit_config repositories, else follow the bottom instructions.
 
 
 
-## Dependencies:
-
+### **- Dependencies**
 - Install ROS:
 http://wiki.ros.org/melodic/Installation/Ubuntu
 
@@ -99,9 +96,8 @@ cmake --build .
 
 
 
-## Building from source
-
-### Create Workspace
+### **- Building from source**
+**Create Workspace**
 ~~~
 mkdir -p ~/workspace/panda_ws/src
 
@@ -117,7 +113,7 @@ git checkout 0.6.0
 ~~~
 
 
-### Configure Workspace
+**Configure Workspace**
 ~~~
 # If you use a different linux distribution based on bionic like Linux Mint
 echo 'export ROS_OS_OVERRIDE=ubuntu:18.04:bionic' >> ~/.bashrc
@@ -139,81 +135,75 @@ catkin init
 ~~~
 
 
-## Build Workspace
+### **- Build Workspace**
 ~~~
 catkin build
 ~~~
 
 
 ---
-## Database
-This folder contains:
-- poses.json: 
-    - A Collection of pose and orientation of the link6 (before Panda's hand)
-    - "name_pose" : {orientation, position}
-    - Look [here](http://docs.ros.org/melodic/api/geometry_msgs/html/msg/Pose.html) for more informations on **Pose**
-- scenes.json:
-    - A collection of Scene
-    - "name_scene" : {name, type, color, dimensions, position, orientation}
-    - Click [here](http://docs.ros.org/melodic/api/shape_msgs/html/msg/SolidPrimitive.html) for more informations on **SolidPrimite**
-    - Click [here](http://docs.ros.org/kinetic/api/std_msgs/html/msg/ColorRGBA.html) for more informations on **ColorRGBA**
+## **Files**
 
-look 
+### **data_manager**
+- This file contains all the functions to communicate with the stored data
+
+### **panda**
+- This file is a wrapper for easy use of moveit to control the Panda robot.
+
+### **exceptions**
+- All exceptions used are defined in this file.
+
 
 
 ---
-## Nodes
+## **Data**
+This folder contains:
+- poses.json: 
+    - **Description**: A Collection of position and orientation of the link6 (before Panda's hand).
+    - **Formant**: "name_pose" : {orientation, position}.
+    - **Doc**: Look [here](http://docs.ros.org/melodic/api/geometry_msgs/html/msg/Pose.html) for more informations on **Pose**.
+- scenes.json:
+    - **Description**: A collection of Scene.
+    - **Formant**: "name_scene" : {name, type, color, dimensions, position, orientation}.
+    - **Doc**:
+        - Click [here](http://docs.ros.org/melodic/api/shape_msgs/html/msg/SolidPrimitive.html) for more informations on **SolidPrimite**.
+        - Click [here](http://docs.ros.org/kinetic/api/std_msgs/html/msg/ColorRGBA.html) for more informations on **ColorRGBA**.
+
+
+
+---
+## **Examples**
 A brief description of the launch files available:
 
 
- ### **controller**
+### **- simulation**
+This node launches rviz with the panda arm (gripper action not work without real panda).
 
-This node launches rviz with the panda arm (gripper action not work without real panda)
-
-![controller](screenshot/controller.png?raw=true "controller")
-
-
- ### **current_pose**
-
-This node takes current pose of the panda arm and saves it on poses.json.
-- **[ name:=string ]:** to specify the pose name to save (default is "current")
-
-![current_pose](screenshot/current_pose.png?raw=true "current_pose")
+![simulation](screenshot/simulation.png?raw=true "simulation")
 
 
-### **relative_move**
+### **- console**
+This node is a console for performing these simple tasks:
+- **help:** to see the list of commands
+- **quit:** to close the node
+- **speed [value]:** to set the arm speed value
+- **save [(name)]:** to save the current pose with the specified name
+- **move offset [x y z]:** to move the arm along the x,y,z specified directions in meters
+- **move pose [name]:** to move the arm on the specified pose saved in database
+- **move gripper [width (speed)]:** to move the gripper fingers with the specified speed on the specified width from center
+- **homing arm:** to do the homing of the arm
+- **homing gripper:** to do the homing of the gripper
+- **grasp [width (speed force epsilon_inner epsilon_outer)]:** to perform the grasp of gripper);
 
-This node moves the arm along the x, y and z directions
-- **[ x:=float ]:** to specify the offset on x in meters (default is 0.0)
-- **[ y:=float ]:** to specify the offset on y in meters (default is 0.0)
-- **[ z:=float ]:** to specify the offset on z in meters (default is 0.0)
-- **[ speed:=float ]:** to specify the factor scale of the arm speed (default is 1.0)
-- **[ plan_only:=bool ]:** to specify if you want move the real arm or not (default is false)
+**Leggends:**
+- [] indicates a parameter
+- () indicates a optional parameter with default
 
-
-### **absolute_move**
-
-This node moves the arm on the selected pose
-- **[ pose:=string ]:** to specify the name of pose
-- **[ speed:=float ]:** to specify the factor scale of the arm speed (default is 1.0)
-- **[ plan_only:=bool ]:** to specify if you want move the real arm or not (default is false)
-
-
-### **gripper_move**
-
-This node moves the gripper
-- **[ mode:=string ]:** to specify the mode between *homing*, *move* and *grasp*
-    - **mode:=home** execute the homing of gripper
-    - **mode:=move** use args **width** and **speed** for moving the gripper
-    - **mode:=grasp** use args **width**, **speed**, **force**, **epsilon_inner** and **epsilon_outer** for execute the grasp
-- **[ width:=float ]:** to specify the width of the gripper movement in meters (default 0.08 which corresponds to the max opening)
-- **[ speed:=float ]:** to specify the factor scale of the arm speed in m/s (default is 0.5)
-- **[ force:=float ]:** to specify the force in netwon of the grasp (default is 20.0)
-- **[ epsilon_inner:=float ]:** to specify the epsilon inner of the grasp (default is 0.002)
-- **[ epsilon_outer:=float ]:** to specify the epsilon outer of the grasp (default is 0.002)
+![console](screenshot/console.png?raw=true "console")
 
 
- ### **pick_place**
+
+ ### **- pick_place**
 
 This node execute the "pick and place" task
 - **[ scene:=string ]:** to specify the name of scene to load (default is "pick_place")
@@ -222,9 +212,11 @@ This node execute the "pick and place" task
 - **[ place_pose:=string ]:** to specify the name of the place pose (default is "place")
 - **[ speed:=float ]:** to specify the factor scale of the arm speed (default is 1.0)
 
+![pick_place](screenshot/pick_place.png?raw=true "pick_place")
+
 
 ---
-## VSCode
+## **VSCode**
 I used these extensions:
 - **c/c++** by microsoft
 - **c/c++ snippets** by harsh
@@ -242,25 +234,22 @@ I used these extensions:
 
 
 The following commands are available:
-- **build** : build this package
-- **buildAndRun**: build this package and run the actual developing node
-- **controller**: run the node that launch rviz
-- **current_pose**: run the node that save current pose
-- **relative_move**: run the node that execute relative move
-- **absolute_move**: run the node execute abolute move
-- **relative_move**: run the node execute gripper move
-- **pick_place**: run the node that execute pick-and-place task
-- **format**: format sources with clang-format
-- **build_all**: build all packages
-- **clean_all**: clean all packages
+- **build** : builds this package
+- **buildAndRun**: builds this package and run the actual developing node
+- **simulation**: starts the node running RVIZ
+- **console**: starts the node that allows the Panda robot to perform simple tasks
+- **pick_place**: starts the node that perform pick-and-place task
+- **format**: formats the sources with clang-format
+- **build_all**: builds all packages
+- **clean_all**: cleans all packages
 
 
 ---
-## Author
+## **Author**
 
 **Enrico Sgarbanti** [@**Envq**](https://github.com/Envq)
 
 
-## License
+## **License**
 
 This project is licensed under the GPL v3 License - see the [LICENSE.md](LICENSE.md) file for details

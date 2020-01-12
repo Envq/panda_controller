@@ -1,6 +1,6 @@
 // PANDA CONTROLLER
 #include "data_manager.hpp"
-#include "my_exceptions.hpp"
+#include "exceptions.hpp"  //PCEXC
 #include "panda.hpp"
 
 // ROS
@@ -56,8 +56,7 @@ int main(int argc, char **argv) {
           node.getParam("gripper_force", GRIPPER_FORCE_DFLT) &&
           node.getParam("gripper_epsilon_inner", GRIPPER_EPSILON_INNER_DFLT) &&
           node.getParam("gripper_epsilon_outer", GRIPPER_EPSILON_OUTER_DFLT))) {
-        ROS_FATAL_STREAM(
-            my_exceptions::get_err_msg(NAME, "Can't get parameters"));
+        ROS_FATAL_STREAM(PCEXC::get_err_msg(NAME, "Can't get parameters"));
         ros::shutdown();
         return 0;
     }
@@ -81,11 +80,11 @@ int main(int argc, char **argv) {
                 std::getline(std::cin, command);  // Read stdin
                 run_command(panda, command);      // Perform task
 
-            } catch (const my_exceptions::panda_error &e) {
-                ROS_ERROR_STREAM(my_exceptions::get_err_msg(NAME, e.what()));
+            } catch (const PCEXC::panda_error &e) {
+                ROS_ERROR_STREAM(PCEXC::get_err_msg(NAME, e.what()));
 
-            } catch (const my_exceptions::data_manager_error &e) {
-                ROS_ERROR_STREAM(my_exceptions::get_err_msg(NAME, e.what()));
+            } catch (const PCEXC::data_manager_error &e) {
+                ROS_ERROR_STREAM(PCEXC::get_err_msg(NAME, e.what()));
             }
 
             std::cout << "\033[1;32m"
@@ -93,8 +92,8 @@ int main(int argc, char **argv) {
                       << "\033[0m" << std::endl
                       << std::endl;
         }
-    } catch (const my_exceptions::panda_error &e) {
-        ROS_FATAL_STREAM(my_exceptions::get_err_msg(NAME, e.what()));
+    } catch (const PCEXC::panda_error &e) {
+        ROS_FATAL_STREAM(PCEXC::get_err_msg(NAME, e.what()));
     }
 
 
@@ -163,8 +162,7 @@ void run_command(robot::Panda &panda, const std::string &command) {
                 << "Leggends:\n"
                 << " - [] indicates a parameter\n"
                 << " - () indicates a optional parameter with default "
-                   "value in "
-                   "launch file\n"
+                   "value in launch file\n"
                 << "Commands available:\n"
                 << " - help: to see the list of commands\n"
                 << " - quit: to close the node\n"
@@ -172,15 +170,12 @@ void run_command(robot::Panda &panda, const std::string &command) {
                 << " - save [(name)]: to save the current pose with the "
                    "specified name\n"
                 << " - move offset [x y z]: to move the arm along the "
-                   "x,y,z "
-                   "specified directions in meters\n"
+                   "x,y,z specified directions in meters\n"
                 << " - move pose [name]: to move the arm on the specified "
-                   "pose "
-                   "saved in database\n"
+                   "pose saved in database\n"
                 << " - move gripper [width (speed)]: to move the gripper "
-                   "fingers "
-                   "with the specified speed on the specified width from "
-                   "center\n"
+                   "fingers with the specified speed on the specified width "
+                   "from center\n"
                 << " - homing arm: to do the homing of the arm\n"
                 << " - homing gripper: to do the homing of the gripper\n"
                 << " - grasp [width (speed force epsilon_inner "
@@ -264,7 +259,7 @@ void run_command(robot::Panda &panda, const std::string &command) {
                     auto target_pose = data_manager::get_pose("ready");
                     ROS_INFO_STREAM("## MOVE TO POSE:\n" << target_pose);
                     panda.moveToPosition(target_pose);
-                } catch (const my_exceptions::data_manager_error &e) {
+                } catch (const PCEXC::data_manager_error &e) {
                     ROS_FATAL_STREAM("Invalid pose name: " << cmd[2]);
                 }
 
