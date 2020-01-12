@@ -10,7 +10,7 @@ struct scene_object {
 };
 
 // Return the absolute path from relative path
-std::string getPath(const std::string &RELATIVE_PATH);
+std::string get_path(const std::string &RELATIVE_PATH);
 
 // Create a scene object from object readed in data
 scene_object create_scene_object(const Json::Value &OBJECT);
@@ -27,17 +27,17 @@ void save_pose(const std::string &NAME, const geometry_msgs::Pose &POSE) {
     Json::StyledStreamWriter writer;
 
     // Get path
-    const std::string PATH = getPath(data_manager::POSES_RELATIVE);
+    const std::string PATH = get_path(data_manager::POSES_RELATIVE);
 
     try {
         // Init root
         file.open(PATH, std::ios::in);
-        if (file.is_open()) {
+        if (!file.fail()) {
             file >> root;
             file.close();
         }
 
-        // Update root
+        // Update root (or initialize it, if the stream has failed)
         root[NAME]["orientation"]["x"] = POSE.orientation.x;
         root[NAME]["orientation"]["y"] = POSE.orientation.y;
         root[NAME]["orientation"]["z"] = POSE.orientation.z;
@@ -46,13 +46,16 @@ void save_pose(const std::string &NAME, const geometry_msgs::Pose &POSE) {
         root[NAME]["position"]["y"] = POSE.position.y;
         root[NAME]["position"]["z"] = POSE.position.z;
 
-        // Save the pose
+        // Open file
         file.open(PATH, std::ios::out);
-        if (!file.is_open())
+
+        // Check if the file stream has failed
+        if (file.fail())
             throw my_exceptions::data_manager_error("save_pose()" +
                                                     my_exceptions::DIVISOR +
                                                     "Can't write on: " + PATH);
 
+        // Save the pose
         writer.write(file, root);
         file.close();
 
@@ -70,13 +73,13 @@ geometry_msgs::Pose get_pose(const std::string &NAME) {
     geometry_msgs::Pose pose;
 
     // Get path
-    const std::string PATH = getPath(data_manager::POSES_RELATIVE);
+    const std::string PATH = get_path(data_manager::POSES_RELATIVE);
 
     // Open file
     file.open(PATH, std::ios::in);
 
-    // Check if the file is correctly opened
-    if (!file.is_open())
+    // Check if the file stream has failed
+    if (file.fail())
         throw my_exceptions::data_manager_error(
             "get_pose()" + my_exceptions::DIVISOR + "Can't open:" + PATH);
 
@@ -120,13 +123,13 @@ moveit_msgs::PlanningScene get_scene(const std::string &NAME) {
     moveit_msgs::PlanningScene scene;
 
     // Get path
-    const std::string PATH = getPath(data_manager::SCENES_RELATIVE);
+    const std::string PATH = get_path(data_manager::SCENES_RELATIVE);
 
     // Open file
     file.open(PATH, std::ios::in);
 
-    // Check if the file is correctly opened
-    if (!file.is_open())
+    // Check if the file stream has failed
+    if (file.fail())
         throw my_exceptions::data_manager_error(
             "get_scene()" + my_exceptions::DIVISOR + "Can't open:" + PATH);
 
@@ -184,13 +187,13 @@ moveit_msgs::PlanningScene get_scene(const std::string &NAME) {
 
 //#############################################################################
 // PRIVATE FUNCTIONS IMPLEMENTATIONS ##########################################
-std::string getPath(const std::string &RELATIVE_PATH) {
+std::string get_path(const std::string &RELATIVE_PATH) {
     // Get package path
     auto PACKAGE_PATH = ros::package::getPath(data_manager::PACKAGE_NAME);
 
     if (PACKAGE_PATH.empty())
         throw my_exceptions::data_manager_error(
-            "getPath()" + my_exceptions::DIVISOR + "Package path not found");
+            "get_path()" + my_exceptions::DIVISOR + "Package path not found");
 
     // Return absolute path
     return PACKAGE_PATH + RELATIVE_PATH;

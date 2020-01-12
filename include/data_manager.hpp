@@ -29,8 +29,8 @@ namespace data_manager {
 // CONSTANTS ###################################################################
 const std::string PACKAGE_NAME = "panda_controller";
 const std::string FOLDER_NAME = "/data/";
-const std::string POSES_RELATIVE = "/data/poses.json";
-const std::string SCENES_RELATIVE = "/data/scenes.json";
+const std::string POSES_RELATIVE = FOLDER_NAME + "poses.json";
+const std::string SCENES_RELATIVE = FOLDER_NAME + "scenes.json";
 
 
 
