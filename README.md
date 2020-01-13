@@ -12,6 +12,7 @@ This is a set of utilities to control Panda Franka Emika using ROS and c++.
     * [data_manager](#data_manager)
     * [panda](#panda)
     * [excepions](#excepions)
+    * [colors](#colors)
 * [Data](#data)
 * [Examples](#examples)
     * [console](#console)
@@ -152,6 +153,9 @@ catkin build
 
 ### **exceptions**
 - All exceptions used are defined in this file.
+
+### **colors**
+- This file contains the definitions to modify the colors and format of the stdout. Wrap your output string with them.
 
 
 

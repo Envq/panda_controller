@@ -9,7 +9,7 @@
             "command": "roslaunch",
             "args": [
                 "${workspaceFolderBasename}",
-                "pick_place.launch"
+                "console.launch"
             ],
             "problemMatcher": [],
             "group": "build",

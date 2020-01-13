@@ -55,6 +55,7 @@ include_directories(
 set(TASK1 console)
 add_executable(${TASK1}  examples/${TASK1}.cpp
     src/data_manager.cpp
+    src/colors.cpp
     src/panda.cpp)
 target_link_libraries(${TASK1} ${catkin_LIBRARIES} ${JSONCPP_LIBRARIES})
 
@@ -62,5 +63,6 @@ target_link_libraries(${TASK1} ${catkin_LIBRARIES} ${JSONCPP_LIBRARIES})
 set(TASK2 pick_place)
 add_executable(${TASK2}  examples/${TASK2}.cpp
     src/data_manager.cpp
+    src/colors.cpp
     src/panda.cpp)
 target_link_libraries(${TASK2} ${catkin_LIBRARIES} ${JSONCPP_LIBRARIES})

@@ -1,4 +1,5 @@
 // PANDA CONTROLLER
+#include "colors.hpp"  //ROS_STRONG_INFO
 #include "data_manager.hpp"
 #include "exceptions.hpp"  //PCEXC
 #include "panda.hpp"
@@ -7,7 +8,8 @@
 #include <ros/ros.h>
 
 // BOOST
-#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string.hpp>  // split()
+#include <boost/shared_ptr.hpp>
 
 // C++
 #include <iostream>
@@ -16,7 +18,15 @@
 
 
 //#############################################################################
-// DEFAULT VALUES #############################################################
+// DEFAULT VALUES ##############################################################
+const int HISTORY_MAX_SIZE = 20;
+const auto FG_COLOR = Colors::FG_BLUE;
+const auto BG_COLOR = Colors::BG_BLACK;
+
+
+
+//#############################################################################
+// GLOBAL VALUES ##############################################################
 std::string POSE_NAME_DFLT;
 float GRIPPER_SPEED_DFLT, GRIPPER_FORCE_DFLT, GRIPPER_EPSILON_INNER_DFLT,
     GRIPPER_EPSILON_OUTER_DFLT;
@@ -34,6 +44,25 @@ void run_command(robot::Panda &panda, const std::string &command);
 
 
 //#############################################################################
+// PRIVATE CLASSES ############################################################
+// Manages history of commands
+class History {
+  private:
+    int max_size_;
+    std::vector<std::string> history_;
+    int cursor_;
+
+  public:
+    explicit History(const int &SIZE);
+    void setSize(const int &SIZE);
+    void add(const std::string &COMMAND);
+    std::string prev();
+    std::string next();
+};
+
+
+
+//#############################################################################
 // MAIN #######################################################################
 int main(int argc, char **argv) {
     // Get the file name
@@ -47,7 +76,7 @@ int main(int argc, char **argv) {
     ros::NodeHandle node("~");
     ros::AsyncSpinner spinner(1);
     spinner.start();
-    ROS_INFO_STREAM("## START: " << NAME);
+    ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "START NODE: ", NAME);
 
 
     // Extract the parameters
@@ -65,20 +94,27 @@ int main(int argc, char **argv) {
     // Task
     try {
         // Create class to manage the Panda arm
-        ROS_INFO("## INIT PANDA CONTROLLER");
+        ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "PANDA CONTROLLER INITIALIZATION");
         auto panda = robot::Panda();
 
         // Read command and performe task
+        int scan;
         std::string command;
-        ROS_INFO("Insert commands:");
+        boost::shared_ptr<History> cmd_history(
+            new History(HISTORY_MAX_SIZE));  // Create history
+        ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "INSERT COMMANDS:");
         while (command != "quit") {
-            std::cout << "\033[1;32m"
-                      << ">> "
-                      << "\033[0m";
+            std::cout << Colors::FG_GREEN << ">> " << Colors::FG_CYAN;
 
+            command = "";  // Reset command
             try {
-                std::getline(std::cin, command);  // Read stdin
-                run_command(panda, command);      // Perform task
+                // while ((scan = getchar()) != 10) {
+                //     command += scan;
+                // }
+                std::getline(std::cin, command);
+                std::cout << Colors::RESET;   // reset color
+                cmd_history->add(command);    // save command
+                run_command(panda, command);  // perform task
 
             } catch (const PCEXC::panda_error &e) {
                 ROS_ERROR_STREAM(PCEXC::get_err_msg(NAME, e.what()));
@@ -87,10 +123,9 @@ int main(int argc, char **argv) {
                 ROS_ERROR_STREAM(PCEXC::get_err_msg(NAME, e.what()));
             }
 
-            std::cout << "\033[1;32m"
-                      << "-------------------------------------"
-                      << "\033[0m" << std::endl
-                      << std::endl;
+            std::cout << Colors::FG_GREEN
+                      << "-------------------------------------\n"
+                      << Colors::RESET;
         }
     } catch (const PCEXC::panda_error &e) {
         ROS_FATAL_STREAM(PCEXC::get_err_msg(NAME, e.what()));
@@ -105,7 +140,7 @@ int main(int argc, char **argv) {
 
 
 //#############################################################################
-// PRIVATE FUNCTIONS IMPLEMENTATIONS
+// PRIVATE FUNCTIONS IMPLEMENTATIONS ##########################################
 bool is_number(const std::string &str) {
     // Check if is empty
     if (str.empty())
@@ -150,20 +185,22 @@ void run_command(robot::Panda &panda, const std::string &command) {
             if ((cmd.size() != 1))
                 throw std::invalid_argument(command);
 
-            ROS_INFO("## SELECTED QUIT");
+            ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "SELECTED QUIT");
 
             // CASE HELP
         } else if (cmd[0] == "help") {
             if ((cmd.size() != 1))
                 throw std::invalid_argument(command);
 
+            ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "SELECTED HELP");
             ROS_INFO_STREAM(
-                "## SELECTED HELP\n"
-                << "Leggends:\n"
-                << " - [] indicates a parameter\n"
+                Colors::BOLD_INTENSITY
+                << "\nLeggends:\n"
+                << Colors::INTENSITY_OFF << " - [] indicates a parameter\n"
                 << " - () indicates a optional parameter with default "
                    "value in launch file\n"
-                << "Commands available:\n"
+                << Colors::BOLD_INTENSITY << "Commands available:\n"
+                << Colors::INTENSITY_OFF
                 << " - help: to see the list of commands\n"
                 << " - quit: to close the node\n"
                 << " - speed [value]: to set the arm speed value\n"
@@ -186,14 +223,17 @@ void run_command(robot::Panda &panda, const std::string &command) {
             if ((cmd.size() != 2) || !is_number(cmd[1]))
                 throw std::invalid_argument(command);
 
+            ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "SELECTED HELP");
             float speed = std::stof(cmd[1]);
-            ROS_INFO_STREAM("## SET ARM SPEED TO: " << speed);
+            ROS_INFO_STREAM("Set arm speed to:" << speed);
             panda.setArmSpeed(speed);
 
             // CASE SAVE
         } else if (cmd[0] == "save") {
             if (cmd.size() > 2)
                 throw std::invalid_argument(command);
+
+            ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "SELECTED SAVE CURRENT POSE");
 
             std::string pose_name = (cmd.size() == 1) ? POSE_NAME_DFLT : cmd[1];
             auto pose = panda.getCurrentPose();
@@ -210,6 +250,7 @@ void run_command(robot::Panda &panda, const std::string &command) {
                     !is_number(cmd[3]) || !is_number(cmd[4]))
                     throw std::invalid_argument(command);
 
+                ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "SELECTED MOVE OFFSET");
                 float x = std::stof(cmd[2]);
                 float y = std::stof(cmd[3]);
                 float z = std::stof(cmd[4]);
@@ -217,18 +258,17 @@ void run_command(robot::Panda &panda, const std::string &command) {
                 target_pose.position.x += x;
                 target_pose.position.y += y;
                 target_pose.position.z += z;
-                ROS_INFO("## SELECTED OFFSET MODE");
-                ROS_INFO_STREAM("## MOVE TO POSE:\n" << target_pose);
+                ROS_INFO_STREAM("Move to pose:\n" << target_pose);
                 panda.moveToPosition(target_pose);
 
             } else if (cmd[1] == "pose") {
                 if (cmd.size() != 3)
                     throw std::invalid_argument(command);
 
-                ROS_INFO("## SELECTED POSE MODE");
-                ROS_INFO_STREAM("## GET POSE: " << cmd[2]);
+                ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "SELECTED MOVE TO POSE");
+                ROS_INFO_STREAM("Get pose: " << cmd[2]);
                 auto target_pose = data_manager::get_pose(cmd[2]);
-                ROS_INFO_STREAM("## MOVE TO POSE:\n" << target_pose);
+                ROS_INFO_STREAM("Move to pose:\n" << target_pose);
                 panda.moveToPosition(target_pose);
 
             } else if (cmd[1] == "gripper") {
@@ -237,11 +277,11 @@ void run_command(robot::Panda &panda, const std::string &command) {
                     (cmd.size() == 4 && !is_number(cmd[3])))
                     throw std::invalid_argument(command);
 
-                ROS_INFO("## SELECTED GRIPPER MODE");
+                ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "SELECTED GRIPPER MOVE");
                 float width = std::stof(cmd[2]);
                 float speed =
                     (cmd.size() == 3) ? GRIPPER_SPEED_DFLT : std::stof(cmd[3]);
-                ROS_INFO_STREAM("## MOVE GRIPPER TO: " << width);
+                ROS_INFO_STREAM("Move gripper to: " << width);
                 panda.gripperMove(width, speed);
 
             } else {
@@ -254,17 +294,17 @@ void run_command(robot::Panda &panda, const std::string &command) {
                 throw std::invalid_argument(command);
 
             if (cmd[1] == "arm") {
-                ROS_INFO("## SELECTED ARM MODE");
+                ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "SELECTED ARM HOMING");
                 try {
                     auto target_pose = data_manager::get_pose("ready");
-                    ROS_INFO_STREAM("## MOVE TO POSE:\n" << target_pose);
+                    ROS_INFO_STREAM("Move to pose:\n" << target_pose);
                     panda.moveToPosition(target_pose);
                 } catch (const PCEXC::data_manager_error &e) {
                     ROS_FATAL_STREAM("Invalid pose name: " << cmd[2]);
                 }
 
             } else if (cmd[1] == "gripper") {
-                ROS_INFO("## SELECTED GRIPPER MODE");
+                ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "SELECTED GRIPPER HOMING");
                 panda.gripperHoming();
 
             } else {
@@ -278,6 +318,7 @@ void run_command(robot::Panda &panda, const std::string &command) {
                                       is_number(cmd[4]) && is_number(cmd[5]))))
                 throw std::invalid_argument(command);
 
+            ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "SELECTED GRASP");
             float width = std::stof(cmd[1]);
             float speed, force, epsilon_inner, epsilon_outer;
             if (cmd.size() == 6) {
@@ -291,7 +332,7 @@ void run_command(robot::Panda &panda, const std::string &command) {
                 epsilon_inner = GRIPPER_EPSILON_INNER_DFLT;
                 epsilon_outer = GRIPPER_EPSILON_OUTER_DFLT;
             }
-            ROS_INFO_STREAM("## GRASP WITH:"
+            ROS_INFO_STREAM("With:"
                             << "\n - width: " << width << "\n - speed: "
                             << speed << "\n - force: " << force
                             << "\n - epsilon_inner: " << epsilon_inner
@@ -306,4 +347,47 @@ void run_command(robot::Panda &panda, const std::string &command) {
     } catch (const std::invalid_argument &e) {
         ROS_WARN_STREAM("invalid command: " << e.what());
     }
+}
+
+
+
+//#############################################################################
+// PRIVATE CLASSES IMPLEMENTATIONS ############################################
+History::History(const int &SIZE) {
+    max_size_ = SIZE;
+}
+
+void History::setSize(const int &SIZE) {
+    max_size_ = SIZE;
+}
+
+void History::add(const std::string &COMMAND) {
+    if (history_.size() >= max_size_)
+        history_.pop_back();      // Remove oldest value
+    history_.push_back(COMMAND);  // Add value
+    cursor_ = history_.size();    // Reset cursor
+}
+
+std::string History::prev() {
+    if (cursor_ == 0) {
+        cursor_ = -1;
+        return "";
+    }
+    if (cursor_ > 0) {
+        cursor_--;
+        return history_[cursor_];
+    }
+    return "history_err";
+}
+
+std::string History::next() {
+    if (cursor_ == static_cast<int>(history_.size() - 1)) {
+        cursor_ == history_.size();
+        return "";
+    }
+    if (cursor_ < static_cast<int>(history_.size() - 1)) {
+        cursor_++;
+        return history_[cursor_];
+    }
+    return "history_err";
 }

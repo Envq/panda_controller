@@ -68,6 +68,8 @@
         "memory_resource": "cpp",
         "optional": "cpp",
         "random": "cpp",
-        "set": "cpp"
+        "set": "cpp",
+        "future": "cpp",
+        "queue": "cpp"
     }
 }

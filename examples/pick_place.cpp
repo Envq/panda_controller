@@ -1,10 +1,18 @@
 // PANDA CONTROLLER
+#include "colors.hpp"  //ROS_STRONG_INFO
 #include "data_manager.hpp"
 #include "exceptions.hpp"  //PCEXC
 #include "panda.hpp"
 
 // ROS
 #include <ros/ros.h>
+
+
+
+//#############################################################################
+// DEFAULT VALUES ##############################################################
+const auto FG_COLOR = Colors::FG_BLUE;
+const auto BG_COLOR = Colors::BG_BLACK;
 
 
 
@@ -22,7 +30,7 @@ int main(int argc, char **argv) {
     ros::NodeHandle node("~");
     ros::AsyncSpinner spinner(1);
     spinner.start();
-    ROS_INFO_STREAM("## START: " << NAME);
+    ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "START NODE: ", NAME);
 
 
     // Extract the parameters
@@ -41,36 +49,40 @@ int main(int argc, char **argv) {
     // Task
     try {
         // Create class to manage the Panda arm
-        ROS_INFO("## INIT PANDA CONTROLLER");
+        ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "PANDA CONTROLLER INITIALIZATION");
         auto panda = robot::Panda();
 
         // Init scene
-        ROS_INFO("## INIT SCENE");
+        ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "SCENE INITIALIZATION");
         panda.setScene(data_manager::get_scene(SCENE_NAME));
         ros::WallDuration(1.0).sleep();
 
         // Set robot speed
-        ROS_INFO_STREAM("## SET ARM SPEED TO: " << SPEED);
+        ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "ARM SPEED ADJUSTAMENT");
+        ROS_INFO_STREAM("Speed setted to: " << SPEED);
         panda.setArmSpeed(SPEED);
 
         // Set robot speed
-        ROS_INFO_STREAM("## GRIPPER HOMING: ");
+        ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "GRIPPER HOMING");
         // panda.gripperHoming();
 
 
         // Pick and place
         // METHOD1 ************************************************************
-        // ROS_INFO_STREAM("## PICK OBJECT to pose: " << PICK_POSE_NAME);
+        // ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "PICKING OBJECT");
+        // ROS_INFO_STREAM("Pose object: " << PICK_POSE_NAME);
         // panda.pick(data_manager::get_pose(PICK_POSE_NAME), 0.02);
         // ros::WallDuration(1.0).sleep();
 
-        // ROS_INFO("## PLACE OBJECT");
+        // ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "OBJECT PLACING");
+        // ROS_INFO_STREAM("Place-Pose object: " << PLACE_POSE_NAME);
         // panda.place(data_manager::get_pose(PLACE_POSE_NAME));
         // ros::WallDuration(1.0).sleep();
 
 
         // METHOD2 ************************************************************
-        ROS_INFO_STREAM("## PICK OBJECT TO POSE: " << PICK_POSE_NAME);
+        ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "OBJECT PICKING");
+        ROS_INFO_STREAM("Pick-Pose object: " << PICK_POSE_NAME);
         geometry_msgs::Vector3 PRE_GRASP_APPROCH;
         PRE_GRASP_APPROCH.x = 0.0;
         PRE_GRASP_APPROCH.y = 0.0;
@@ -79,7 +91,8 @@ int main(int argc, char **argv) {
                    PRE_GRASP_APPROCH);
         ros::WallDuration(1.0).sleep();
 
-        ROS_INFO_STREAM("## PLACE OBJECT TO POSE:" << PLACE_POSE_NAME);
+        ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "OBJECT PLACING");
+        ROS_INFO_STREAM("Place-Pose object: " << PLACE_POSE_NAME);
         geometry_msgs::Vector3 POST_GRASP_RETREAT;
         POST_GRASP_RETREAT.x = 0.0;
         POST_GRASP_RETREAT.y = 0.0;
