@@ -17,7 +17,7 @@
     <depend>moveit_ros_planning_interface</depend>
     <depend>actionlib_msgs</depend>
     <depend>actionlib</depend>
-    <depend>franka_gripper</depend>
+    <!-- <depend>franka_gripper</depend> -->
 
     <!-- The export tag contains other, unspecified, tags -->
     <export>

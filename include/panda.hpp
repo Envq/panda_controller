@@ -56,7 +56,7 @@ typedef actionlib::SimpleActionClient<franka_gripper::GraspAction>
 // Class to easily manage the Panda arm with moveit
 class Panda {
   private:
-    moveit::planning_interface::MoveGroupInterfacePtr arm_group_ptr_;
+    moveit::planning_interface::MoveGroupInterfacePtr move_group_ptr_;
     moveit::planning_interface::PlanningSceneInterfacePtr planning_scene_ptr_;
     boost::shared_ptr<GripperHomingClient> gripper_homing_client_ptr_;
     boost::shared_ptr<GripperMoveClient> gripper_move_client_ptr_;
@@ -81,6 +81,18 @@ class Panda {
     // Move to the position pose
     void moveToPosition(const geometry_msgs::Pose &POSE,
                         const bool &PLAN_ONLY = false);
+
+    // Move in cartesian path
+    void cartesianMovement(const std::vector<geometry_msgs::Pose> &WAYPOINTS,
+                           const double &STEP = 0.01,
+                           const double &JUMP_THRESHOLD = 0.0,
+                           const bool &PLAN_ONLY = false);
+
+    // Move in cartesian path in only one waypoint
+    void cartesianMovement(const geometry_msgs::Pose &POSE,
+                           const double &STEP = 0.01,
+                           const double &JUMP_THRESHOLD = 0.0,
+                           const bool &PLAN_ONLY = false);
 
     // Perfom pick without constraints
     void pick(const geometry_msgs::Pose &POSE, const float &WIDTH,

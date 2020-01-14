@@ -18,7 +18,7 @@ namespace robot {
 Panda::Panda(const bool &HOMING_STARTUP) {
     // Init MoveGroupInterface with arm
     try {
-        arm_group_ptr_.reset(
+        move_group_ptr_.reset(
             new moveit::planning_interface::MoveGroupInterface("panda_arm"));
 
     } catch (const std::runtime_error &e) {
@@ -69,12 +69,12 @@ Panda::Panda(const bool &HOMING_STARTUP) {
 
 
 geometry_msgs::Pose Panda::getCurrentPose() {
-    return arm_group_ptr_->getCurrentPose().pose;
+    return move_group_ptr_->getCurrentPose().pose;
 }
 
 
 void Panda::setArmSpeed(const float &SPEED) {
-    arm_group_ptr_->setMaxVelocityScalingFactor(SPEED);
+    move_group_ptr_->setMaxVelocityScalingFactor(SPEED);
 }
 
 
@@ -92,20 +92,57 @@ void Panda::resetScene() {
 void Panda::moveToPosition(const geometry_msgs::Pose &POSE,
                            const bool &PLAN_ONLY) {
     // Set the target Pose
-    arm_group_ptr_->setPoseTarget(POSE);
+    move_group_ptr_->setPoseTarget(POSE);
 
     // Perform the planning
     moveit::planning_interface::MoveGroupInterface::Plan plan;
-    auto res = arm_group_ptr_->plan(plan);
+    auto res = move_group_ptr_->plan(plan);
 
     // State of planning check
     if (res != moveit::planning_interface::MoveItErrorCode::SUCCESS)
         throw PCEXC::panda_arm_error("Panda::moveToPosition()" +
-                                     PCEXC::DIVISOR + "Planning failure");
+                                     PCEXC::DIVISOR + "plan()" +
+                                     PCEXC::DIVISOR + "failure");
 
     // Execute the move
     if (!PLAN_ONLY)
-        arm_group_ptr_->move();
+        move_group_ptr_->move();
+}
+
+
+void Panda::cartesianMovement(const std::vector<geometry_msgs::Pose> &WAYPOINTS,
+                              const double &STEP, const double &JUMP_THRESHOLD,
+                              const bool &PLAN_ONLY) {
+    moveit_msgs::RobotTrajectory trajectory;
+    double fraction = move_group_ptr_->computeCartesianPath(
+        WAYPOINTS, STEP, JUMP_THRESHOLD, trajectory);
+
+    // Check Errors
+    if (fraction == -1)
+        throw PCEXC::panda_arm_error("Panda::moveInCartesian()" +
+                                     PCEXC::DIVISOR + "computeCartesianPath()" +
+                                     PCEXC::DIVISOR + "failure");
+    if (fraction != 1)
+        throw PCEXC::panda_arm_error(
+            "Panda::moveInCartesian()" + PCEXC::DIVISOR +
+            "computeCartesianPath()" + PCEXC::DIVISOR + "failure: only " +
+            std::to_string(fraction * 100) + "% completed");
+
+    // Execute the move
+    if (!PLAN_ONLY) {
+        moveit::planning_interface::MoveGroupInterface::Plan plan;
+        plan.trajectory_ = trajectory;
+        move_group_ptr_->execute(plan);
+    }
+}
+
+
+void Panda::cartesianMovement(const geometry_msgs::Pose &POSE,
+                              const double &STEP, const double &JUMP_THRESHOLD,
+                              const bool &PLAN_ONLY) {
+    std::vector<geometry_msgs::Pose> waypoint;
+    waypoint.push_back(POSE);
+    cartesianMovement(waypoint, STEP, JUMP_THRESHOLD, PLAN_ONLY);
 }
 
 
@@ -137,7 +174,7 @@ void Panda::pick(const geometry_msgs::Pose &POSE, const float &WIDTH,
                  const bool &PLAN_ONLY) {
     try {
         // Open gripper
-        // gripperMove(robot::GRIPPER_MAX_WIDTH);
+        gripperMove(robot::GRIPPER_MAX_WIDTH);
 
         // Get pre-grasp-approch pose
         auto pre_pose = POSE;
@@ -149,10 +186,10 @@ void Panda::pick(const geometry_msgs::Pose &POSE, const float &WIDTH,
         moveToPosition(pre_pose);
 
         // Move to pose
-        moveToPosition(POSE);  // MoveLinear()
+        cartesianMovement(POSE);
 
         // Close gripper
-        // gripperGrasp(WIDTH);
+        gripperGrasp(WIDTH);
 
     } catch (PCEXC::panda_arm_error &e) {
         throw PCEXC::panda_arm_error("Panda::pick()" + PCEXC::DIVISOR + "" +
@@ -196,13 +233,13 @@ void Panda::place(const geometry_msgs::Pose &POSE,
         PGR_pose.position.z += POST_GRASP_RETREAT.z;
 
         // Move to post-grasp-retrait pose
-        moveToPosition(PGR_pose);  // MoveLinear()
+        cartesianMovement(PGR_pose);
 
         // Move arm
         moveToPosition(POSE);
 
         // Open gripper
-        // gripperMove(robot::GRIPPER_MAX_WIDTH);
+        gripperMove(robot::GRIPPER_MAX_WIDTH);
 
         // Get post-place-retrait pose
         auto PPR_pose = getCurrentPose();
@@ -211,7 +248,7 @@ void Panda::place(const geometry_msgs::Pose &POSE,
         PPR_pose.position.z += POST_PLACE_RETREAT.z;
 
         // Move to post-place-retrait pose
-        moveToPosition(PPR_pose);  // MoveLinear()
+        cartesianMovement(PPR_pose);
 
     } catch (PCEXC::panda_arm_error &e) {
         throw PCEXC::panda_arm_error("Panda::place() >>" +

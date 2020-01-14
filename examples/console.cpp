@@ -259,7 +259,7 @@ void run_command(robot::Panda &panda, const std::string &command) {
                 target_pose.position.y += y;
                 target_pose.position.z += z;
                 ROS_INFO_STREAM("Move to pose:\n" << target_pose);
-                panda.moveToPosition(target_pose);
+                panda.cartesianMovement(target_pose);
 
             } else if (cmd[1] == "pose") {
                 if (cmd.size() != 3)

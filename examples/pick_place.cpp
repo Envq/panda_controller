@@ -64,7 +64,7 @@ int main(int argc, char **argv) {
 
         // Set robot speed
         ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "GRIPPER HOMING");
-        // panda.gripperHoming();
+        panda.gripperHoming();
 
 
         // Pick and place
