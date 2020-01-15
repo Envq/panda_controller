@@ -59,8 +59,9 @@ Panda::Panda(const bool &HOMING_STARTUP) {
                                  "action clients for franka_gripper");
     }
 
-    // Set default arm speed
+    // Set default speeds
     setArmSpeed(robot::DEFAULT_ARM_SPEED);
+    gripper_speed_ = robot::DEFAULT_GRIPPER_SPEED;
 
     // Homing gripper
     if (HOMING_STARTUP)
@@ -75,6 +76,11 @@ geometry_msgs::Pose Panda::getCurrentPose() {
 
 void Panda::setArmSpeed(const float &SPEED) {
     move_group_ptr_->setMaxVelocityScalingFactor(SPEED);
+}
+
+
+void Panda::setGripperSpeed(const float &SPEED) {
+    gripper_speed_ = SPEED;
 }
 
 
@@ -146,17 +152,19 @@ void Panda::cartesianMovement(const geometry_msgs::Pose &POSE,
 }
 
 
-void Panda::pick(const geometry_msgs::Pose &POSE, const float &WIDTH,
-                 const bool &PLAN_ONLY) {
+void Panda::pick(const geometry_msgs::Pose &POSE, const float &GRASP_WIDTH,
+                 const float &GRASP_FORCE, const float &GRASP_EPSILON_INNER,
+                 const float &GRASP_EPSILON_OUTER, const bool &PLAN_ONLY) {
     try {
         // Open gripper
-        gripperMove(robot::GRIPPER_MAX_WIDTH);
+        gripperMove(robot::GRIPPER_MAX_WIDTH);  // needs real robot
 
         // Move arm
         moveToPosition(POSE);
 
         // Close gripper
-        gripperGrasp(WIDTH);
+        gripperGrasp(GRASP_WIDTH, GRASP_FORCE, GRASP_EPSILON_INNER,
+                     GRASP_EPSILON_OUTER);  // needs real robot
 
     } catch (PCEXC::panda_arm_error &e) {
         throw PCEXC::panda_arm_error("Panda::pick()" + PCEXC::DIVISOR + "" +
@@ -169,12 +177,14 @@ void Panda::pick(const geometry_msgs::Pose &POSE, const float &WIDTH,
 }
 
 
-void Panda::pick(const geometry_msgs::Pose &POSE, const float &WIDTH,
+void Panda::pick(const geometry_msgs::Pose &POSE,
                  const geometry_msgs::Vector3 &PRE_GRASP_APPROCH,
-                 const bool &PLAN_ONLY) {
+                 const float &GRASP_WIDTH, const float &GRASP_FORCE,
+                 const float &GRASP_EPSILON_INNER,
+                 const float &GRASP_EPSILON_OUTER, const bool &PLAN_ONLY) {
     try {
         // Open gripper
-        gripperMove(robot::GRIPPER_MAX_WIDTH);
+        gripperMove(robot::GRIPPER_MAX_WIDTH);  // needs real robot
 
         // Get pre-grasp-approch pose
         auto pre_pose = POSE;
@@ -189,7 +199,52 @@ void Panda::pick(const geometry_msgs::Pose &POSE, const float &WIDTH,
         cartesianMovement(POSE);
 
         // Close gripper
-        gripperGrasp(WIDTH);
+        gripperGrasp(GRASP_WIDTH, GRASP_FORCE, GRASP_EPSILON_INNER,
+                     GRASP_EPSILON_OUTER);  // needs real robot
+
+    } catch (PCEXC::panda_arm_error &e) {
+        throw PCEXC::panda_arm_error("Panda::pick()" + PCEXC::DIVISOR + "" +
+                                     std::string(e.what()));
+
+    } catch (PCEXC::panda_gripper_error &e) {
+        throw PCEXC::panda_gripper_error("Panda::place() >>" +
+                                         std::string(e.what()));
+    }
+}
+
+
+void Panda::pick(const geometry_msgs::Pose &POSE,
+                 const std::string &OBJECT_NAME, const float &GRASP_FORCE,
+                 const float &GRASP_EPSILON_INNER,
+                 const float &GRASP_EPSILON_OUTER, const bool &PLAN_ONLY) {
+    try {
+        // Open gripper
+        gripperMove(robot::GRIPPER_MAX_WIDTH);  // needs real robot
+
+        // Move arm
+        moveToPosition(POSE);
+
+        // Check if object exist
+        bool exist = false;
+        for (auto e : planning_scene_ptr_->getObjects()) {
+            if (e.first == OBJECT_NAME)
+                exist = true;
+        }
+
+        // Exit if object not exist
+        if (!exist)
+            throw PCEXC::panda_arm_error("'" + OBJECT_NAME + "' not exists");
+
+        // Attach object
+        move_group_ptr_->attachObject(OBJECT_NAME,
+                                      move_group_ptr_->getEndEffectorLink());
+
+        // Get size object
+        float size = get_size_object(planning_scene_ptr_, OBJECT_NAME);
+
+        // Close gripper
+        gripperGrasp(size, GRASP_FORCE, GRASP_EPSILON_INNER,
+                     GRASP_EPSILON_OUTER);  // needs real robot
 
     } catch (PCEXC::panda_arm_error &e) {
         throw PCEXC::panda_arm_error("Panda::pick()" + PCEXC::DIVISOR + "" +
@@ -207,8 +262,11 @@ void Panda::place(const geometry_msgs::Pose &POSE, const bool &PLAN_ONLY) {
         // Move arm
         moveToPosition(POSE);
 
+        // Detach objects
+        move_group_ptr_->detachObject(move_group_ptr_->getEndEffectorLink());
+
         // Open gripper
-        gripperMove(robot::GRIPPER_MAX_WIDTH);
+        gripperMove(robot::GRIPPER_MAX_WIDTH);  // needs real robot
 
     } catch (PCEXC::panda_arm_error &e) {
         throw PCEXC::panda_arm_error("Panda::place() >>" +
@@ -239,7 +297,7 @@ void Panda::place(const geometry_msgs::Pose &POSE,
         moveToPosition(POSE);
 
         // Open gripper
-        gripperMove(robot::GRIPPER_MAX_WIDTH);
+        gripperMove(robot::GRIPPER_MAX_WIDTH);  // needs real robot
 
         // Get post-place-retrait pose
         auto PPR_pose = getCurrentPose();
@@ -261,7 +319,7 @@ void Panda::place(const geometry_msgs::Pose &POSE,
 }
 
 
-void Panda::gripperHoming() {
+void Panda::gripperHoming() {  // needs real robot
     // Check if server is connected
     if (!gripper_homing_client_ptr_->isServerConnected()) {
         throw PCEXC::panda_gripper_error(
@@ -289,7 +347,7 @@ void Panda::gripperHoming() {
 }
 
 
-void Panda::gripperMove(const float &WIDTH, const float &SPEED) {
+void Panda::gripperMove(const float &WIDTH) {  // needs real robot
     // Check if server is connected
     if (!gripper_homing_client_ptr_->isServerConnected()) {
         throw PCEXC::panda_gripper_error(
@@ -307,7 +365,7 @@ void Panda::gripperMove(const float &WIDTH, const float &SPEED) {
     // Create move goal
     auto goal = franka_gripper::MoveGoal();
     goal.width = WIDTH;
-    goal.speed = SPEED;
+    goal.speed = gripper_speed_;
     gripper_move_client_ptr_->sendGoal(goal);
 
     // Wait for result
@@ -319,9 +377,9 @@ void Panda::gripperMove(const float &WIDTH, const float &SPEED) {
 }
 
 
-void Panda::gripperGrasp(const float &WIDTH, const float &SPEED,
-                         const float &FORCE, const float &EPSILON_INNER,
-                         const float &EPSILON_OUTER) {
+void Panda::gripperGrasp(const float &WIDTH, const float &FORCE,
+                         const float &EPSILON_INNER,
+                         const float &EPSILON_OUTER) {  // needs real robot
     // Check if server is connected
     if (!gripper_homing_client_ptr_->isServerConnected()) {
         throw PCEXC::panda_gripper_error(
@@ -339,7 +397,7 @@ void Panda::gripperGrasp(const float &WIDTH, const float &SPEED,
     // Create move goal
     auto goal = franka_gripper::GraspGoal();
     goal.width = WIDTH;
-    goal.speed = SPEED;
+    goal.speed = gripper_speed_;
     goal.force = FORCE;
     goal.epsilon.inner = EPSILON_INNER;
     goal.epsilon.outer = EPSILON_OUTER;

@@ -27,8 +27,7 @@ const auto BG_COLOR = Colors::BG_BLACK;
 
 //#############################################################################
 // GLOBAL VALUES ##############################################################
-std::string POSE_NAME_DFLT;
-float GRIPPER_SPEED_DFLT, GRIPPER_FORCE_DFLT, GRIPPER_EPSILON_INNER_DFLT,
+float GRIPPER_FORCE_DFLT, GRIPPER_EPSILON_INNER_DFLT,
     GRIPPER_EPSILON_OUTER_DFLT;
 
 
@@ -80,9 +79,7 @@ int main(int argc, char **argv) {
 
 
     // Extract the parameters
-    if (!(node.getParam("pose_name", POSE_NAME_DFLT) &&
-          node.getParam("gripper_speed", GRIPPER_SPEED_DFLT) &&
-          node.getParam("gripper_force", GRIPPER_FORCE_DFLT) &&
+    if (!(node.getParam("gripper_force", GRIPPER_FORCE_DFLT) &&
           node.getParam("gripper_epsilon_inner", GRIPPER_EPSILON_INNER_DFLT) &&
           node.getParam("gripper_epsilon_outer", GRIPPER_EPSILON_OUTER_DFLT))) {
         ROS_FATAL_STREAM(PCEXC::get_err_msg(NAME, "Can't get parameters"));
@@ -205,7 +202,8 @@ void run_command(robot::Panda &panda, const std::string &command) {
                 << " - quit: to close the node.\n"
                 << " - load [scene]: to load specified scene.\n"
                 << " - load reset to reset scene.\n"
-                << " - speed [value]: to set the arm speed value.\n"
+                << " - speed arm [value]: to set the arm speed value.\n"
+                << " - speed gripper [value]: to set the gripper speed value.\n"
                 << " - save [(name)]: to save the current pose with the "
                    "specified name.\n"
                 << " - move offset [x y z]: to move the arm along the "
@@ -237,13 +235,29 @@ void run_command(robot::Panda &panda, const std::string &command) {
 
             // CASE SPEED
         } else if (cmd[0] == "speed") {
-            if ((cmd.size() != 2) || !is_number(cmd[1]))
+            if (cmd.size() < 2)
                 throw std::invalid_argument(command);
 
-            ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "SELECTED HELP");
-            float speed = std::stof(cmd[1]);
-            ROS_INFO_STREAM("Set arm speed to:" << speed);
-            panda.setArmSpeed(speed);
+            if (cmd[1] == "arm") {
+                if ((cmd.size() != 3) || !is_number(cmd[2]))
+                    throw std::invalid_argument(command);
+
+                ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "SELECTED ARM SPEED");
+                float speed = std::stof(cmd[2]);
+                ROS_INFO_STREAM("Set arm speed to:" << speed);
+                panda.setArmSpeed(speed);
+
+            } else if (cmd[1] == "gripper") {
+                if ((cmd.size() != 3) || !is_number(cmd[2]))
+                    throw std::invalid_argument(command);
+
+                ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "SELECTED GRIPPER SPEED");
+                float speed = std::stof(cmd[2]);
+                ROS_INFO_STREAM("Set gripper speed to:" << speed);
+                panda.setGripperSpeed(speed);
+            } else {
+                throw std::invalid_argument(command);
+            }
 
             // CASE SAVE
         } else if (cmd[0] == "save") {
@@ -251,11 +265,14 @@ void run_command(robot::Panda &panda, const std::string &command) {
                 throw std::invalid_argument(command);
 
             ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "SELECTED SAVE CURRENT POSE");
-
-            std::string pose_name = (cmd.size() == 1) ? POSE_NAME_DFLT : cmd[1];
             auto pose = panda.getCurrentPose();
-            ROS_INFO_STREAM("## SAVE POSE: " << pose_name << std::endl << pose);
-            data_manager::save_pose(pose_name, pose);
+            ROS_INFO_STREAM("Save pose:\n" << pose);
+            if (cmd.size() == 2) {
+                std::string pose_name = cmd[1];
+                data_manager::save_pose(pose, pose_name);
+            } else {
+                data_manager::save_pose(pose);
+            }
 
             // CASE MOVE
         } else if (cmd[0] == "move") {
@@ -289,17 +306,14 @@ void run_command(robot::Panda &panda, const std::string &command) {
                 panda.moveToPosition(target_pose);
 
             } else if (cmd[1] == "gripper") {
-                if ((cmd.size() != 3 && cmd.size() != 4) ||
-                    !is_number(cmd[2]) ||
-                    (cmd.size() == 4 && !is_number(cmd[3])))
+                if (cmd.size() != 3 || !is_number(cmd[2]))
                     throw std::invalid_argument(command);
 
                 ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "SELECTED GRIPPER MOVE");
                 float width = std::stof(cmd[2]);
-                float speed =
-                    (cmd.size() == 3) ? GRIPPER_SPEED_DFLT : std::stof(cmd[3]);
+                float speed = std::stof(cmd[3]);
                 ROS_INFO_STREAM("Move gripper to: " << width);
-                panda.gripperMove(width, speed);
+                panda.gripperMove(width);
 
             } else {
                 throw std::invalid_argument(command);
@@ -326,21 +340,19 @@ void run_command(robot::Panda &panda, const std::string &command) {
 
             // CASE GRASP
         } else if (cmd[0] == "grasp") {
-            if ((cmd.size() != 2 && cmd.size() != 6) || !is_number(cmd[1]) ||
-                (cmd.size() == 6 && !(is_number(cmd[2]) && is_number(cmd[3]) &&
-                                      is_number(cmd[4]) && is_number(cmd[5]))))
+            if ((cmd.size() != 2 && cmd.size() != 5) || !is_number(cmd[1]) ||
+                (cmd.size() == 5 && !(is_number(cmd[2]) && is_number(cmd[3]) &&
+                                      is_number(cmd[4]))))
                 throw std::invalid_argument(command);
 
             ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "SELECTED GRASP");
             float width = std::stof(cmd[1]);
             float speed, force, epsilon_inner, epsilon_outer;
-            if (cmd.size() == 6) {
-                speed = std::stof(cmd[2]);
-                force = std::stof(cmd[3]);
-                epsilon_inner = std::stof(cmd[4]);
-                epsilon_outer = std::stof(cmd[5]);
+            if (cmd.size() == 5) {
+                force = std::stof(cmd[2]);
+                epsilon_inner = std::stof(cmd[3]);
+                epsilon_outer = std::stof(cmd[4]);
             } else {
-                speed = GRIPPER_SPEED_DFLT;
                 force = GRIPPER_FORCE_DFLT;
                 epsilon_inner = GRIPPER_EPSILON_INNER_DFLT;
                 epsilon_outer = GRIPPER_EPSILON_OUTER_DFLT;
@@ -350,8 +362,7 @@ void run_command(robot::Panda &panda, const std::string &command) {
                             << speed << "\n - force: " << force
                             << "\n - epsilon_inner: " << epsilon_inner
                             << "\n - epsilon_outer: " << epsilon_outer);
-            panda.gripperGrasp(width, speed, force, epsilon_inner,
-                               epsilon_outer);
+            panda.gripperGrasp(width, force, epsilon_inner, epsilon_outer);
 
         } else {
             throw std::invalid_argument(command);

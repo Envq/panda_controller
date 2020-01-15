@@ -21,7 +21,7 @@ scene_object create_scene_object(const Json::Value &OBJECT);
 // PUBLIC FUNCTIONS IMPLEMENTATION ############################################
 namespace data_manager {
 
-void save_pose(const std::string &NAME, const geometry_msgs::Pose &POSE) {
+void save_pose(const geometry_msgs::Pose &POSE, const std::string &NAME) {
     std::fstream file;
     Json::Value root;
     Json::StyledStreamWriter writer;

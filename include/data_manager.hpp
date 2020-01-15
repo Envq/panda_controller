@@ -38,7 +38,8 @@ const std::string SCENES_RELATIVE = FOLDER_NAME + "scenes.json";
 // FUNCTIONS INTERFACE ########################################################
 
 // Save the pose with name
-void save_pose(const std::string &NAME, const geometry_msgs::Pose &POSE);
+void save_pose(const geometry_msgs::Pose &POSE,
+               const std::string &NAME = "current");
 
 
 // Get the pose indicated

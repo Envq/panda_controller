@@ -4,6 +4,11 @@
         "/opt/ros/melodic/lib/python2.7/dist-packages",
         "/opt/ros/kinetic/lib/python2.7/dist-packages"
     ],
+    "files.watcherExclude": {
+        "**/.git/objects/**": true,
+        "**/.git/subtree-cache/**": true,
+        "**/node_modules/**": true
+    },
     "files.associations": {
         "array": "cpp",
         "string": "cpp",

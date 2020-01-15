@@ -1,8 +1,6 @@
 <launch>
     <node name="panda_console" pkg="panda_controller" 
     type="console" respawn="false" output="screen">
-        <param name="pose_name" value="current"/>
-        <param name="gripper_speed" value="0.1"/>
         <param name="gripper_force" value="20.0"/>
         <param name="gripper_epsilon_inner" value="0.002"/>
         <param name="gripper_epsilon_outer" value="0.002"/>

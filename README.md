@@ -192,7 +192,8 @@ This node is a console for performing these simple tasks:
 - **quit:** to close the node.
 - **load [scene]:** to load specified scene.
 - **load reset:** to reset scene.
-- **speed [value]:** to set the arm speed value.
+- **speed arm [value]:** to set the arm speed value.
+- **speed gripper [value]:** to set the gripper speed value.
 - **save [(name)]:** to save the current pose with the specified name.
 - **move offset [x y z]:** to move the arm along the x,y,z specified directions in meters.
 - **move pose [name]:** to move the arm on the specified pose saved in database.

@@ -86,8 +86,10 @@ template<typename... TArgs>  // variadic typename
 void ROS_STRONG_INFO(const Colors::Code &COLOR_FG, const Colors::Code &COLOR_BG,
                      TArgs... args) {
     std::stringstream ss;
+    ss << Colors::BOLD_INTENSITY;
     ss << COLOR_FG;
     ss << COLOR_BG;
+    ss << "## ";
     (ss << ... << args);
     ss << Colors::RESET;
     ROS_INFO_STREAM(ss.str());

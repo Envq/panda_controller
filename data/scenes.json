@@ -42,7 +42,163 @@
             "position": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": -0.015
+                "z": -0.016
+            },
+            "orientation": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        {
+            "name": "shield_bottom",
+            "type": "box",
+            "color": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 0.3
+            },
+            "dimensions": {
+                "x": 0.02,
+                "y": 0.6,
+                "z": 1.0
+            },
+            "position": {
+                "x": -0.25,
+                "y": 0.0,
+                "z": 0.5
+            },
+            "orientation": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        {
+            "name": "shield_left",
+            "type": "box",
+            "color": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 0.3
+            },
+            "dimensions": {
+                "x": 1.2,
+                "y": 0.02,
+                "z": 1.0
+            },
+            "position": {
+                "x": 0.35,
+                "y": 0.3,
+                "z": 0.5
+            },
+            "orientation": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        {
+            "name": "shield_right",
+            "type": "box",
+            "color": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 0.3
+            },
+            "dimensions": {
+                "x": 1.2,
+                "y": 0.02,
+                "z": 1.0
+            },
+            "position": {
+                "x": 0.35,
+                "y": -0.3,
+                "z": 0.5
+            },
+            "orientation": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        }
+    ],
+    "pick_place2": [
+        {
+            "name": "object",
+            "type": "cylinder",
+            "color": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 1.0
+            },
+            "dimensions": {
+                "h": 0.16,
+                "r": 0.01
+            },
+            "position": {
+                "x": 0.44,
+                "y": 0.0,
+                "z": 0.12
+            },
+            "orientation": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        {
+            "name": "surface",
+            "type": "cylinder",
+            "color": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 1.0
+            },
+            "dimensions": {
+                "h": 0.04,
+                "r": 0.35
+            },
+            "position": {
+                "x": 0.5,
+                "y": 0.0,
+                "z": 0.02
+            },
+            "orientation": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        {
+            "name": "table",
+            "type": "box",
+            "color": {
+                "r": 0.6,
+                "g": 0.4,
+                "b": 0.2,
+                "a": 1.0
+            },
+            "dimensions": {
+                "x": 1.6,
+                "y": 1.6,
+                "z": 0.03
+            },
+            "position": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": -0.016
             },
             "orientation": {
                 "w": 1.0,
