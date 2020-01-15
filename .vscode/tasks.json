@@ -35,6 +35,34 @@
             }
         },
         {
+            "label": "teleop_listener",
+            "type": "shell",
+            "command": "roslaunch",
+            "args": [
+                "${workspaceFolderBasename}",
+                "teleop_listener.launch"
+            ],
+            "problemMatcher": [],
+            "group": "none",
+            "presentation": {
+                "focus": true
+            }
+        },
+        {
+            "label": "teleop_talker",
+            "type": "shell",
+            "command": "roslaunch",
+            "args": [
+                "${workspaceFolderBasename}",
+                "teleop_talker.launch"
+            ],
+            "problemMatcher": [],
+            "group": "none",
+            "presentation": {
+                "focus": true
+            }
+        },
+        {
             "label": "console",
             "type": "shell",
             "command": "roslaunch",

@@ -210,12 +210,12 @@ void run_command(robot::Panda &panda, const std::string &command) {
                    "x,y,z specified directions in meters.\n"
                 << " - move pose [name]: to move the arm on the specified "
                    "pose saved in database.\n"
-                << " - move gripper [width (speed)]: to move the gripper "
+                << " - move gripper [width]: to move the gripper "
                    "fingers with the specified speed on the specified width "
                    "from center.\n"
                 << " - homing arm: to perform the homing of the arm.\n"
                 << " - homing gripper: to perform the homing of the gripper.\n"
-                << " - grasp [width (speed force epsilon_inner "
+                << " - grasp [width (force epsilon_inner "
                    "epsilon_outer)]: to perform the grasping.");
 
             // CASE SCENE

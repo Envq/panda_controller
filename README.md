@@ -17,6 +17,7 @@ This is a set of utilities to control Panda Franka Emika using ROS and c++.
 * [Examples](#examples)
     * [console](#console)
     * [pick_place](#pick_place)
+    * [teleop](#teleop)
 * [Visual Studio Code](#vscode)
 * [Author](#author)
 * [License](#license)
@@ -197,10 +198,10 @@ This node is a console for performing these simple tasks:
 - **save [(name)]:** to save the current pose with the specified name.
 - **move offset [x y z]:** to move the arm along the x,y,z specified directions in meters.
 - **move pose [name]:** to move the arm on the specified pose saved in database.
-- **move gripper [width (speed)]:** to move the gripper fingers with the specified speed on the specified width from center.
+- **move gripper [width]:** to move the gripper fingers with the specified speed on the specified width from center.
 - **homing arm:** to perform the homing of the arm.
 - **homing gripper:** to perform the homing of the gripper.
-- **grasp [width (speed force epsilon_inner epsilon_outer)]:** to perform the grasping.
+- **grasp [width (force epsilon_inner epsilon_outer)]:** to perform the grasping.
 
 **Leggends:**
 - [] indicates a parameter.
@@ -212,15 +213,50 @@ This node is a console for performing these simple tasks:
 
  ### **- pick_place**
 
-This node execute the "pick and place" task
-- **[ scene:=string ]:** to specify the name of scene to load (default is "pick_place").
-- **[ object:=string ]:** to specify the name of object to pick (default is "object").
-- **[ pick_pose:=string ]:** to specify the name of the pick pose (default is "pick").
-- **[ place_pose:=string ]:** to specify the name of the place pose (default is "place").
-- **[ speed:=float ]:** to specify the factor scale of the arm speed (default is 1.0).
+This node execute the "pick and place" task with 3 methods.
+- **[ method:=int ]:** to specify the method of pick-and-place (values: 1, 2, 3)
+- **[ scene:=string ]:** to specify the name of scene to load.
+- **[ object:=string ]:** to specify the name of object to pick.
+- **[ pick_pose:=string ]:** to specify the name of the pick pose.
+- **[ place_pose:=string ]:** to specify the name of the place pose.
+- **[ arm_speed:=float ]:** to specify the factor scale of the arm speed.
+- **[ gripper_speed:=float ]:** to specify the gripper speed.
+Values for grasp:
+- **[ grasp_width:=float ]:** to specify the width of the grasp.
+- **[ grasp_force:=float ]:** to specify the force of the grasp.
+- **[ grasp_epsilon_inner:=float ]:** to specify the epsilon inner of the grasp.
+- **[ grasp_epsilon_outer:=float ]:** to specify the epsilon outer of the grasp.
+Values for approch of method 2:
+- **[ pre_grasp_approch_x:=float ]:** to specify the pre-grasp x.
+- **[ pre_grasp_approch_y:=float ]:** to specify the pre-grasp y.
+- **[ pre_grasp_approch_z:=float ]:** to specify the pre-grasp z.
+- **[ post_grasp_retreat_x:=float ]:** to specify the post-grasp x.
+- **[ post_grasp_retreat_y:=float ]:** to specify the post-grasp y.
+- **[ post_grasp_retreat_z:=float ]:** to specify the post-grasp z.
+- **[ post_place_retreat_x:=float ]:** to specify the post place x.
+- **[ post_place_retreat_y:=float ]:** to specify the post place y.
+- **[ post_place_retreat_z:=float ]:** to specify the post place z.
 
 ![pick_place](screenshot/pick_place.png?raw=true "pick_place")
 
+
+### **- teleop**
+
+The "teleop_listener" node read from the topic "teleop" a vector message for moving the arm in cartesian mode.
+The "teleop_talker" node read stdin for sending a vector message on the topic "teleop"
+For control "teleop_talker":
+- **HELP:** 'h'
+- **ESC:** 'q'
+- **FRONT:** 'w'
+- **BACK:** 's'
+- **RIGHT:** 'd'
+- **LEFT:** 'a'
+- **UP:** 'i'
+- **DOWN:** 'k'
+- **INCREASE:** 'l'
+- **DECREASE:** 'j'
+
+![teleop](screenshot/pick_place.png?raw=true "teleop")
 
 ---
 ## **VSCode**
