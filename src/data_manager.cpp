@@ -139,7 +139,7 @@ moveit_msgs::PlanningScene get_scene(const std::string &NAME) {
         if (!root.isMember(NAME)) {
             file.close();
             throw PCEXC::data_manager_error("get_scene()" + PCEXC::DIVISOR +
-                                            "'" + NAME + "' pose not exist");
+                                            "'" + NAME + "' scene not exist");
         }
 
         // Get Objects

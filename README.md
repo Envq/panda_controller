@@ -146,7 +146,7 @@ catkin build
 ## **Files**
 
 ### **data_manager**
-- This file contains all the functions to communicate with the stored data
+- This file contains all the functions to communicate with the stored data.
 
 ### **panda**
 - This file is a wrapper for easy use of moveit to control the Panda robot.
@@ -188,20 +188,22 @@ This node launches rviz with the panda arm (gripper action not work without real
 
 ### **- console**
 This node is a console for performing these simple tasks:
-- **help:** to see the list of commands
-- **quit:** to close the node
-- **speed [value]:** to set the arm speed value
-- **save [(name)]:** to save the current pose with the specified name
-- **move offset [x y z]:** to move the arm along the x,y,z specified directions in meters
-- **move pose [name]:** to move the arm on the specified pose saved in database
-- **move gripper [width (speed)]:** to move the gripper fingers with the specified speed on the specified width from center
-- **homing arm:** to do the homing of the arm
-- **homing gripper:** to do the homing of the gripper
-- **grasp [width (speed force epsilon_inner epsilon_outer)]:** to perform the grasp of gripper);
+- **help:** to see the list of commands.
+- **quit:** to close the node.
+- **load [scene]:** to load specified scene.
+- **load reset:** to reset scene.
+- **speed [value]:** to set the arm speed value.
+- **save [(name)]:** to save the current pose with the specified name.
+- **move offset [x y z]:** to move the arm along the x,y,z specified directions in meters.
+- **move pose [name]:** to move the arm on the specified pose saved in database.
+- **move gripper [width (speed)]:** to move the gripper fingers with the specified speed on the specified width from center.
+- **homing arm:** to perform the homing of the arm.
+- **homing gripper:** to perform the homing of the gripper.
+- **grasp [width (speed force epsilon_inner epsilon_outer)]:** to perform the grasping.
 
 **Leggends:**
-- [] indicates a parameter
-- () indicates a optional parameter with default
+- [] indicates a parameter.
+- () indicates a optional parameter with default.
 
 ![console](screenshot/console.png?raw=true "console")
 
@@ -210,11 +212,11 @@ This node is a console for performing these simple tasks:
  ### **- pick_place**
 
 This node execute the "pick and place" task
-- **[ scene:=string ]:** to specify the name of scene to load (default is "pick_place")
-- **[ object:=string ]:** to specify the name of object to pick (default is "object")
-- **[ pick_pose:=string ]:** to specify the name of the pick pose (default is "pick")
-- **[ place_pose:=string ]:** to specify the name of the place pose (default is "place")
-- **[ speed:=float ]:** to specify the factor scale of the arm speed (default is 1.0)
+- **[ scene:=string ]:** to specify the name of scene to load (default is "pick_place").
+- **[ object:=string ]:** to specify the name of object to pick (default is "object").
+- **[ pick_pose:=string ]:** to specify the name of the pick pose (default is "pick").
+- **[ place_pose:=string ]:** to specify the name of the place pose (default is "place").
+- **[ speed:=float ]:** to specify the factor scale of the arm speed (default is 1.0).
 
 ![pick_place](screenshot/pick_place.png?raw=true "pick_place")
 
@@ -251,9 +253,9 @@ The following commands are available:
 ---
 ## **Author**
 
-**Enrico Sgarbanti** [@**Envq**](https://github.com/Envq)
+**Enrico Sgarbanti** [@**Envq**](https://github.com/Envq).
 
 
 ## **License**
 
-This project is licensed under the GPL v3 License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the GPL v3 License - see the [LICENSE.md](LICENSE.md) file for details.

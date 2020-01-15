@@ -196,27 +196,44 @@ void run_command(robot::Panda &panda, const std::string &command) {
             ROS_INFO_STREAM(
                 Colors::BOLD_INTENSITY
                 << "\nLeggends:\n"
-                << Colors::INTENSITY_OFF << " - [] indicates a parameter\n"
+                << Colors::INTENSITY_OFF << " - [] indicates a parameter.\n"
                 << " - () indicates a optional parameter with default "
-                   "value in launch file\n"
+                   "value in launch file.\n"
                 << Colors::BOLD_INTENSITY << "Commands available:\n"
                 << Colors::INTENSITY_OFF
-                << " - help: to see the list of commands\n"
-                << " - quit: to close the node\n"
-                << " - speed [value]: to set the arm speed value\n"
+                << " - help: to see the list of commands.\n"
+                << " - quit: to close the node.\n"
+                << " - load [scene]: to load specified scene.\n"
+                << " - load reset to reset scene.\n"
+                << " - speed [value]: to set the arm speed value.\n"
                 << " - save [(name)]: to save the current pose with the "
-                   "specified name\n"
+                   "specified name.\n"
                 << " - move offset [x y z]: to move the arm along the "
-                   "x,y,z specified directions in meters\n"
+                   "x,y,z specified directions in meters.\n"
                 << " - move pose [name]: to move the arm on the specified "
-                   "pose saved in database\n"
+                   "pose saved in database.\n"
                 << " - move gripper [width (speed)]: to move the gripper "
                    "fingers with the specified speed on the specified width "
-                   "from center\n"
-                << " - homing arm: to do the homing of the arm\n"
-                << " - homing gripper: to do the homing of the gripper\n"
+                   "from center.\n"
+                << " - homing arm: to perform the homing of the arm.\n"
+                << " - homing gripper: to perform the homing of the gripper.\n"
                 << " - grasp [width (speed force epsilon_inner "
-                   "epsilon_outer)]: to perform the grasp of gripper");
+                   "epsilon_outer)]: to perform the grasping.");
+
+            // CASE LOAD
+        } else if (cmd[0] == "load") {
+            if ((cmd.size() != 2))
+                throw std::invalid_argument(command);
+
+            ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "SELECTED LOAD");
+            std::string scene = cmd[1];
+            if (scene == "reset") {
+                ROS_INFO_STREAM("Reset scene");
+                panda.resetScene();
+            } else {
+                ROS_INFO_STREAM("Load scene:" << scene);
+                panda.setScene(data_manager::get_scene(scene));
+            }
 
             // CASE SPEED
         } else if (cmd[0] == "speed") {
@@ -295,13 +312,9 @@ void run_command(robot::Panda &panda, const std::string &command) {
 
             if (cmd[1] == "arm") {
                 ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "SELECTED ARM HOMING");
-                try {
-                    auto target_pose = data_manager::get_pose("ready");
-                    ROS_INFO_STREAM("Move to pose:\n" << target_pose);
-                    panda.moveToPosition(target_pose);
-                } catch (const PCEXC::data_manager_error &e) {
-                    ROS_FATAL_STREAM("Invalid pose name: " << cmd[2]);
-                }
+                auto target_pose = data_manager::get_pose("ready");
+                ROS_INFO_STREAM("Move to pose:\n" << target_pose);
+                panda.moveToPosition(target_pose);
 
             } else if (cmd[1] == "gripper") {
                 ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "SELECTED GRIPPER HOMING");
