@@ -52,7 +52,6 @@ int main(int argc, char **argv) {
 
     // Extract the parameters
     float FREQUENCY, START_RESOLUTION, DELTA;
-    std::cout << node.getParam("frequency", FREQUENCY) << std::endl;
     if (!(node.getParam("frequency", FREQUENCY) &&
           node.getParam("start_resolution", START_RESOLUTION) &&
           node.getParam("delta", DELTA))) {
@@ -63,15 +62,16 @@ int main(int argc, char **argv) {
 
 
     // Create publisher
-    ros::Publisher pub = node.advertise<geometry_msgs::Vector3>("/panda_controller/teleop", 1000);
+    ros::Publisher pub = node.advertise<geometry_msgs::Vector3>(
+        "/panda_controller/teleop", 1000);
 
 
     // Task
     ros::Rate loop_rate(FREQUENCY);
-    geometry_msgs::Vector3 msg;
     float resolution = START_RESOLUTION;
     int command;
     while (ros::ok()) {
+        geometry_msgs::Vector3 msg;
         switch (command = getch()) {
         case ESC:
             ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "QUIT");

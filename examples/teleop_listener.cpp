@@ -34,7 +34,7 @@ void teleopCallback(const geometry_msgs::Vector3::ConstPtr &msg) {
     ROS_INFO_STREAM("Offset:\n"
                     << "- X: " << X << std::endl
                     << "- Y: " << Y << std::endl
-                    << "- Z: " << Z << std::endl);
+                    << "- Z: " << Z);
     try {
         auto target_pose = panda_ptr->getCurrentPose();
         target_pose.position.x += X;
