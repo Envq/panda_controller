@@ -200,8 +200,8 @@ void run_command(robot::Panda &panda, const std::string &command) {
                 << Colors::INTENSITY_OFF
                 << " - help: to see the list of commands.\n"
                 << " - quit: to close the node.\n"
-                << " - load [scene]: to load specified scene.\n"
-                << " - load reset to reset scene.\n"
+                << " - scene [name]: to load specified scene.\n"
+                << " - scene reset to reset scene.\n"
                 << " - speed arm [value]: to set the arm speed value.\n"
                 << " - speed gripper [value]: to set the gripper speed value.\n"
                 << " - save [(name)]: to save the current pose with the "
@@ -218,8 +218,8 @@ void run_command(robot::Panda &panda, const std::string &command) {
                 << " - grasp [width (speed force epsilon_inner "
                    "epsilon_outer)]: to perform the grasping.");
 
-            // CASE LOAD
-        } else if (cmd[0] == "load") {
+            // CASE SCENE
+        } else if (cmd[0] == "scene") {
             if ((cmd.size() != 2))
                 throw std::invalid_argument(command);
 

@@ -190,8 +190,8 @@ This node launches rviz with the panda arm (gripper action not work without real
 This node is a console for performing these simple tasks:
 - **help:** to see the list of commands.
 - **quit:** to close the node.
-- **load [scene]:** to load specified scene.
-- **load reset:** to reset scene.
+- **scene [name]:** to load specified scene.
+- **scene reset:** to reset scene.
 - **speed arm [value]:** to set the arm speed value.
 - **speed gripper [value]:** to set the gripper speed value.
 - **save [(name)]:** to save the current pose with the specified name.
