@@ -1,10 +1,9 @@
 ###############################################################################
 # CMAKE CONFIG ################################################################
-project(panda_controller)
 cmake_minimum_required(VERSION 2.8.3)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED)
-
+project(panda_controller)
 
 
 ###############################################################################
@@ -20,6 +19,7 @@ find_package(catkin REQUIRED COMPONENTS
     moveit_core
     moveit_ros_planning_interface
     franka_gripper
+    message_generation
 )
 
 # json
@@ -32,15 +32,31 @@ pkg_check_modules(JSONCPP jsoncpp)
 
 
 ###############################################################################
+# MSGS ########################################################################
+add_message_files(
+    FILES
+    teleop_panda.msg
+  )
+
+generate_messages(
+    DEPENDENCIES
+    std_msgs
+)
+
+
+
+###############################################################################
 # CATKIN CONFIG ###############################################################
 catkin_package(
     # INCLUDE_DIRS include
+    LIBRARIES panda_controller
     CATKIN_DEPENDS 
         moveit_core
         moveit_ros_planning_interface
         actionlib_msgs
+        std_msgs
+        message_runtime
 )
-
 
 
 ###############################################################################
@@ -73,6 +89,7 @@ add_executable(${TASK}  examples/${TASK}.cpp
     src/data_manager.cpp
     src/colors.cpp
     src/panda.cpp)
+add_dependencies(${TASK} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(${TASK} ${catkin_LIBRARIES} ${JSONCPP_LIBRARIES})
 
 
@@ -81,4 +98,5 @@ add_executable(${TASK}  examples/${TASK}.cpp
     src/data_manager.cpp
     src/colors.cpp
     src/panda.cpp)
+add_dependencies(${TASK} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(${TASK} ${catkin_LIBRARIES} ${JSONCPP_LIBRARIES})

@@ -95,7 +95,7 @@ void Panda::resetScene() {
 }
 
 
-void Panda::moveToPosition(const geometry_msgs::Pose &POSE,
+void Panda::moveToPose(const geometry_msgs::Pose &POSE,
                            const bool &PLAN_ONLY) {
     // Set the target Pose
     move_group_ptr_->setPoseTarget(POSE);
@@ -106,7 +106,7 @@ void Panda::moveToPosition(const geometry_msgs::Pose &POSE,
 
     // State of planning check
     if (res != moveit::planning_interface::MoveItErrorCode::SUCCESS)
-        throw PCEXC::panda_arm_error("Panda::moveToPosition()" +
+        throw PCEXC::panda_arm_error("Panda::moveToPose()" +
                                      PCEXC::DIVISOR + "plan()" +
                                      PCEXC::DIVISOR + "failure");
 
@@ -160,7 +160,7 @@ void Panda::pick(const geometry_msgs::Pose &POSE, const float &GRASP_WIDTH,
         gripperMove(robot::GRIPPER_MAX_WIDTH);  // needs real robot
 
         // Move arm
-        moveToPosition(POSE);
+        moveToPose(POSE);
 
         // Close gripper
         gripperGrasp(GRASP_WIDTH, GRASP_FORCE, GRASP_EPSILON_INNER,
@@ -193,7 +193,7 @@ void Panda::pick(const geometry_msgs::Pose &POSE,
         pre_pose.position.z += PRE_GRASP_APPROCH.z;
 
         // Move to pre-grasp-approch pose
-        moveToPosition(pre_pose);
+        moveToPose(pre_pose);
 
         // Move to pose
         cartesianMovement(POSE);
@@ -222,7 +222,7 @@ void Panda::pick(const geometry_msgs::Pose &POSE,
         gripperMove(robot::GRIPPER_MAX_WIDTH);  // needs real robot
 
         // Move arm
-        moveToPosition(POSE);
+        moveToPose(POSE);
 
         // Check if object exist
         bool exist = false;
@@ -260,7 +260,7 @@ void Panda::pick(const geometry_msgs::Pose &POSE,
 void Panda::place(const geometry_msgs::Pose &POSE, const bool &PLAN_ONLY) {
     try {
         // Move arm
-        moveToPosition(POSE);
+        moveToPose(POSE);
 
         // Detach objects
         move_group_ptr_->detachObject(move_group_ptr_->getEndEffectorLink());
@@ -294,7 +294,7 @@ void Panda::place(const geometry_msgs::Pose &POSE,
         cartesianMovement(PGR_pose);
 
         // Move arm
-        moveToPosition(POSE);
+        moveToPose(POSE);
 
         // Open gripper
         gripperMove(robot::GRIPPER_MAX_WIDTH);  // needs real robot

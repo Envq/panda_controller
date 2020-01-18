@@ -303,7 +303,7 @@ void run_command(robot::Panda &panda, const std::string &command) {
                 ROS_INFO_STREAM("Get pose: " << cmd[2]);
                 auto target_pose = data_manager::get_pose(cmd[2]);
                 ROS_INFO_STREAM("Move to pose:\n" << target_pose);
-                panda.moveToPosition(target_pose);
+                panda.moveToPose(target_pose);
 
             } else if (cmd[1] == "gripper") {
                 if (cmd.size() != 3 || !is_number(cmd[2]))
@@ -328,7 +328,7 @@ void run_command(robot::Panda &panda, const std::string &command) {
                 ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "SELECTED ARM HOMING");
                 auto target_pose = data_manager::get_pose("ready");
                 ROS_INFO_STREAM("Move to pose:\n" << target_pose);
-                panda.moveToPosition(target_pose);
+                panda.moveToPose(target_pose);
 
             } else if (cmd[1] == "gripper") {
                 ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "SELECTED GRIPPER HOMING");

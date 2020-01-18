@@ -84,7 +84,7 @@ class Panda {
     void resetScene();
 
     // Move to the position pose
-    void moveToPosition(const geometry_msgs::Pose &POSE,
+    void moveToPose(const geometry_msgs::Pose &POSE,
                         const bool &PLAN_ONLY = false);
 
     // Move in cartesian path

@@ -6,11 +6,11 @@
                 "limitSymbolsToIncludedHeaders": true
             },
             "includePath": [
-                "${workspaceFolder}/../panda_controller/include/**",
+                "${workspaceFolder}/../panda_controller/include/*",
                 "/opt/ros/melodic/include/**",
                 "/opt/ros/kinetic/include/**",
                 "/usr/include/**",     
-                "${workspaceFolder}/../../devel/include/**",
+                "${workspaceFolder}/../../devel/include/*",
                 "${workspaceFolder}/../franka_ros/franka_control/include/**",
                 "${workspaceFolder}/../franka_ros/franka_gripper/include/franka_gripper/**",
                 "${workspaceFolder}/../franka_ros/franka_hw/include/**"

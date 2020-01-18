@@ -1,9 +1,9 @@
 // PANDA CONTROLLER
-#include "colors.hpp"      //ROS_STRONG_INFO
-#include "exceptions.hpp"  //PCEXC
+#include "colors.hpp"                       //ROS_STRONG_INFO
+#include "exceptions.hpp"                   //PCEXC
+#include "panda_controller/teleop_panda.h"  //MSG
 
 // ROS
-#include <geometry_msgs/Vector3.h>
 #include <ros/ros.h>
 
 // C
@@ -16,16 +16,24 @@
 // DEFAULT VALUES ##############################################################
 const auto FG_COLOR = Colors::FG_BLUE;
 const auto BG_COLOR = Colors::BG_BLACK;
+const int QUIT = 'q';
 const int HELP = 'h';
-const int ESC = 'q';
-const int FRONT = 'w';
-const int BACK = 's';
-const int RIGHT = 'd';
-const int LEFT = 'a';
-const int UP = 'i';
-const int DOWN = 'k';
-const int INCREASE = 'l';
-const int DECREASE = 'j';
+const int X_POS = 'w';
+const int X_NEG = 's';
+const int Y_POS = 'a';
+const int Y_NEG = 'd';
+const int Z_POS = 'i';
+const int Z_NEG = 'k';
+const int INCREASE_POSITION = 'l';
+const int DECREASE_POSITION = 'j';
+const int ROLL_POS = '7';
+const int ROLL_NEG = '9';
+const int PITCH_POS = '8';
+const int PITCH_NEG = '5';
+const int YAW_POS = '4';
+const int YAW_NEG = '6';
+const int INCREASE_ORIENTATION = '3';
+const int DECREASE_ORIENTATION = '1';
 
 
 
@@ -51,10 +59,13 @@ int main(int argc, char **argv) {
 
 
     // Extract the parameters
-    float FREQUENCY, START_RESOLUTION, DELTA;
+    float FREQUENCY, START_DELTA_POSITION, START_DELTA_ORIENTATION,
+        RESOLUTION_POSITION, RESOLUTION_ORIENTATION;
     if (!(node.getParam("frequency", FREQUENCY) &&
-          node.getParam("start_resolution", START_RESOLUTION) &&
-          node.getParam("delta", DELTA))) {
+          node.getParam("start_delta_position", START_DELTA_POSITION) &&
+          node.getParam("start_delta_orientation", START_DELTA_ORIENTATION) &&
+          node.getParam("resolution_position", RESOLUTION_POSITION) &&
+          node.getParam("resolution_orientation", RESOLUTION_ORIENTATION))) {
         ROS_FATAL_STREAM(PCEXC::get_err_msg(NAME, "Can't get parameters"));
         ros::shutdown();
         return 0;
@@ -62,99 +73,141 @@ int main(int argc, char **argv) {
 
 
     // Create publisher
-    ros::Publisher pub = node.advertise<geometry_msgs::Vector3>(
+    ros::Publisher pub = node.advertise<panda_controller::teleop_panda>(
         "/panda_controller/teleop", 1000);
 
 
     // Task
     ros::Rate loop_rate(FREQUENCY);
-    float resolution = START_RESOLUTION;
+    float delta_position = START_DELTA_POSITION;
+    float delta_orientation = START_DELTA_ORIENTATION;
     int command;
     while (ros::ok()) {
-        geometry_msgs::Vector3 msg;
-        switch (command = getch()) {
-        case ESC:
+        panda_controller::teleop_panda msg;
+        command = getch();
+
+        // QUIT case
+        if (command == QUIT) {
             ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "QUIT");
             ros::shutdown();
-            break;
 
-        case HELP:
-            std::cout << "HELP:     'h'" << std::endl;
-            std::cout << "ESC:      'q'" << std::endl;
-            std::cout << "FRONT:    'w'" << std::endl;
-            std::cout << "BACK:     's'" << std::endl;
-            std::cout << "RIGHT:    'd'" << std::endl;
-            std::cout << "LEFT:     'a'" << std::endl;
-            std::cout << "UP:       'i'" << std::endl;
-            std::cout << "DOWN:     'k'" << std::endl;
-            std::cout << "INCREASE: 'l'" << std::endl;
-            std::cout << "DECREASE: 'j'" << std::endl;
-            break;
+            // HELP case
+        } else if (command == HELP) {
+            std::cout << "#########################" << std::endl;
+            std::cout << "HELP:                 'h'" << std::endl;
+            std::cout << "ESC:                  'q'" << std::endl;
+            std::cout << "#########################" << std::endl;
+            std::cout << "X_POS:                'w'" << std::endl;
+            std::cout << "X_NEG:                's'" << std::endl;
+            std::cout << "Y_NEG:                'd'" << std::endl;
+            std::cout << "Y_POS:                'a'" << std::endl;
+            std::cout << "Z_POS:                'i'" << std::endl;
+            std::cout << "Z_NEG:                'k'" << std::endl;
+            std::cout << "INCREASE POSITION:    'l'" << std::endl;
+            std::cout << "DECREASE POSITION:    'j'" << std::endl;
+            std::cout << "#########################" << std::endl;
+            std::cout << "ROLL_POS:             '7'" << std::endl;
+            std::cout << "ROLL_NEG:             '9'" << std::endl;
+            std::cout << "PITCH_POS:            '8'" << std::endl;
+            std::cout << "PITCH_NEG:            '5'" << std::endl;
+            std::cout << "YAW_POS:              '4'" << std::endl;
+            std::cout << "YAW_NEG:              '6'" << std::endl;
+            std::cout << "INCREASE ORIENTATION: '3'" << std::endl;
+            std::cout << "DECREASE ORIENTATION: '1'" << std::endl;
+            std::cout << "#########################" << std::endl;
 
-        case FRONT:
-            msg.y = 0.0;
-            msg.x += resolution;
-            msg.z = 0.0;
+            // DELTA POSITION cases
+        } else if (command == INCREASE_POSITION) {
+            delta_position += RESOLUTION_POSITION;
+            std::cout << "Delta position: " << delta_position << std::endl;
+
+        } else if (command == DECREASE_POSITION) {
+            if (delta_position - RESOLUTION_POSITION > 0)
+                delta_position -= RESOLUTION_POSITION;
+            std::cout << "Delta position: " << delta_position << std::endl;
+
+            // DELTA ORIENTATION cases
+        } else if (command == INCREASE_ORIENTATION) {
+            delta_orientation += RESOLUTION_ORIENTATION;
+            std::cout << "Delta orientation: " << delta_orientation
+                      << std::endl;
+
+        } else if (command == INCREASE_ORIENTATION) {
+            if (delta_orientation - RESOLUTION_ORIENTATION > 0)
+                delta_orientation -= RESOLUTION_ORIENTATION;
+            std::cout << "Delta orientation: " << delta_orientation
+                      << std::endl;
+
+        } else {
+            // POSITION cases
+            if (command == X_POS) {
+                msg.y = 0.0;
+                msg.x += delta_position;
+                msg.z = 0.0;
+
+            } else if (command == X_NEG) {
+                msg.y = 0.0;
+                msg.x -= delta_position;
+                msg.z = 0.0;
+
+            } else if (command == Y_NEG) {
+                msg.y -= delta_position;
+                msg.x = 0.0;
+                msg.z = 0.0;
+
+            } else if (command == Y_POS) {
+                msg.y += delta_position;
+                msg.x = 0.0;
+                msg.z = 0.0;
+
+            } else if (command == Z_POS) {
+                msg.y = 0.0;
+                msg.x = 0.0;
+                msg.z += delta_position;
+
+            } else if (command == Z_NEG) {
+                msg.y = 0.0;
+                msg.x = 0.0;
+                msg.z -= delta_position;
+            }
+
+            // ORIENTATION cases
+            if (command == ROLL_POS) {
+                msg.roll += delta_orientation;
+                msg.pitch = 0.0;
+                msg.yaw = 0.0;
+
+            } else if (command == ROLL_NEG) {
+                msg.roll -= delta_orientation;
+                msg.pitch = 0.0;
+                msg.yaw = 0.0;
+
+            } else if (command == PITCH_POS) {
+                msg.roll = 0.0;
+                msg.pitch += delta_orientation;
+                msg.yaw = 0.0;
+
+            } else if (command == PITCH_NEG) {
+                msg.roll = 0.0;
+                msg.pitch -= delta_orientation;
+                msg.yaw = 0.0;
+
+            } else if (command == YAW_POS) {
+                msg.roll = 0.0;
+                msg.pitch = 0.0;
+                msg.yaw += delta_orientation;
+
+            } else if (command == YAW_NEG) {
+                msg.roll = 0.0;
+                msg.pitch = 0.0;
+                msg.yaw -= delta_orientation;
+            }
             pub.publish(msg);
             ros::spinOnce();
-            break;
-
-        case BACK:
-            msg.y = 0.0;
-            msg.x -= resolution;
-            msg.z = 0.0;
-            pub.publish(msg);
-            ros::spinOnce();
-            break;
-
-        case RIGHT:
-            msg.y -= resolution;
-            msg.x = 0.0;
-            msg.z = 0.0;
-            pub.publish(msg);
-            ros::spinOnce();
-            break;
-
-        case LEFT:
-            msg.y += resolution;
-            msg.x = 0.0;
-            msg.z = 0.0;
-            pub.publish(msg);
-            ros::spinOnce();
-            break;
-
-        case UP:
-            msg.y = 0.0;
-            msg.x = 0.0;
-            msg.z += resolution;
-            pub.publish(msg);
-            ros::spinOnce();
-            break;
-
-        case DOWN:
-            msg.y = 0.0;
-            msg.x = 0.0;
-            msg.z -= resolution;
-            pub.publish(msg);
-            ros::spinOnce();
-            break;
-
-        case INCREASE:
-            resolution += DELTA;
-            std::cout << "Resolution: " << resolution << std::endl;
-            break;
-
-        case DECREASE:
-            if (resolution - DELTA > 0)
-                resolution -= DELTA;
-            std::cout << "Resolution: " << resolution << std::endl;
-            break;
-
-        default:
-            break;
         }
         loop_rate.sleep();  // sync with loop_rate
     }
+
 
     ros::shutdown();
     return 0;
