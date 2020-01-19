@@ -246,18 +246,37 @@ Values for approch of method 2:
 The "teleop_listener" node read from the topic "teleop" a vector message for moving the arm in cartesian mode.
 The "teleop_talker" node read stdin for sending a vector message on the topic "teleop"
 For control "teleop_talker":
-- **HELP:** 'h'
-- **ESC:** 'q'
-- **FRONT:** 'w'
-- **BACK:** 's'
-- **RIGHT:** 'd'
-- **LEFT:** 'a'
-- **UP:** 'i'
-- **DOWN:** 'k'
-- **INCREASE:** 'l'
-- **DECREASE:** 'j'
+- **GENERIC COMMANDS:**
+    - **QUIT:** ESC
+    - **HELP:** 'h'
+    - **MODE:** 'm' There are 3 modes: position, orientation, gripper
+- **POSITIONAL COMMANDS:**
+    -  **X_POS:** 'w'
+    -  **X_NEG:** 's'
+    -  **Y_POS:** 'a'
+    -  **Y_NEG:** 'd'
+    -  **Z_POS:** 'i'
+    -  **Z_NEG:** 'k'
+    -  **INCREASE_POSITION:** 'l'
+    -  **DECREASE_POSITION:** 'j'
+- **ORIENTATION COMMANDS:**
+    -  **ROLL_POS:** 'd'
+    -  **ROLL_NEG:** 'a'
+    -  **PITCH_POS:** 'w'
+    -  **PITCH_NEG:** 's'
+    -  **YAW_POS:** 'q'
+    -  **YAW_NEG:** 'e'
+    -  **INCREASE_ORIENTATION:** 'l'
+    -  **DECREASE_ORIENTATION:** 'j'
+- **GRIPPER COMMANDS:**
+    -  **GRIPPER_HOMING:** 'o'
+    -  **GRIPPER_WIDTH_POS:** 'i'
+    -  **GRIPPER_WIDTH_NEG:** 'k'
+    -  **INCREASE_GRIPPER_WIDTH:** 'l'
+    -  **DECREASE_GRIPPER_WIDTH:** 'j'
 
-![teleop](screenshot/pick_place.png?raw=true "teleop")
+
+![teleop](screenshot/teleop.png?raw=true "teleop")
 
 ---
 ## **VSCode**
