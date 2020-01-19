@@ -26,12 +26,12 @@ const int Z_POS = 'i';
 const int Z_NEG = 'k';
 const int INCREASE_POSITION = 'l';
 const int DECREASE_POSITION = 'j';
-const int ROLL_POS = '7';
-const int ROLL_NEG = '9';
+const int ROLL_POS = '6';
+const int ROLL_NEG = '4';
 const int PITCH_POS = '8';
 const int PITCH_NEG = '5';
-const int YAW_POS = '4';
-const int YAW_NEG = '6';
+const int YAW_POS = '7';
+const int YAW_NEG = '9';
 const int INCREASE_ORIENTATION = '3';
 const int DECREASE_ORIENTATION = '1';
 
@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
 
 
     // Extract the parameters
-    float FREQUENCY, START_DELTA_POSITION, START_DELTA_ORIENTATION,
+    double FREQUENCY, START_DELTA_POSITION, START_DELTA_ORIENTATION,
         RESOLUTION_POSITION, RESOLUTION_ORIENTATION;
     if (!(node.getParam("frequency", FREQUENCY) &&
           node.getParam("start_delta_position", START_DELTA_POSITION) &&
@@ -73,15 +73,20 @@ int main(int argc, char **argv) {
 
 
     // Create publisher
+    ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "PUBLICATION TO THE TOPIC: teleop");
     ros::Publisher pub = node.advertise<panda_controller::teleop_panda>(
         "/panda_controller/teleop", 1000);
 
 
     // Task
     ros::Rate loop_rate(FREQUENCY);
-    float delta_position = START_DELTA_POSITION;
-    float delta_orientation = START_DELTA_ORIENTATION;
+    double delta_position = START_DELTA_POSITION;
+    double delta_orientation = START_DELTA_ORIENTATION;
     int command;
+    ROS_INFO_STREAM("START DELTA:"
+                    << "\n- Delta position: " << delta_position << " meters"
+                    << "\n- Delta orientation: " << delta_orientation
+                    << " degrees");
     while (ros::ok()) {
         panda_controller::teleop_panda msg;
         command = getch();
@@ -89,54 +94,56 @@ int main(int argc, char **argv) {
         // QUIT case
         if (command == QUIT) {
             ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "QUIT");
-            ros::shutdown();
+            break;
 
             // HELP case
         } else if (command == HELP) {
-            std::cout << "#########################" << std::endl;
-            std::cout << "HELP:                 'h'" << std::endl;
-            std::cout << "ESC:                  'q'" << std::endl;
-            std::cout << "#########################" << std::endl;
-            std::cout << "X_POS:                'w'" << std::endl;
-            std::cout << "X_NEG:                's'" << std::endl;
-            std::cout << "Y_NEG:                'd'" << std::endl;
-            std::cout << "Y_POS:                'a'" << std::endl;
-            std::cout << "Z_POS:                'i'" << std::endl;
-            std::cout << "Z_NEG:                'k'" << std::endl;
-            std::cout << "INCREASE POSITION:    'l'" << std::endl;
-            std::cout << "DECREASE POSITION:    'j'" << std::endl;
-            std::cout << "#########################" << std::endl;
-            std::cout << "ROLL_POS:             '7'" << std::endl;
-            std::cout << "ROLL_NEG:             '9'" << std::endl;
-            std::cout << "PITCH_POS:            '8'" << std::endl;
-            std::cout << "PITCH_NEG:            '5'" << std::endl;
-            std::cout << "YAW_POS:              '4'" << std::endl;
-            std::cout << "YAW_NEG:              '6'" << std::endl;
-            std::cout << "INCREASE ORIENTATION: '3'" << std::endl;
-            std::cout << "DECREASE ORIENTATION: '1'" << std::endl;
-            std::cout << "#########################" << std::endl;
+            std::cout << "########################" << std::endl;
+            std::cout << "HELP:                  " << static_cast<char>(HELP) << std::endl;
+            std::cout << "QUIT:                  " << static_cast<char>(QUIT) << std::endl;
+            std::cout << "########################" << std::endl;
+            std::cout << "X POS:                 " << static_cast<char>(X_POS) << std::endl;
+            std::cout << "X NEG:                 " << static_cast<char>(X_NEG) << std::endl;
+            std::cout << "Y NEG:                 " << static_cast<char>(Y_NEG) << std::endl;
+            std::cout << "Y POS:                 " << static_cast<char>(Y_POS) << std::endl;
+            std::cout << "Z POS:                 " << static_cast<char>(Z_POS) << std::endl;
+            std::cout << "Z NEG:                 " << static_cast<char>(Z_NEG) << std::endl;
+            std::cout << "INCREASE POSITION:     " << static_cast<char>(INCREASE_POSITION) << std::endl;
+            std::cout << "DECREASE POSITION:     " << static_cast<char>(DECREASE_POSITION) << std::endl;
+            std::cout << "########################" << std::endl;
+            std::cout << "ROLL POS:              " << static_cast<char>(ROLL_POS) << std::endl;
+            std::cout << "ROLL NEG:              " << static_cast<char>(ROLL_NEG) << std::endl;
+            std::cout << "PITCH POS:             " << static_cast<char>(PITCH_POS) << std::endl;
+            std::cout << "PITCH NEG:             " << static_cast<char>(PITCH_NEG) << std::endl;
+            std::cout << "YAW POS:               " << static_cast<char>(YAW_POS) << std::endl;
+            std::cout << "YAW NEG:               " << static_cast<char>(YAW_NEG) << std::endl;
+            std::cout << "INCREASE ORIENTATION:  " << static_cast<char>(INCREASE_ORIENTATION) << std::endl;
+            std::cout << "DECREASE ORIENTATION:  " << static_cast<char>(DECREASE_ORIENTATION) << std::endl;
+            std::cout << "########################" << std::endl;
 
             // DELTA POSITION cases
         } else if (command == INCREASE_POSITION) {
             delta_position += RESOLUTION_POSITION;
-            std::cout << "Delta position: " << delta_position << std::endl;
+            std::cout << "Delta position: " << delta_position << " meters"
+                      << std::endl;
 
         } else if (command == DECREASE_POSITION) {
-            if (delta_position - RESOLUTION_POSITION > 0)
+            if ((delta_position - RESOLUTION_POSITION) > 0)
                 delta_position -= RESOLUTION_POSITION;
-            std::cout << "Delta position: " << delta_position << std::endl;
+            std::cout << "Delta position: " << delta_position << " meters"
+                      << std::endl;
 
             // DELTA ORIENTATION cases
         } else if (command == INCREASE_ORIENTATION) {
             delta_orientation += RESOLUTION_ORIENTATION;
             std::cout << "Delta orientation: " << delta_orientation
-                      << std::endl;
+                      << " degrees" << std::endl;
 
-        } else if (command == INCREASE_ORIENTATION) {
-            if (delta_orientation - RESOLUTION_ORIENTATION > 0)
+        } else if (command == DECREASE_ORIENTATION) {
+            if ((delta_orientation - RESOLUTION_ORIENTATION) > 0)
                 delta_orientation -= RESOLUTION_ORIENTATION;
             std::cout << "Delta orientation: " << delta_orientation
-                      << std::endl;
+                      << " degrees" << std::endl;
 
         } else {
             // POSITION cases
@@ -201,6 +208,9 @@ int main(int argc, char **argv) {
                 msg.roll = 0.0;
                 msg.pitch = 0.0;
                 msg.yaw -= delta_orientation;
+            
+            } else {
+                continue; // Not publish
             }
             pub.publish(msg);
             ros::spinOnce();
@@ -209,6 +219,7 @@ int main(int argc, char **argv) {
     }
 
 
+    // Finish
     ros::shutdown();
     return 0;
 }

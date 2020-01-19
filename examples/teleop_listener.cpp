@@ -1,6 +1,5 @@
 // PANDA CONTROLLER
-#include "colors.hpp"  //ROS_STRONG_INFO
-#include "data_manager.hpp"
+#include "colors.hpp"      //ROS_STRONG_INFO
 #include "exceptions.hpp"  //PCEXC
 #include "panda.hpp"
 #include "panda_controller/teleop_panda.h"  //MSG
@@ -29,12 +28,12 @@ robot::Panda *panda_ptr;
 // CALLBACK ###################################################################
 void teleopCallback(const panda_controller::teleop_panda::ConstPtr &msg) {
     ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "MOVING:");
-    const float X = msg->x;
-    const float Y = msg->y;
-    const float Z = msg->z;
-    const float ROLL = msg->roll;
-    const float PITCH = msg->pitch;
-    const float YAW = msg->yaw;
+    const double X = msg->x;
+    const double Y = msg->y;
+    const double Z = msg->z;
+    const double ROLL = msg->roll;
+    const double PITCH = msg->pitch;
+    const double YAW = msg->yaw;
     ROS_INFO_STREAM("Offset:\n"
                     << "- X:     " << X << std::endl
                     << "- Y:     " << Y << std::endl
@@ -47,14 +46,14 @@ void teleopCallback(const panda_controller::teleop_panda::ConstPtr &msg) {
         target_pose.position.x += X;
         target_pose.position.y += Y;
         target_pose.position.z += Z;
-        tf2::Quaternion orientation;
-        orientation.setRPY(ROLL, PITCH, YAW);
-        std::cout << "quartenion:\n" << orientation << std::endl;
-        target_pose.orientation.w += orientation.getW();
-        target_pose.orientation.x += orientation.getX();
-        target_pose.orientation.y += orientation.getY();
-        target_pose.orientation.z += orientation.getZ();
-
+        tf2::Quaternion original, orientation, rotation;
+        tf2::convert(target_pose.orientation,
+                     original);  // get original orientation
+        rotation.setRPY(ROLL * M_PI / 180.0, PITCH * M_PI / 180.0,
+                        YAW * M_PI / 180.0);  // get rotation orientation
+        orientation = rotation * original;   // get new orientation
+        orientation.normalize();             // normalize new orientation
+        target_pose.orientation = tf2::toMsg(orientation);  // Update
 
         ROS_INFO_STREAM("Move to pose:\n" << target_pose);
         panda_ptr->cartesianMovement(target_pose);
@@ -97,7 +96,7 @@ int main(int argc, char **argv) {
 
 
     // Create subscriber
-    ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "SUBCRIPTION TO THE TOPIC: teleop");
+    ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "SUBSCRIPTION TO THE TOPIC: teleop");
     ros::Subscriber sub =
         node.subscribe("/panda_controller/teleop", 1000, teleopCallback);
 

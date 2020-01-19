@@ -8,6 +8,9 @@
 #include <geometry_msgs/Pose.h>
 #include <geometry_msgs/PoseStamped.h>
 
+// TF2
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+
 // MOVEIT
 #include <moveit/move_group_interface/move_group_interface.h>
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
@@ -33,11 +36,13 @@ namespace robot {
 //#############################################################################
 // CONSTANTS ##################################################################
 const std::string FRAME_REF = "panda_link0";
-const float GRIPPER_MAX_WIDTH = 0.08;
+const double GRIPPER_MAX_WIDTH = 0.08;
 const float DEFAULT_ARM_SPEED = 1.0;
 const float DEFAULT_GRIPPER_SPEED = 0.1;
-const float DEFAULT_MOVE_STEP = 0.01;
-const float DEFAULT_MOVE_JUMP_THRESHOLD = 0.0;
+const double DEFAULT_MOVE_STEP = 0.01;
+const double DEFAULT_MOVE_JUMP_THRESHOLD = 0.0;
+const auto HOME_JOINTS = std::vector<double>{
+    0.00, -0.25 * M_PI, 0.00, -0.75 * M_PI, 0.00, 0.50 * M_PI, 0.25 * M_PI};
 
 
 
@@ -83,15 +88,31 @@ class Panda {
     // Set scene
     void resetScene();
 
-    // Move to the position pose
+    // Move to the specified pose
     void moveToPose(const geometry_msgs::Pose &POSE,
-                        const bool &PLAN_ONLY = false);
+                    const bool &PLAN_ONLY = false);
+
+    // Move joints
+    void moveJoints(const std::vector<double> &JOINTS,
+                    const bool &PLAN_ONLY = false);
+
+    // Move the specified joint in radiants
+    void moveJointRad(const int &JOINT, const double &VAL,
+                      const bool &PLAN_ONLY = false);
+
+    // Move the specified joint in degrees
+    void moveJointDeg(const int &JOINT, const double &VAL,
+                      const bool &PLAN_ONLY = false);
+
+    // Go to ready pose
+    void moveToReadyPose();
 
     // Move in cartesian path
-    void cartesianMovement(const std::vector<geometry_msgs::Pose> &WAYPOINTS,
-                           const double &STEP = 0.01,
-                           const double &JUMP_THRESHOLD = 0.0,
-                           const bool &PLAN_ONLY = false);
+    void cartesianMovement(
+        const std::vector<geometry_msgs::Pose> &WAYPOINTS,
+        const double &STEP = DEFAULT_MOVE_STEP,
+        const double &JUMP_THRESHOLD = DEFAULT_MOVE_JUMP_THRESHOLD,
+        const bool &PLAN_ONLY = false);
 
     // Move in cartesian path in only one waypoint
     void cartesianMovement(
@@ -100,21 +121,21 @@ class Panda {
         const bool &PLAN_ONLY = false);
 
     // Perfom pick without constraints
-    void pick(const geometry_msgs::Pose &POSE, const float &GRASP_WIDTH,
-              const float &GRASP_FORCE, const float &GRASP_EPSILON_INNER,
-              const float &GRASP_EPSILON_OUTER, const bool &PLAN_ONLY = false);
+    void pick(const geometry_msgs::Pose &POSE, const double &GRASP_WIDTH,
+              const double &GRASP_FORCE, const double &GRASP_EPSILON_INNER,
+              const double &GRASP_EPSILON_OUTER, const bool &PLAN_ONLY = false);
 
     // Perform pick with pre and post approch
     void pick(const geometry_msgs::Pose &POSE,
               const geometry_msgs::Vector3 &PRE_GRASP_APPROCH,
-              const float &GRASP_WIDTH, const float &GRASP_FORCE,
-              const float &GRASP_EPSILON_INNER,
-              const float &GRASP_EPSILON_OUTER, const bool &PLAN_ONLY = false);
+              const double &GRASP_WIDTH, const double &GRASP_FORCE,
+              const double &GRASP_EPSILON_INNER,
+              const double &GRASP_EPSILON_OUTER, const bool &PLAN_ONLY = false);
 
     // Perform pick with collision object
     void pick(const geometry_msgs::Pose &POSE, const std::string &OBJECT_NAME,
-              const float &GRASP_FORCE, const float &GRASP_EPSILON_INNER,
-              const float &GRASP_EPSILON_OUTER, const bool &PLAN_ONLY = false);
+              const double &GRASP_FORCE, const double &GRASP_EPSILON_INNER,
+              const double &GRASP_EPSILON_OUTER, const bool &PLAN_ONLY = false);
 
     // Perform place without constraints
     void place(const geometry_msgs::Pose &POSE, const bool &PLAN_ONLY = false);
@@ -129,12 +150,12 @@ class Panda {
     void gripperHoming();
 
     // Move gripper
-    void gripperMove(const float &WIDTH);
+    void gripperMove(const double &WIDTH);
 
     // Grasp gripper
-    void gripperGrasp(const float &WIDTH, const float &GRASP_FORCE,
-                      const float &GRASP_EPSILON_INNER,
-                      const float &GRASP_EPSILON_OUTER);
+    void gripperGrasp(const double &WIDTH, const double &GRASP_FORCE,
+                      const double &GRASP_EPSILON_INNER,
+                      const double &GRASP_EPSILON_OUTER);
 };
 
 

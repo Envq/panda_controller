@@ -191,17 +191,18 @@ This node launches rviz with the panda arm (gripper action not work without real
 This node is a console for performing these simple tasks:
 - **help:** to see the list of commands.
 - **quit:** to close the node.
-- **scene [name]:** to load specified scene.
+- **scene [name:str]:** to load specified scene.
 - **scene reset:** to reset scene.
-- **speed arm [value]:** to set the arm speed value.
-- **speed gripper [value]:** to set the gripper speed value.
-- **save [(name)]:** to save the current pose with the specified name.
-- **move offset [x y z]:** to move the arm along the x,y,z specified directions in meters.
-- **move pose [name]:** to move the arm on the specified pose saved in database.
-- **move gripper [width]:** to move the gripper fingers with the specified speed on the specified width from center.
+- **speed arm [speed:float]:** to set the arm speed value.
+- **speed gripper [speed:float]:** to set the gripper speed value.
+- **save [(name:str)]:** to save the current pose with the specified name.
+- **move joint [joint:int, val:double]:** to move the specified joint by an integer of the specified radian.
+- **move offset [x:double y:double z:double]:** to move the arm along the x,y,z specified directions in meters.
+- **move pose [name:str]:** to move the arm on the specified pose saved in database.
+- **move gripper [width:double]:** to move the gripper fingers with the specified speed on the specified width from center.
 - **homing arm:** to perform the homing of the arm.
 - **homing gripper:** to perform the homing of the gripper.
-- **grasp [width (force epsilon_inner epsilon_outer)]:** to perform the grasping.
+- **grasp [width:double (force:double epsilon_inner:double epsilon_outer:double)]:** to perform the grasping.
 
 **Leggends:**
 - [] indicates a parameter.

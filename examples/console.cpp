@@ -200,23 +200,26 @@ void run_command(robot::Panda &panda, const std::string &command) {
                 << Colors::INTENSITY_OFF
                 << " - help: to see the list of commands.\n"
                 << " - quit: to close the node.\n"
-                << " - scene [name]: to load specified scene.\n"
+                << " - scene [name:str]: to load specified scene.\n"
                 << " - scene reset to reset scene.\n"
-                << " - speed arm [value]: to set the arm speed value.\n"
-                << " - speed gripper [value]: to set the gripper speed value.\n"
-                << " - save [(name)]: to save the current pose with the "
+                << " - speed arm [speed:float]: to set the arm speed value.\n"
+                << " - speed gripper [speed:float]: to set the gripper speed "
+                   "value.\n"
+                << " - save [(name:str)]: to save the current pose with the "
                    "specified name.\n"
-                << " - move offset [x y z]: to move the arm along the "
-                   "x,y,z specified directions in meters.\n"
-                << " - move pose [name]: to move the arm on the specified "
+                << " - move joint [joint:int, val:double]:** to move the "
+                   "specified joint by an integer of the specified radian.\n"
+                << " - move offset [x:double y:double z:double]: to move the "
+                   "arm along the x,y,z specified directions in meters.\n"
+                << " - move pose [name:str]: to move the arm on the specified "
                    "pose saved in database.\n"
-                << " - move gripper [width]: to move the gripper "
+                << " - move gripper [width:double]: to move the gripper "
                    "fingers with the specified speed on the specified width "
                    "from center.\n"
                 << " - homing arm: to perform the homing of the arm.\n"
                 << " - homing gripper: to perform the homing of the gripper.\n"
-                << " - grasp [width (force epsilon_inner "
-                   "epsilon_outer)]: to perform the grasping.");
+                << " - grasp [width:double (force:double epsilon_inner:double "
+                   "epsilon_outer:double)]: to perform the grasping.");
 
             // CASE SCENE
         } else if (cmd[0] == "scene") {
@@ -279,15 +282,27 @@ void run_command(robot::Panda &panda, const std::string &command) {
             if (cmd.size() < 2)
                 throw std::invalid_argument(command);
 
-            if (cmd[1] == "offset") {
+            if (cmd[1] == "joint") {
+                if ((cmd.size() != 4) || !is_number(cmd[2]) ||
+                    !is_number(cmd[3]))
+                    throw std::invalid_argument(command);
+
+                ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "SELECTED MOVE JOINT");
+                int joint = std::stoi(cmd[2]);
+                double val = std::stod(cmd[3]);
+                ROS_INFO_STREAM("Move joint " << joint << " of " << val
+                                              << " rad\n");
+                panda.moveJointDeg(joint, val);
+
+            } else if (cmd[1] == "offset") {
                 if ((cmd.size() != 5) || !is_number(cmd[2]) ||
                     !is_number(cmd[3]) || !is_number(cmd[4]))
                     throw std::invalid_argument(command);
 
                 ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "SELECTED MOVE OFFSET");
-                float x = std::stof(cmd[2]);
-                float y = std::stof(cmd[3]);
-                float z = std::stof(cmd[4]);
+                double x = std::stod(cmd[2]);
+                double y = std::stod(cmd[3]);
+                double z = std::stod(cmd[4]);
                 auto target_pose = panda.getCurrentPose();
                 target_pose.position.x += x;
                 target_pose.position.y += y;
@@ -310,8 +325,8 @@ void run_command(robot::Panda &panda, const std::string &command) {
                     throw std::invalid_argument(command);
 
                 ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "SELECTED GRIPPER MOVE");
-                float width = std::stof(cmd[2]);
-                float speed = std::stof(cmd[3]);
+                double width = std::stod(cmd[2]);
+                double speed = std::stod(cmd[3]);
                 ROS_INFO_STREAM("Move gripper to: " << width);
                 panda.gripperMove(width);
 
@@ -326,9 +341,10 @@ void run_command(robot::Panda &panda, const std::string &command) {
 
             if (cmd[1] == "arm") {
                 ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "SELECTED ARM HOMING");
-                auto target_pose = data_manager::get_pose("ready");
-                ROS_INFO_STREAM("Move to pose:\n" << target_pose);
-                panda.moveToPose(target_pose);
+                panda.moveToReadyPose();
+                // auto target_pose = data_manager::get_pose("ready");
+                // ROS_INFO_STREAM("Move to pose:\n" << target_pose);
+                // panda.moveToPose(target_pose);
 
             } else if (cmd[1] == "gripper") {
                 ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "SELECTED GRIPPER HOMING");
@@ -346,8 +362,8 @@ void run_command(robot::Panda &panda, const std::string &command) {
                 throw std::invalid_argument(command);
 
             ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "SELECTED GRASP");
-            float width = std::stof(cmd[1]);
-            float speed, force, epsilon_inner, epsilon_outer;
+            double width = std::stod(cmd[1]);
+            double force, epsilon_inner, epsilon_outer;
             if (cmd.size() == 5) {
                 force = std::stof(cmd[2]);
                 epsilon_inner = std::stof(cmd[3]);
@@ -358,9 +374,8 @@ void run_command(robot::Panda &panda, const std::string &command) {
                 epsilon_outer = GRIPPER_EPSILON_OUTER_DFLT;
             }
             ROS_INFO_STREAM("With:"
-                            << "\n - width: " << width << "\n - speed: "
-                            << speed << "\n - force: " << force
-                            << "\n - epsilon_inner: " << epsilon_inner
+                            << "\n - width: " << width << "\n - force: "
+                            << force << "\n - epsilon_inner: " << epsilon_inner
                             << "\n - epsilon_outer: " << epsilon_outer);
             panda.gripperGrasp(width, force, epsilon_inner, epsilon_outer);
 
