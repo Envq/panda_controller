@@ -6,3 +6,4 @@
 
 in console:
 - history with arrows
+- POSE of EEF in gripper center

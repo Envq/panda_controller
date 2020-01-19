@@ -47,9 +47,9 @@ void run_command(robot::Panda &panda, const std::string &command);
 // Manages history of commands
 class History {
   private:
-    int max_size_;
+    size_t max_size_;
     std::vector<std::string> history_;
-    int cursor_;
+    size_t cursor_;
 
   public:
     explicit History(const int &SIZE);
@@ -151,7 +151,7 @@ bool is_number(const std::string &str) {
 
     // Check the rest
     bool point_finded = false;
-    for (int i = 1; i < str.size() - 1; i++) {
+    for (size_t i = 1; i < str.size() - 1; i++) {
         if (!std::isdigit(str[i])) {
             // Check point symbol
             if (str[i] == '.' && !point_finded)
@@ -324,7 +324,6 @@ void run_command(robot::Panda &panda, const std::string &command) {
 
                 ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "SELECTED GRIPPER MOVE");
                 double width = std::stod(cmd[2]);
-                double speed = std::stod(cmd[3]);
                 ROS_INFO_STREAM("Move gripper to: " << width);
                 panda.gripperMove(width);
 
@@ -415,11 +414,11 @@ std::string History::prev() {
 }
 
 std::string History::next() {
-    if (cursor_ == static_cast<int>(history_.size() - 1)) {
-        cursor_ == history_.size();
+    if (cursor_ == static_cast<size_t>(history_.size() - 1)) {
+        cursor_ = history_.size();
         return "";
     }
-    if (cursor_ < static_cast<int>(history_.size() - 1)) {
+    if (cursor_ < static_cast<size_t>(history_.size() - 1)) {
         cursor_++;
         return history_[cursor_];
     }

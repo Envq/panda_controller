@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED)
 project(panda_controller)
 
 # Compile options
-# add_compile_options("-Wall")
+add_compile_options("-Wall")
 # add_compile_options("-Wextra")
 # add_compile_options("-Wpedantic")
 # add_compile_options("-Werror")
