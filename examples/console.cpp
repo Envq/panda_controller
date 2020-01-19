@@ -28,7 +28,7 @@ const auto BG_COLOR = Colors::BG_BLACK;
 //#############################################################################
 // GLOBAL VALUES ##############################################################
 float GRIPPER_FORCE_DFLT, GRIPPER_EPSILON_INNER_DFLT,
-    GRIPPER_EPSILON_OUTER_DFLT;
+    GRIPPER_EPSILON_OUTER_DFLT, CARTESIAN_STEP, CARTESIAN_JUMP;
 
 
 
@@ -81,7 +81,9 @@ int main(int argc, char **argv) {
     // Extract the parameters
     if (!(node.getParam("gripper_force", GRIPPER_FORCE_DFLT) &&
           node.getParam("gripper_epsilon_inner", GRIPPER_EPSILON_INNER_DFLT) &&
-          node.getParam("gripper_epsilon_outer", GRIPPER_EPSILON_OUTER_DFLT))) {
+          node.getParam("gripper_epsilon_outer", GRIPPER_EPSILON_OUTER_DFLT) &&
+          node.getParam("cartesian_step", CARTESIAN_STEP) &&
+          node.getParam("cartesian_jump", CARTESIAN_JUMP))) {
         ROS_FATAL_STREAM(PCEXC::get_err_msg(NAME, "Can't get parameters"));
         ros::shutdown();
         return 0;
@@ -95,7 +97,6 @@ int main(int argc, char **argv) {
         auto panda = robot::Panda();
 
         // Read command and performe task
-        int scan;
         std::string command;
         boost::shared_ptr<History> cmd_history(
             new History(HISTORY_MAX_SIZE));  // Create history
@@ -103,11 +104,7 @@ int main(int argc, char **argv) {
         while (command != "quit") {
             std::cout << Colors::FG_GREEN << ">> " << Colors::FG_CYAN;
 
-            command = "";  // Reset command
             try {
-                // while ((scan = getchar()) != 10) {
-                //     command += scan;
-                // }
                 std::getline(std::cin, command);
                 std::cout << Colors::RESET;   // reset color
                 cmd_history->add(command);    // save command
@@ -308,7 +305,8 @@ void run_command(robot::Panda &panda, const std::string &command) {
                 target_pose.position.y += y;
                 target_pose.position.z += z;
                 ROS_INFO_STREAM("Move to pose:\n" << target_pose);
-                panda.cartesianMovement(target_pose);
+                panda.cartesianMovement(target_pose, CARTESIAN_STEP,
+                                        CARTESIAN_JUMP);
 
             } else if (cmd[1] == "pose") {
                 if (cmd.size() != 3)
@@ -342,9 +340,6 @@ void run_command(robot::Panda &panda, const std::string &command) {
             if (cmd[1] == "arm") {
                 ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "SELECTED ARM HOMING");
                 panda.moveToReadyPose();
-                // auto target_pose = data_manager::get_pose("ready");
-                // ROS_INFO_STREAM("Move to pose:\n" << target_pose);
-                // panda.moveToPose(target_pose);
 
             } else if (cmd[1] == "gripper") {
                 ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "SELECTED GRIPPER HOMING");

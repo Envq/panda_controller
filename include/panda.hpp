@@ -41,6 +41,7 @@ const float DEFAULT_ARM_SPEED = 1.0;
 const float DEFAULT_GRIPPER_SPEED = 0.1;
 const double DEFAULT_MOVE_STEP = 0.01;
 const double DEFAULT_MOVE_JUMP_THRESHOLD = 0.0;
+const double DISTANCE_FROM_GRIPPER_CENTER = 0.105;
 const auto HOME_JOINTS = std::vector<double>{
     0.00, -0.25 * M_PI, 0.00, -0.75 * M_PI, 0.00, 0.50 * M_PI, 0.25 * M_PI};
 

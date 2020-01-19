@@ -51,8 +51,8 @@ void teleopCallback(const panda_controller::teleop_panda::ConstPtr &msg) {
                      original);  // get original orientation
         rotation.setRPY(ROLL * M_PI / 180.0, PITCH * M_PI / 180.0,
                         YAW * M_PI / 180.0);  // get rotation orientation
-        orientation = rotation * original;   // get new orientation
-        orientation.normalize();             // normalize new orientation
+        orientation = rotation * original;    // get new orientation
+        orientation.normalize();              // normalize new orientation
         target_pose.orientation = tf2::toMsg(orientation);  // Update
 
         ROS_INFO_STREAM("Move to pose:\n" << target_pose);

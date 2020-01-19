@@ -1,9 +1,9 @@
 <launch>
-    <arg name="frequency" default="10.0"/>
+    <arg name="frequency" default="50"/>
     <arg name="start_delta_position" default="0.1"/>
-    <arg name="start_delta_orientation" default="90"/>
+    <arg name="start_delta_orientation" default="10"/>
     <arg name="resolution_position" default="0.01"/>
-    <arg name="resolution_orientation" default="1"/>
+    <arg name="resolution_orientation" default="10"/>
 
     <node name="teleop_talker" pkg="panda_controller" 
     type="teleop_talker" respawn="false" output="screen">

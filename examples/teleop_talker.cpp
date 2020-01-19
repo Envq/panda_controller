@@ -99,26 +99,44 @@ int main(int argc, char **argv) {
             // HELP case
         } else if (command == HELP) {
             std::cout << "########################" << std::endl;
-            std::cout << "HELP:                  " << static_cast<char>(HELP) << std::endl;
-            std::cout << "QUIT:                  " << static_cast<char>(QUIT) << std::endl;
+            std::cout << "HELP:                  " << static_cast<char>(HELP)
+                      << std::endl;
+            std::cout << "QUIT:                  " << static_cast<char>(QUIT)
+                      << std::endl;
             std::cout << "########################" << std::endl;
-            std::cout << "X POS:                 " << static_cast<char>(X_POS) << std::endl;
-            std::cout << "X NEG:                 " << static_cast<char>(X_NEG) << std::endl;
-            std::cout << "Y NEG:                 " << static_cast<char>(Y_NEG) << std::endl;
-            std::cout << "Y POS:                 " << static_cast<char>(Y_POS) << std::endl;
-            std::cout << "Z POS:                 " << static_cast<char>(Z_POS) << std::endl;
-            std::cout << "Z NEG:                 " << static_cast<char>(Z_NEG) << std::endl;
-            std::cout << "INCREASE POSITION:     " << static_cast<char>(INCREASE_POSITION) << std::endl;
-            std::cout << "DECREASE POSITION:     " << static_cast<char>(DECREASE_POSITION) << std::endl;
+            std::cout << "X POS:                 " << static_cast<char>(X_POS)
+                      << std::endl;
+            std::cout << "X NEG:                 " << static_cast<char>(X_NEG)
+                      << std::endl;
+            std::cout << "Y NEG:                 " << static_cast<char>(Y_NEG)
+                      << std::endl;
+            std::cout << "Y POS:                 " << static_cast<char>(Y_POS)
+                      << std::endl;
+            std::cout << "Z POS:                 " << static_cast<char>(Z_POS)
+                      << std::endl;
+            std::cout << "Z NEG:                 " << static_cast<char>(Z_NEG)
+                      << std::endl;
+            std::cout << "INCREASE POSITION:     "
+                      << static_cast<char>(INCREASE_POSITION) << std::endl;
+            std::cout << "DECREASE POSITION:     "
+                      << static_cast<char>(DECREASE_POSITION) << std::endl;
             std::cout << "########################" << std::endl;
-            std::cout << "ROLL POS:              " << static_cast<char>(ROLL_POS) << std::endl;
-            std::cout << "ROLL NEG:              " << static_cast<char>(ROLL_NEG) << std::endl;
-            std::cout << "PITCH POS:             " << static_cast<char>(PITCH_POS) << std::endl;
-            std::cout << "PITCH NEG:             " << static_cast<char>(PITCH_NEG) << std::endl;
-            std::cout << "YAW POS:               " << static_cast<char>(YAW_POS) << std::endl;
-            std::cout << "YAW NEG:               " << static_cast<char>(YAW_NEG) << std::endl;
-            std::cout << "INCREASE ORIENTATION:  " << static_cast<char>(INCREASE_ORIENTATION) << std::endl;
-            std::cout << "DECREASE ORIENTATION:  " << static_cast<char>(DECREASE_ORIENTATION) << std::endl;
+            std::cout << "ROLL POS:              "
+                      << static_cast<char>(ROLL_POS) << std::endl;
+            std::cout << "ROLL NEG:              "
+                      << static_cast<char>(ROLL_NEG) << std::endl;
+            std::cout << "PITCH POS:             "
+                      << static_cast<char>(PITCH_POS) << std::endl;
+            std::cout << "PITCH NEG:             "
+                      << static_cast<char>(PITCH_NEG) << std::endl;
+            std::cout << "YAW POS:               " << static_cast<char>(YAW_POS)
+                      << std::endl;
+            std::cout << "YAW NEG:               " << static_cast<char>(YAW_NEG)
+                      << std::endl;
+            std::cout << "INCREASE ORIENTATION:  "
+                      << static_cast<char>(INCREASE_ORIENTATION) << std::endl;
+            std::cout << "DECREASE ORIENTATION:  "
+                      << static_cast<char>(DECREASE_ORIENTATION) << std::endl;
             std::cout << "########################" << std::endl;
 
             // DELTA POSITION cases
@@ -176,10 +194,10 @@ int main(int argc, char **argv) {
                 msg.y = 0.0;
                 msg.x = 0.0;
                 msg.z -= delta_position;
-            }
 
-            // ORIENTATION cases
-            if (command == ROLL_POS) {
+
+                // ORIENTATION cases
+            } else if (command == ROLL_POS) {
                 msg.roll += delta_orientation;
                 msg.pitch = 0.0;
                 msg.yaw = 0.0;
@@ -208,9 +226,9 @@ int main(int argc, char **argv) {
                 msg.roll = 0.0;
                 msg.pitch = 0.0;
                 msg.yaw -= delta_orientation;
-            
+
             } else {
-                continue; // Not publish
+                continue;  // Not publish
             }
             pub.publish(msg);
             ros::spinOnce();
