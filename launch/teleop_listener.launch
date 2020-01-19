@@ -1,4 +1,7 @@
 <launch>
     <node name="teleop_listener" pkg="panda_controller" 
-    type="teleop_listener" respawn="false" output="screen"></node>
+    type="teleop_listener" respawn="false" output="screen">
+        <param name="arm_speed" value="1.0"/>
+        <param name="gripper_speed" value="0.1"/>
+    </node>
 </launch>

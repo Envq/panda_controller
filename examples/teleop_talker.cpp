@@ -16,8 +16,9 @@
 // DEFAULT VALUES ##############################################################
 const auto FG_COLOR = Colors::FG_BLUE;
 const auto BG_COLOR = Colors::BG_BLACK;
-const int QUIT = 'q';
+const int QUIT = 27;  // esc
 const int HELP = 'h';
+const int MODE = 'm';
 const int X_POS = 'w';
 const int X_NEG = 's';
 const int Y_POS = 'a';
@@ -26,14 +27,19 @@ const int Z_POS = 'i';
 const int Z_NEG = 'k';
 const int INCREASE_POSITION = 'l';
 const int DECREASE_POSITION = 'j';
-const int ROLL_POS = '6';
-const int ROLL_NEG = '4';
-const int PITCH_POS = '8';
-const int PITCH_NEG = '5';
-const int YAW_POS = '7';
-const int YAW_NEG = '9';
-const int INCREASE_ORIENTATION = '3';
-const int DECREASE_ORIENTATION = '1';
+const int ROLL_POS = 'd';              // '6';
+const int ROLL_NEG = 'a';              //'4';
+const int PITCH_POS = 'w';             //'8';
+const int PITCH_NEG = 's';             //'5';
+const int YAW_POS = 'q';               //'7';
+const int YAW_NEG = 'e';               //'9';
+const int INCREASE_ORIENTATION = 'l';  //'3';
+const int DECREASE_ORIENTATION = 'j';  //'1';
+const int GRIPPER_HOMING = 'o';
+const int GRIPPER_WIDTH_POS = 'i';
+const int GRIPPER_WIDTH_NEG = 'k';
+const int INCREASE_GRIPPER_WIDTH = 'l';
+const int DECREASE_GRIPPER_WIDTH = 'j';
 
 
 
@@ -59,13 +65,18 @@ int main(int argc, char **argv) {
 
 
     // Extract the parameters
-    double FREQUENCY, START_DELTA_POSITION, START_DELTA_ORIENTATION,
-        RESOLUTION_POSITION, RESOLUTION_ORIENTATION;
+    double START_DELTA_POSITION, START_DELTA_ORIENTATION,
+        START_DELTA_GRIPPER_WIDTH, RESOLUTION_POSITION, RESOLUTION_ORIENTATION,
+        RESOLUTION_GRIPPER_WIDTH, FREQUENCY;
     if (!(node.getParam("frequency", FREQUENCY) &&
           node.getParam("start_delta_position", START_DELTA_POSITION) &&
           node.getParam("start_delta_orientation", START_DELTA_ORIENTATION) &&
+          node.getParam("start_delta_gripper_width",
+                        START_DELTA_GRIPPER_WIDTH) &&
           node.getParam("resolution_position", RESOLUTION_POSITION) &&
-          node.getParam("resolution_orientation", RESOLUTION_ORIENTATION))) {
+          node.getParam("resolution_orientation", RESOLUTION_ORIENTATION) &&
+          node.getParam("resolution_gripper_width",
+                        RESOLUTION_GRIPPER_WIDTH))) {
         ROS_FATAL_STREAM(PCEXC::get_err_msg(NAME, "Can't get parameters"));
         ros::shutdown();
         return 0;
@@ -82,14 +93,31 @@ int main(int argc, char **argv) {
     ros::Rate loop_rate(FREQUENCY);
     double delta_position = START_DELTA_POSITION;
     double delta_orientation = START_DELTA_ORIENTATION;
+    double delta_gripper_width = START_DELTA_GRIPPER_WIDTH;
     int command;
-    ROS_INFO_STREAM("START DELTA:"
-                    << "\n- Delta position: " << delta_position << " meters"
-                    << "\n- Delta orientation: " << delta_orientation
-                    << " degrees");
+    int mode = 0;
+    panda_controller::teleop_panda msg;
+    ROS_INFO_STREAM(
+        "START INFO:"
+        << "\n- Mode: "
+        << ((mode == 0) ? "position" : (mode == 1) ? "orientation" : "gripper")
+        << "\n- Delta position:      " << delta_position << " meters"
+        << "\n- Delta orientation:   " << delta_orientation << " degrees"
+        << "\n- Delta gripper width: " << delta_gripper_width << " meters");
+
     while (ros::ok()) {
-        panda_controller::teleop_panda msg;
+        // Get command
         command = getch();
+
+        // Reset msg
+        msg.x = 0.0;
+        msg.y = 0.0;
+        msg.z = 0.0;
+        msg.roll = 0.0;
+        msg.pitch = 0.0;
+        msg.yaw = 0.0;
+        msg.gripper_width = 0.0;
+        msg.gripper_homing = false;
 
         // QUIT case
         if (command == QUIT) {
@@ -98,140 +126,162 @@ int main(int argc, char **argv) {
 
             // HELP case
         } else if (command == HELP) {
-            std::cout << "########################" << std::endl;
-            std::cout << "HELP:                  " << static_cast<char>(HELP)
-                      << std::endl;
-            std::cout << "QUIT:                  " << static_cast<char>(QUIT)
-                      << std::endl;
-            std::cout << "########################" << std::endl;
-            std::cout << "X POS:                 " << static_cast<char>(X_POS)
-                      << std::endl;
-            std::cout << "X NEG:                 " << static_cast<char>(X_NEG)
-                      << std::endl;
-            std::cout << "Y NEG:                 " << static_cast<char>(Y_NEG)
-                      << std::endl;
-            std::cout << "Y POS:                 " << static_cast<char>(Y_POS)
-                      << std::endl;
-            std::cout << "Z POS:                 " << static_cast<char>(Z_POS)
-                      << std::endl;
-            std::cout << "Z NEG:                 " << static_cast<char>(Z_NEG)
-                      << std::endl;
-            std::cout << "INCREASE POSITION:     "
-                      << static_cast<char>(INCREASE_POSITION) << std::endl;
-            std::cout << "DECREASE POSITION:     "
-                      << static_cast<char>(DECREASE_POSITION) << std::endl;
-            std::cout << "########################" << std::endl;
-            std::cout << "ROLL POS:              "
-                      << static_cast<char>(ROLL_POS) << std::endl;
-            std::cout << "ROLL NEG:              "
-                      << static_cast<char>(ROLL_NEG) << std::endl;
-            std::cout << "PITCH POS:             "
-                      << static_cast<char>(PITCH_POS) << std::endl;
-            std::cout << "PITCH NEG:             "
-                      << static_cast<char>(PITCH_NEG) << std::endl;
-            std::cout << "YAW POS:               " << static_cast<char>(YAW_POS)
-                      << std::endl;
-            std::cout << "YAW NEG:               " << static_cast<char>(YAW_NEG)
-                      << std::endl;
-            std::cout << "INCREASE ORIENTATION:  "
-                      << static_cast<char>(INCREASE_ORIENTATION) << std::endl;
-            std::cout << "DECREASE ORIENTATION:  "
-                      << static_cast<char>(DECREASE_ORIENTATION) << std::endl;
-            std::cout << "########################" << std::endl;
+            std::cout
+                << "#########################"
+                << "\nQUIT:                 ESC"
+                << "\nHELP:                   " << static_cast<char>(HELP)
+                << "\nMODE:                   " << static_cast<char>(MODE)
+                << "\n#########################"
+                << "\nX POS:                  " << static_cast<char>(X_POS)
+                << "\nX NEG:                  " << static_cast<char>(X_NEG)
+                << "\nY NEG:                  " << static_cast<char>(Y_NEG)
+                << "\nY POS:                  " << static_cast<char>(Y_POS)
+                << "\nZ POS:                  " << static_cast<char>(Z_POS)
+                << "\nZ NEG:                  " << static_cast<char>(Z_NEG)
+                << "\nINCREASE POSITION:      "
+                << static_cast<char>(INCREASE_POSITION)
+                << "\nDECREASE POSITION:      "
+                << static_cast<char>(DECREASE_POSITION)
+                << "\n#########################"
+                << "\nROLL POS:               " << static_cast<char>(ROLL_POS)
+                << "\nROLL NEG:               " << static_cast<char>(ROLL_NEG)
+                << "\nPITCH POS:              " << static_cast<char>(PITCH_POS)
+                << "\nPITCH NEG:              " << static_cast<char>(PITCH_NEG)
+                << "\nYAW POS:                " << static_cast<char>(YAW_POS)
+                << "\nYAW NEG:                " << static_cast<char>(YAW_NEG)
+                << "\nINCREASE ORIENTATION:   "
+                << static_cast<char>(INCREASE_ORIENTATION)
+                << "\nDECREASE ORIENTATION:   "
+                << static_cast<char>(DECREASE_ORIENTATION)
+                << "\n#########################"
+                << "\nGRIPPER HOMING:         "
+                << static_cast<char>(GRIPPER_HOMING)
+                << "\nGRIPPER WIDTH POS:      "
+                << static_cast<char>(GRIPPER_WIDTH_POS)
+                << "\nGRIPPER WIDTH NEG:      "
+                << static_cast<char>(GRIPPER_WIDTH_NEG)
+                << "\nINCREASE GRIPPER WIDTH: "
+                << static_cast<char>(INCREASE_GRIPPER_WIDTH)
+                << "\nDECREASE GRIPPER WIDTH: "
+                << static_cast<char>(DECREASE_GRIPPER_WIDTH)
+                << "\n#########################" << std::endl;
 
+        } else if (command == MODE) {
+            mode = (mode + 1) % 3;
+            std::cout << "MODE: "
+                      << ((mode == 0) ? "position"
+                                      : (mode == 1) ? "orientation" : "gripper")
+                      << std::endl;
+
+        } else if (mode == 0) {
             // DELTA POSITION cases
-        } else if (command == INCREASE_POSITION) {
-            delta_position += RESOLUTION_POSITION;
-            std::cout << "Delta position: " << delta_position << " meters"
-                      << std::endl;
+            if (command == INCREASE_POSITION) {
+                delta_position += RESOLUTION_POSITION;
+                std::cout << "Delta position: " << delta_position << " meters"
+                          << std::endl;
 
-        } else if (command == DECREASE_POSITION) {
-            if ((delta_position - RESOLUTION_POSITION) > 0)
-                delta_position -= RESOLUTION_POSITION;
-            std::cout << "Delta position: " << delta_position << " meters"
-                      << std::endl;
-
-            // DELTA ORIENTATION cases
-        } else if (command == INCREASE_ORIENTATION) {
-            delta_orientation += RESOLUTION_ORIENTATION;
-            std::cout << "Delta orientation: " << delta_orientation
-                      << " degrees" << std::endl;
-
-        } else if (command == DECREASE_ORIENTATION) {
-            if ((delta_orientation - RESOLUTION_ORIENTATION) > 0)
-                delta_orientation -= RESOLUTION_ORIENTATION;
-            std::cout << "Delta orientation: " << delta_orientation
-                      << " degrees" << std::endl;
-
-        } else {
-            // POSITION cases
-            if (command == X_POS) {
-                msg.y = 0.0;
-                msg.x += delta_position;
-                msg.z = 0.0;
-
-            } else if (command == X_NEG) {
-                msg.y = 0.0;
-                msg.x -= delta_position;
-                msg.z = 0.0;
-
-            } else if (command == Y_NEG) {
-                msg.y -= delta_position;
-                msg.x = 0.0;
-                msg.z = 0.0;
-
-            } else if (command == Y_POS) {
-                msg.y += delta_position;
-                msg.x = 0.0;
-                msg.z = 0.0;
-
-            } else if (command == Z_POS) {
-                msg.y = 0.0;
-                msg.x = 0.0;
-                msg.z += delta_position;
-
-            } else if (command == Z_NEG) {
-                msg.y = 0.0;
-                msg.x = 0.0;
-                msg.z -= delta_position;
-
-
-                // ORIENTATION cases
-            } else if (command == ROLL_POS) {
-                msg.roll += delta_orientation;
-                msg.pitch = 0.0;
-                msg.yaw = 0.0;
-
-            } else if (command == ROLL_NEG) {
-                msg.roll -= delta_orientation;
-                msg.pitch = 0.0;
-                msg.yaw = 0.0;
-
-            } else if (command == PITCH_POS) {
-                msg.roll = 0.0;
-                msg.pitch += delta_orientation;
-                msg.yaw = 0.0;
-
-            } else if (command == PITCH_NEG) {
-                msg.roll = 0.0;
-                msg.pitch -= delta_orientation;
-                msg.yaw = 0.0;
-
-            } else if (command == YAW_POS) {
-                msg.roll = 0.0;
-                msg.pitch = 0.0;
-                msg.yaw += delta_orientation;
-
-            } else if (command == YAW_NEG) {
-                msg.roll = 0.0;
-                msg.pitch = 0.0;
-                msg.yaw -= delta_orientation;
+            } else if (command == DECREASE_POSITION) {
+                if ((delta_position - RESOLUTION_POSITION) > 0)
+                    delta_position -= RESOLUTION_POSITION;
+                std::cout << "Delta position: " << delta_position << " meters"
+                          << std::endl;
 
             } else {
-                continue;  // Not publish
+                // POSITION cases
+                if (command == X_POS) {
+                    msg.x += delta_position;
+
+                } else if (command == X_NEG) {
+                    msg.x -= delta_position;
+
+                } else if (command == Y_NEG) {
+                    msg.y -= delta_position;
+
+                } else if (command == Y_POS) {
+                    msg.y += delta_position;
+
+                } else if (command == Z_POS) {
+                    msg.z += delta_position;
+
+                } else if (command == Z_NEG) {
+                    msg.z -= delta_position;
+
+                } else {
+                    continue; // Not publish
+                }
+                pub.publish(msg);
+                ros::spinOnce();
             }
-            pub.publish(msg);
-            ros::spinOnce();
+        } else if (mode == 1) {
+            // DELTA ORIENTATION cases
+            if (command == INCREASE_ORIENTATION) {
+                delta_orientation += RESOLUTION_ORIENTATION;
+                std::cout << "Delta orientation: " << delta_orientation
+                          << " degrees" << std::endl;
+
+            } else if (command == DECREASE_ORIENTATION) {
+                if ((delta_orientation - RESOLUTION_ORIENTATION) > 0)
+                    delta_orientation -= RESOLUTION_ORIENTATION;
+                std::cout << "Delta orientation: " << delta_orientation
+                          << " degrees" << std::endl;
+
+            } else {
+                // ORIENTATION cases
+                if (command == ROLL_POS) {
+                    msg.roll += delta_orientation;
+
+                } else if (command == ROLL_NEG) {
+                    msg.roll -= delta_orientation;
+
+                } else if (command == PITCH_POS) {
+                    msg.pitch += delta_orientation;
+
+                } else if (command == PITCH_NEG) {
+                    msg.pitch -= delta_orientation;
+
+                } else if (command == YAW_POS) {
+                    msg.yaw += delta_orientation;
+
+                } else if (command == YAW_NEG) {
+                    msg.yaw -= delta_orientation;
+
+                } else {
+                    continue; // Not publish
+                }
+                pub.publish(msg);
+                ros::spinOnce();
+            }
+
+        } else if (mode == 2) {
+            // DELTA GRIPPER WIDTH cases
+            if (command == INCREASE_GRIPPER_WIDTH) {
+                delta_gripper_width += RESOLUTION_GRIPPER_WIDTH;
+                std::cout << "Delta delta gripper_width: "
+                          << delta_gripper_width << " meters" << std::endl;
+
+            } else if (command == DECREASE_GRIPPER_WIDTH) {
+                if ((delta_gripper_width - RESOLUTION_GRIPPER_WIDTH) > 0)
+                    delta_gripper_width -= RESOLUTION_GRIPPER_WIDTH;
+                std::cout << "Delta delta gripper_width: "
+                          << delta_gripper_width << " meters" << std::endl;
+
+            } else {
+                // GRIPPER WIDTH cases
+                if (command == GRIPPER_HOMING) {
+                    msg.gripper_homing = true;
+
+                } else if (command == GRIPPER_WIDTH_POS) {
+                    msg.gripper_width += delta_gripper_width;
+
+                } else if (command == GRIPPER_WIDTH_NEG) {
+                    msg.gripper_width -= delta_gripper_width;
+
+                } else {
+                    continue; // Not publish
+                }
+                pub.publish(msg);
+                ros::spinOnce();
+            }
         }
         loop_rate.sleep();  // sync with loop_rate
     }
@@ -245,7 +295,8 @@ int main(int argc, char **argv) {
 
 
 //#############################################################################
-// FUNCTIONS IMPLEMENTATIONS ##################################################
+// FUNCTIONS IMPLEMENTATIONS
+// ##################################################
 int getch() {
     int ch;
     struct termios oldt;
