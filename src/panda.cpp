@@ -368,11 +368,11 @@ void Panda::place(const geometry_msgs::Pose &POSE,
 
 void Panda::gripperHoming() {  // needs real robot
     // Check if server is connected
-    if (!gripper_homing_client_ptr_->isServerConnected()) {
-        throw PCEXC::panda_gripper_error(
-            "Panda::gripperHoming()" + PCEXC::DIVISOR + "isServerConnected()" +
-            PCEXC::DIVISOR + "Server is not connected");
-    }
+    // if (!gripper_homing_client_ptr_->isServerConnected()) {
+    //     throw PCEXC::panda_gripper_error(
+    //         "Panda::gripperHoming()" + PCEXC::DIVISOR + "isServerConnected()" +
+    //         PCEXC::DIVISOR + "Server is not connected");
+    // }
 
     // Wait for action server
     if (!gripper_homing_client_ptr_->waitForServer()) {
@@ -395,12 +395,6 @@ void Panda::gripperHoming() {  // needs real robot
 
 
 void Panda::gripperMove(const double &WIDTH) {  // needs real robot
-    // Check if server is connected
-    if (!gripper_homing_client_ptr_->isServerConnected()) {
-        throw PCEXC::panda_gripper_error(
-            "Panda::gripperHoming()" + PCEXC::DIVISOR + "isServerConnected()" +
-            PCEXC::DIVISOR + "Server is not connected");
-    }
 
     // Wait for action server
     if (!gripper_move_client_ptr_->waitForServer()) {
@@ -427,12 +421,6 @@ void Panda::gripperMove(const double &WIDTH) {  // needs real robot
 void Panda::gripperGrasp(const double &WIDTH, const double &FORCE,
                          const double &EPSILON_INNER,
                          const double &EPSILON_OUTER) {  // needs real robot
-    // Check if server is connected
-    if (!gripper_homing_client_ptr_->isServerConnected()) {
-        throw PCEXC::panda_gripper_error(
-            "Panda::gripperHoming()" + PCEXC::DIVISOR + "isServerConnected()" +
-            PCEXC::DIVISOR + "Server is not connected");
-    }
 
     // Wait for action server
     if (!gripper_grasp_client_ptr_->waitForServer()) {

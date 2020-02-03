@@ -205,7 +205,7 @@ void run_command(robot::Panda &panda, const std::string &command) {
                 << " - save [(name:str)]: to save the current pose with the "
                    "specified name.\n"
                 << " - move joint [joint:int, val:double]:** to move the "
-                   "specified joint by an integer of the specified radian.\n"
+                   "specified joint by an integer of the specified degree.\n"
                 << " - move offset [x:double y:double z:double]: to move the "
                    "arm along the x,y,z specified directions in meters.\n"
                 << " - move pose [name:str]: to move the arm on the specified "
@@ -288,7 +288,7 @@ void run_command(robot::Panda &panda, const std::string &command) {
                 int joint = std::stoi(cmd[2]);
                 double val = std::stod(cmd[3]);
                 ROS_INFO_STREAM("Move joint " << joint << " of " << val
-                                              << " rad\n");
+                                              << " deg\n");
                 panda.moveJointDeg(joint, val);
 
             } else if (cmd[1] == "offset") {

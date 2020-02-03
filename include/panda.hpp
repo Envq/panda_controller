@@ -37,7 +37,7 @@ namespace robot {
 // CONSTANTS ##################################################################
 const std::string FRAME_REF = "panda_link0";
 const double GRIPPER_MAX_WIDTH = 0.08;
-const float DEFAULT_ARM_SPEED = 1.0;
+const float DEFAULT_ARM_SPEED = 0.1;
 const float DEFAULT_GRIPPER_SPEED = 0.1;
 const double DEFAULT_MOVE_STEP = 0.01;
 const double DEFAULT_MOVE_JUMP_THRESHOLD = 0.0;

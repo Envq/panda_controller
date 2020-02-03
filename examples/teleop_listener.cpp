@@ -27,7 +27,7 @@ robot::Panda *panda_ptr;
 //#############################################################################
 // CALLBACK ###################################################################
 namespace callback {
-double current_gripper_width = 0.0;
+double current_gripper_width = robot::GRIPPER_MAX_WIDTH;
 
 void teleopCallback(const panda_controller::teleop_panda::ConstPtr &msg) {
     ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "MOVING:");
@@ -49,30 +49,42 @@ void teleopCallback(const panda_controller::teleop_panda::ConstPtr &msg) {
                     << "- GRIPPER HOMING:   " << GRIPPER_HOMING << std::endl
                     << "- GRIPPER WITDH:    " << GRIPPER_WIDTH);
     try {
-        auto target_pose = panda_ptr->getCurrentPose();
-        target_pose.position.x += X;
-        target_pose.position.y += Y;
-        target_pose.position.z += Z;
-        tf2::Quaternion original, orientation, rotation;
-        tf2::convert(target_pose.orientation,
-                     original);  // get original orientation
-        rotation.setRPY(ROLL * M_PI / 180.0, PITCH * M_PI / 180.0,
-                        YAW * M_PI / 180.0);  // get rotation orientation
-        orientation = rotation * original;    // get new orientation
-        orientation.normalize();              // normalize new orientation
-        target_pose.orientation = tf2::toMsg(orientation);  // Update
-
-        ROS_INFO_STREAM("Move to pose:\n" << target_pose);
-        panda_ptr->cartesianMovement(target_pose);
-
-        if (GRIPPER_WIDTH != 0.0) {
-            current_gripper_width += GRIPPER_WIDTH;
-            ROS_INFO_STREAM("Move gripper to width: " << current_gripper_width);
-            panda_ptr->gripperMove(current_gripper_width);
-        }
-
-        if (GRIPPER_WIDTH == 0.0 && GRIPPER_HOMING) {
+        // GRIPPER
+        if (GRIPPER_HOMING) {
+            ROS_INFO("Gripper homing");
             panda_ptr->gripperHoming();
+            current_gripper_width = robot::GRIPPER_MAX_WIDTH;
+
+
+        } else if (GRIPPER_WIDTH != 0) {
+            current_gripper_width += GRIPPER_WIDTH;
+            if (current_gripper_width < 0.0 ||
+                current_gripper_width > robot::GRIPPER_MAX_WIDTH) {
+                ROS_WARN_STREAM("Gripper width invalid: " << current_gripper_width);
+            current_gripper_width -= GRIPPER_WIDTH;
+            } else {
+                ROS_INFO_STREAM(
+                    "Move gripper to width: " << current_gripper_width);
+                panda_ptr->gripperMove(current_gripper_width);
+            }
+
+            // ARM
+        } else {
+            auto target_pose = panda_ptr->getCurrentPose();
+            target_pose.position.x += X;
+            target_pose.position.y += Y;
+            target_pose.position.z += Z;
+            tf2::Quaternion original, orientation, rotation;
+            tf2::convert(target_pose.orientation,
+                         original);  // get original orientation
+            rotation.setRPY(ROLL * M_PI / 180.0, PITCH * M_PI / 180.0,
+                            YAW * M_PI / 180.0);  // get rotation orientation
+            orientation = rotation * original;    // get new orientation
+            orientation.normalize();              // normalize new orientation
+            target_pose.orientation = tf2::toMsg(orientation);  // Update
+
+            ROS_INFO_STREAM("Move to pose:\n" << target_pose);
+            panda_ptr->cartesianMovement(target_pose);
         }
 
     } catch (const PCEXC::panda_error &e) {
@@ -116,12 +128,14 @@ int main(int argc, char **argv) {
         ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "PANDA CONTROLLER INITIALIZATION");
         panda_ptr = new robot::Panda();
 
-        // Set robot speeds
+        // Set robot
         ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "SPEEDS ADJUSTAMENT");
         ROS_INFO_STREAM("Arm speed setted to: " << ARM_SPEED);
         panda_ptr->setArmSpeed(ARM_SPEED);
         ROS_INFO_STREAM("Gripper speed setted to: " << GRIPPER_SPEED);
-        panda_ptr->setArmSpeed(GRIPPER_SPEED);
+        panda_ptr->setGripperSpeed(GRIPPER_SPEED);
+        ROS_INFO("Gripper homing");
+        panda_ptr->gripperHoming();
 
         // Print first pose
         ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "FIRST POSE:");

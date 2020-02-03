@@ -196,7 +196,7 @@ This node is a console for performing these simple tasks:
 - **speed arm [speed:float]:** to set the arm speed value.
 - **speed gripper [speed:float]:** to set the gripper speed value.
 - **save [(name:str)]:** to save the current pose with the specified name.
-- **move joint [joint:int, val:double]:** to move the specified joint by an integer of the specified radian.
+- **move joint [joint:int, val:double]:** to move the specified joint by an integer of the specified degree.
 - **move offset [x:double y:double z:double]:** to move the arm along the x,y,z specified directions in meters.
 - **move pose [name:str]:** to move the arm on the specified pose saved in database.
 - **move gripper [width:double]:** to move the gripper fingers with the specified speed on the specified width from center.
