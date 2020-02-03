@@ -82,15 +82,34 @@ class Colors {
 
 //#############################################################################
 // FUNCTIONS ##################################################################
-template<typename... TArgs>  // variadic typename
+// template<typename... TArgs>  // variadic typename
+// void ROS_STRONG_INFO(const Colors::Code &COLOR_FG, const Colors::Code
+// &COLOR_BG,
+//                      TArgs... args) {
+//     std::stringstream ss;
+//     ss << Colors::BOLD_INTENSITY;
+//     ss << COLOR_FG;
+//     ss << COLOR_BG;
+//     ss << "## ";
+//     // (ss << ... << args);
+//     ss << Colors::RESET;
+//     ROS_INFO_STREAM(ss.str());
+// }
+
+// C++14 compatible
+template<typename Arg, typename... Args>  // variadic typename
 void ROS_STRONG_INFO(const Colors::Code &COLOR_FG, const Colors::Code &COLOR_BG,
-                     TArgs... args) {
+                     Arg &&arg, Args &&... args) {
     std::stringstream ss;
     ss << Colors::BOLD_INTENSITY;
     ss << COLOR_FG;
     ss << COLOR_BG;
     ss << "## ";
-    (ss << ... << args);
+
+    ss << std::forward<Arg>(arg);
+    using expander = int[];
+    (void)expander{0, (void(ss << ',' << std::forward<Args>(args)), 0)...};
+
     ss << Colors::RESET;
     ROS_INFO_STREAM(ss.str());
 }

@@ -1,0 +1,37 @@
+<launch>
+
+  <!-- <include file="$(find realsense2_camera)/launch/rs_rgbd.launch"/>  -->
+
+  <!-- camera attached to EE-->
+  <!-- <node pkg="tf" type="static_transform_publisher" name="camera_broadcast" args="0.0429 0.0 -0.0575 0.7071 0 0.7071 0 panda_EE camera_link 1000"/>   -->
+  
+  
+  <include file="$(find franka_control)/launch/franka_control.launch">
+    <arg name="robot_ip" value="192.168.1.2"/>
+    <arg name="load_gripper" value="true"/>
+  </include>
+
+  <include file="$(find panda_moveit_config)/launch/panda_moveit.launch">
+    <arg name="load_gripper" value="true"/>
+  </include>
+
+  <include file="$(find altair_panda)/launch/saras_moveit.launch"/>
+
+
+  <!-- <node pkg="altair_panda" name="frankaConverter" type="franka_converter.py" output="screen">
+        <param name="convert2pose_topic" type="string" value="/franka_pub/pose"/> 
+        <param name="ext_f_topic" type="string" value="/franka_pub/ext_F"/>
+  </node>       -->
+
+
+  <!-- <node pkg="altair_panda" name="convert2Pose" type="convert2Pose.py" output="screen"/> -->
+  <!-- <node name="resampler" type="throttle" pkg="topic_tools" args="messages franka_pub/pose 1 /franka_pub/pose_new"/> -->
+
+
+  <!-- <node pkg="altair_panda" name="panda_probe_breast" type="panda_probe_breast.py" output="screen">
+        <param name="contact_topic" type="string" value="/breast/pose"/> 
+        <param name="debug_topic" type="string" value="/debug/pose"/>
+  </node> -->
+
+
+</launch>

@@ -91,6 +91,20 @@
             }
         },
         {
+            "label": "controller",
+            "type": "shell",
+            "command": "roslaunch",
+            "args": [
+                "${workspaceFolderBasename}",
+                "controller.launch"
+            ],
+            "problemMatcher": [],
+            "group": "none",
+            "presentation": {
+                "focus": true
+            }
+        },
+        {
             "label": "build",
             "type": "shell",
             "command": "catkin",
