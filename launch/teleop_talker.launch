@@ -1,6 +1,6 @@
 <launch>
     <arg name="frequency" default="50"/>
-    <arg name="start_delta_position" default="0.1"/>
+    <arg name="start_delta_position" default="0.05"/>
     <arg name="start_delta_orientation" default="10"/>
     <arg name="start_delta_gripper_width" default="0.01"/>
     <arg name="resolution_position" default="0.01"/>

@@ -4,5 +4,7 @@ float64 z
 float64 roll
 float64 pitch
 float64 yaw
+bool arm_homing
 bool gripper_homing
+float64 gripper_grasp
 float64 gripper_width

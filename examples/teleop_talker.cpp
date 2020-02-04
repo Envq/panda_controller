@@ -36,8 +36,10 @@ const int YAW_NEG = 'e';               //'9';
 const int INCREASE_ORIENTATION = 'l';  //'3';
 const int DECREASE_ORIENTATION = 'j';  //'1';
 const int GRIPPER_HOMING = 'o';
-const int GRIPPER_WIDTH_POS = 'i';
-const int GRIPPER_WIDTH_NEG = 'k';
+const int ARM_HOMING = 'o';
+const int GRIPPER_GRASP = 's';
+const int GRIPPER_WIDTH_POS = 'd';
+const int GRIPPER_WIDTH_NEG = 'a';
 const int INCREASE_GRIPPER_WIDTH = 'l';
 const int DECREASE_GRIPPER_WIDTH = 'j';
 
@@ -117,6 +119,7 @@ int main(int argc, char **argv) {
         msg.pitch = 0.0;
         msg.yaw = 0.0;
         msg.gripper_width = 0.0;
+        msg.arm_homing = false;
         msg.gripper_homing = false;
 
         // QUIT case
@@ -132,6 +135,7 @@ int main(int argc, char **argv) {
                 << "\nHELP:                   " << static_cast<char>(HELP)
                 << "\nMODE:                   " << static_cast<char>(MODE)
                 << "\n#########################"
+                << "\nARM HOMING:             " << static_cast<char>(ARM_HOMING)
                 << "\nX POS:                  " << static_cast<char>(X_POS)
                 << "\nX NEG:                  " << static_cast<char>(X_NEG)
                 << "\nY NEG:                  " << static_cast<char>(Y_NEG)
@@ -156,6 +160,8 @@ int main(int argc, char **argv) {
                 << "\n#########################"
                 << "\nGRIPPER HOMING:         "
                 << static_cast<char>(GRIPPER_HOMING)
+                << "\nGRIPPER GRASP           "
+                << static_cast<char>(GRIPPER_GRASP)
                 << "\nGRIPPER WIDTH POS:      "
                 << static_cast<char>(GRIPPER_WIDTH_POS)
                 << "\nGRIPPER WIDTH NEG:      "
@@ -188,7 +194,10 @@ int main(int argc, char **argv) {
 
             } else {
                 // POSITION cases
-                if (command == X_POS) {
+                if (command == ARM_HOMING) {
+                    msg.arm_homing = true;
+
+                } else if (command == X_POS) {
                     msg.x += delta_position;
 
                 } else if (command == X_NEG) {
@@ -207,11 +216,12 @@ int main(int argc, char **argv) {
                     msg.z -= delta_position;
 
                 } else {
-                    continue; // Not publish
+                    continue;  // Not publish
                 }
                 pub.publish(msg);
                 ros::spinOnce();
             }
+
         } else if (mode == 1) {
             // DELTA ORIENTATION cases
             if (command == INCREASE_ORIENTATION) {
@@ -227,7 +237,10 @@ int main(int argc, char **argv) {
 
             } else {
                 // ORIENTATION cases
-                if (command == ROLL_POS) {
+                if (command == ARM_HOMING) {
+                    msg.arm_homing = true;
+
+                } else if (command == ROLL_POS) {
                     msg.roll += delta_orientation;
 
                 } else if (command == ROLL_NEG) {
@@ -246,7 +259,7 @@ int main(int argc, char **argv) {
                     msg.yaw -= delta_orientation;
 
                 } else {
-                    continue; // Not publish
+                    continue;  // Not publish
                 }
                 pub.publish(msg);
                 ros::spinOnce();
@@ -256,14 +269,17 @@ int main(int argc, char **argv) {
             // DELTA GRIPPER WIDTH cases
             if (command == INCREASE_GRIPPER_WIDTH) {
                 delta_gripper_width += RESOLUTION_GRIPPER_WIDTH;
-                std::cout << "Delta delta gripper_width: "
-                          << delta_gripper_width << " meters" << std::endl;
+                std::cout << "Delta gripper width: " << delta_gripper_width
+                          << " meters" << std::endl;
 
             } else if (command == DECREASE_GRIPPER_WIDTH) {
                 if ((delta_gripper_width - RESOLUTION_GRIPPER_WIDTH) > 0)
                     delta_gripper_width -= RESOLUTION_GRIPPER_WIDTH;
-                std::cout << "Delta delta gripper_width: "
-                          << delta_gripper_width << " meters" << std::endl;
+                std::cout << "Delta gripper width: " << delta_gripper_width
+                          << " meters" << std::endl;
+
+            } else if (command == GRIPPER_GRASP) {
+                msg.gripper_grasp = delta_gripper_width;
 
             } else {
                 // GRIPPER WIDTH cases
@@ -277,7 +293,7 @@ int main(int argc, char **argv) {
                     msg.gripper_width -= delta_gripper_width;
 
                 } else {
-                    continue; // Not publish
+                    continue;  // Not publish
                 }
                 pub.publish(msg);
                 ros::spinOnce();

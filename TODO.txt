@@ -10,6 +10,6 @@ in console:
 
 
 
-- add grasp in teleop_talker/listener
 - fix cartesianMove in console
 - test pick_place
+- test speed arm

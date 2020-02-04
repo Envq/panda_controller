@@ -15,6 +15,9 @@
 const auto FG_COLOR = Colors::FG_BLUE;
 const auto BG_COLOR = Colors::BG_BLACK;
 
+float ARM_SPEED, GRIPPER_SPEED, GRIPPER_FORCE_DFLT, GRIPPER_EPSILON_INNER_DFLT,
+    GRIPPER_EPSILON_OUTER_DFLT;
+
 
 
 //#############################################################################
@@ -37,8 +40,10 @@ void teleopCallback(const panda_controller::teleop_panda::ConstPtr &msg) {
     const double ROLL = msg->roll;
     const double PITCH = msg->pitch;
     const double YAW = msg->yaw;
-    const double GRIPPER_WIDTH = msg->gripper_width;
+    const double ARM_HOMING = msg->arm_homing;
     const bool GRIPPER_HOMING = msg->gripper_homing;
+    const double GRIPPER_GRASP = msg->gripper_grasp;
+    const double GRIPPER_WIDTH = msg->gripper_width;
     ROS_INFO_STREAM("Offset:\n"
                     << "- X:                " << X << std::endl
                     << "- Y:                " << Y << std::endl
@@ -46,27 +51,47 @@ void teleopCallback(const panda_controller::teleop_panda::ConstPtr &msg) {
                     << "- ROLL:             " << ROLL << std::endl
                     << "- PITCH:            " << PITCH << std::endl
                     << "- YAW:              " << YAW << std::endl
+                    << "- ARM HOMING:       " << ARM_HOMING << std::endl
                     << "- GRIPPER HOMING:   " << GRIPPER_HOMING << std::endl
+                    << "- GRIPPER GRASP:    " << GRIPPER_GRASP << std::endl
                     << "- GRIPPER WITDH:    " << GRIPPER_WIDTH);
     try {
-        // GRIPPER
+        // GRIPPER HOMING
         if (GRIPPER_HOMING) {
             ROS_INFO("Gripper homing");
             panda_ptr->gripperHoming();
             current_gripper_width = robot::GRIPPER_MAX_WIDTH;
 
+            // GRIPPER GRASP
+        } else if (GRIPPER_GRASP != 0) {
+            if (GRIPPER_GRASP < 0.0 ||
+                GRIPPER_GRASP > robot::GRIPPER_MAX_WIDTH) {
+                ROS_WARN_STREAM("Gripper grasp invalid: " << GRIPPER_GRASP);
+            } else {
+                ROS_INFO_STREAM("Grasp gripper to: " << GRIPPER_GRASP);
+                panda_ptr->gripperGrasp(GRIPPER_GRASP, GRIPPER_FORCE_DFLT,
+                                        GRIPPER_EPSILON_INNER_DFLT,
+                                        GRIPPER_EPSILON_OUTER_DFLT);
+            }
 
+            // GRIPPER WIDTH
         } else if (GRIPPER_WIDTH != 0) {
             current_gripper_width += GRIPPER_WIDTH;
             if (current_gripper_width < 0.0 ||
                 current_gripper_width > robot::GRIPPER_MAX_WIDTH) {
-                ROS_WARN_STREAM("Gripper width invalid: " << current_gripper_width);
-            current_gripper_width -= GRIPPER_WIDTH;
+                ROS_WARN_STREAM(
+                    "Gripper width invalid: " << current_gripper_width);
+                current_gripper_width -= GRIPPER_WIDTH;
             } else {
                 ROS_INFO_STREAM(
                     "Move gripper to width: " << current_gripper_width);
                 panda_ptr->gripperMove(current_gripper_width);
             }
+
+            // ARM HOMING
+        } else if (ARM_HOMING) {
+            ROS_INFO("Arm homing");
+            panda_ptr->moveToReadyPose();
 
             // ARM
         } else {
@@ -115,7 +140,10 @@ int main(int argc, char **argv) {
     // Extract the parameters
     float ARM_SPEED, GRIPPER_SPEED;
     if (!(node.getParam("arm_speed", ARM_SPEED) &&
-          node.getParam("gripper_speed", GRIPPER_SPEED))) {
+          node.getParam("gripper_speed", GRIPPER_SPEED) &&
+          node.getParam("gripper_force", GRIPPER_FORCE_DFLT) &&
+          node.getParam("gripper_epsilon_inner", GRIPPER_EPSILON_INNER_DFLT) &&
+          node.getParam("gripper_epsilon_outer", GRIPPER_EPSILON_OUTER_DFLT))) {
         ROS_FATAL_STREAM(PCEXC::get_err_msg(NAME, "Can't get parameters"));
         ros::shutdown();
         return 0;
