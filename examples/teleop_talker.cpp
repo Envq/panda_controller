@@ -119,6 +119,7 @@ int main(int argc, char **argv) {
         msg.pitch = 0.0;
         msg.yaw = 0.0;
         msg.gripper_width = 0.0;
+        msg.gripper_grasp = 0.0;
         msg.arm_homing = false;
         msg.gripper_homing = false;
 
@@ -278,12 +279,12 @@ int main(int argc, char **argv) {
                 std::cout << "Delta gripper width: " << delta_gripper_width
                           << " meters" << std::endl;
 
-            } else if (command == GRIPPER_GRASP) {
-                msg.gripper_grasp = delta_gripper_width;
-
             } else {
                 // GRIPPER WIDTH cases
-                if (command == GRIPPER_HOMING) {
+                if (command == GRIPPER_GRASP) {
+                    msg.gripper_grasp = delta_gripper_width;
+
+                } else if (command == GRIPPER_HOMING) {
                     msg.gripper_homing = true;
 
                 } else if (command == GRIPPER_WIDTH_POS) {

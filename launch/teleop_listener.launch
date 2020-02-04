@@ -1,10 +1,12 @@
 <launch>
     <node name="teleop_listener" pkg="panda_controller" 
     type="teleop_listener" respawn="false" output="screen">
-        <param name="arm_speed" value="0.01"/>
+        <param name="arm_speed" value="0.1"/>
         <param name="gripper_speed" value="0.1"/>
         <param name="gripper_force" value="10.0"/>
         <param name="gripper_epsilon_inner" value="0.002"/>
         <param name="gripper_epsilon_outer" value="0.002"/>
+        <param name="cartesian_step" value="0.01"/>
+        <param name="cartesian_jump" value="0.0"/>
     </node>
 </launch>

@@ -15,8 +15,8 @@
 const auto FG_COLOR = Colors::FG_BLUE;
 const auto BG_COLOR = Colors::BG_BLACK;
 
-float ARM_SPEED, GRIPPER_SPEED, GRIPPER_FORCE_DFLT, GRIPPER_EPSILON_INNER_DFLT,
-    GRIPPER_EPSILON_OUTER_DFLT;
+float GRIPPER_FORCE_DFLT, GRIPPER_EPSILON_INNER_DFLT,
+    GRIPPER_EPSILON_OUTER_DFLT, CARTESIAN_STEP, CARTESIAN_JUMP;
 
 
 
@@ -72,6 +72,7 @@ void teleopCallback(const panda_controller::teleop_panda::ConstPtr &msg) {
                 panda_ptr->gripperGrasp(GRIPPER_GRASP, GRIPPER_FORCE_DFLT,
                                         GRIPPER_EPSILON_INNER_DFLT,
                                         GRIPPER_EPSILON_OUTER_DFLT);
+                current_gripper_width = GRIPPER_GRASP;
             }
 
             // GRIPPER WIDTH
@@ -109,7 +110,8 @@ void teleopCallback(const panda_controller::teleop_panda::ConstPtr &msg) {
             target_pose.orientation = tf2::toMsg(orientation);  // Update
 
             ROS_INFO_STREAM("Move to pose:\n" << target_pose);
-            panda_ptr->cartesianMovement(target_pose);
+            panda_ptr->cartesianMovement(target_pose, CARTESIAN_STEP,
+                                         CARTESIAN_JUMP);
         }
 
     } catch (const PCEXC::panda_error &e) {
@@ -143,7 +145,9 @@ int main(int argc, char **argv) {
           node.getParam("gripper_speed", GRIPPER_SPEED) &&
           node.getParam("gripper_force", GRIPPER_FORCE_DFLT) &&
           node.getParam("gripper_epsilon_inner", GRIPPER_EPSILON_INNER_DFLT) &&
-          node.getParam("gripper_epsilon_outer", GRIPPER_EPSILON_OUTER_DFLT))) {
+          node.getParam("gripper_epsilon_outer", GRIPPER_EPSILON_OUTER_DFLT) &&
+          node.getParam("cartesian_step", CARTESIAN_STEP) &&
+          node.getParam("cartesian_jump", CARTESIAN_JUMP))) {
         ROS_FATAL_STREAM(PCEXC::get_err_msg(NAME, "Can't get parameters"));
         ros::shutdown();
         return 0;
