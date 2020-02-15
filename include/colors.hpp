@@ -108,7 +108,7 @@ void ROS_STRONG_INFO(const Colors::Code &COLOR_FG, const Colors::Code &COLOR_BG,
 
     ss << std::forward<Arg>(arg);
     using expander = int[];
-    (void)expander{0, (void(ss << ',' << std::forward<Args>(args)), 0)...};
+    (void)expander{0, (void(ss << std::forward<Args>(args)), 0)...};
 
     ss << Colors::RESET;
     ROS_INFO_STREAM(ss.str());
