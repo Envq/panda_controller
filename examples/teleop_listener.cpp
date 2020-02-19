@@ -167,7 +167,7 @@ int main(int argc, char **argv) {
         ROS_INFO_STREAM("Gripper speed setted to: " << GRIPPER_SPEED);
         panda_ptr->setGripperSpeed(GRIPPER_SPEED);
         ROS_INFO("Gripper homing");
-        panda_ptr->gripperHoming();
+        // panda_ptr->gripperHoming();
 
         // Print first pose
         ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "FIRST POSE:");

@@ -1,0 +1,139 @@
+# FORMAT:
+# NAME_SCENE:
+#  - name: name_object (string)
+#    color: rgba (float)
+#    position: xyz (double)
+#    orientation: xyzw (double)
+#    type: (mesh/box/cylinder/cone/sphere)
+#    file: (string) #for mesh
+#    scale: xyz (double) #for mesh
+#    dimensions: xyz/rh (double) #for others
+
+pick_place:
+  - name: table
+    color:
+      r: 0.6
+      g: 0.4
+      b: 0.2
+      a: 1.0
+    position:
+      x: 0.0
+      y: 0.0
+      z: -0.016
+    orientation:
+      x: 0.0
+      y: 0.0
+      z: 0.0
+      w: 1.0
+    type: box
+    dimensions:
+      x: 1.6
+      y: 1.6
+      z: 0.03
+
+  - name: toy1
+    color:
+      r: 0.0
+      g: 0.0
+      b: 1.0
+      a: 0.5
+    position:
+      x: 0.2
+      y: 0.15
+      z: 0.2
+    orientation:
+      x: 1.0
+      y: 0.0
+      z: 0.0
+      w: 0.0
+    type: mesh
+    file: toy1.stl
+    scale:
+      x: 0.001
+      y: 0.001
+      z: 0.001
+
+  - name: toy2
+    color:
+      r: 1.0
+      g: 0.0
+      b: 0.0
+      a: 0.5
+    position:
+      x: 0.2
+      y: -0.15
+      z: 0.2
+    orientation:
+      x: 1.0
+      y: 0.0
+      z: 0.0
+      w: 0.0
+    type: mesh
+    file: toy2.stl
+    scale:
+      x: 0.001
+      y: 0.001
+      z: 0.001
+
+  - name: shield_bottom
+    color:
+      r: 1.0
+      g: 1.0
+      b: 1.0
+      a: 0.3
+    position:
+      x: -0.25
+      y: 0.0
+      z: 0.5
+    orientation:
+      x: 1.0
+      y: 0.0
+      z: 0.0
+      w: 0.0
+    type: box
+    dimensions:
+      x: 0.02
+      y: 0.6
+      z: 1.0
+
+  - name: shield_left
+    color:
+      r: 1.0
+      g: 1.0
+      b: 1.0
+      a: 0.3
+    position:
+      x: 0.35
+      y: 0.3
+      z: 0.5
+    orientation:
+      x: 1.0
+      y: 0.0
+      z: 0.0
+      w: 0.0
+    type: box
+    dimensions:
+      x: 1.2
+      y: 0.02
+      z: 1.0
+
+  - name: shield_right
+    color:
+      r: 1.0
+      g: 1.0
+      b: 1.0
+      a: 0.3
+    position:
+      x: 0.35
+      y: -0.3
+      z: 0.5
+    orientation:
+      x: 1.0
+      y: 0.0
+      z: 0.0
+      w: 0.0
+    type: box
+    dimensions:
+      x: 1.2
+      y: 0.02
+      z: 1.0

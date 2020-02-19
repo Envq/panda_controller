@@ -370,8 +370,8 @@ void Panda::gripperHoming() {  // needs real robot
     // Check if server is connected
     // if (!gripper_homing_client_ptr_->isServerConnected()) {
     //     throw PCEXC::panda_gripper_error(
-    //         "Panda::gripperHoming()" + PCEXC::DIVISOR + "isServerConnected()" +
-    //         PCEXC::DIVISOR + "Server is not connected");
+    //         "Panda::gripperHoming()" + PCEXC::DIVISOR + "isServerConnected()"
+    //         + PCEXC::DIVISOR + "Server is not connected");
     // }
 
     // Wait for action server

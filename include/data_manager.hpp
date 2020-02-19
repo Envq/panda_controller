@@ -5,12 +5,14 @@
 
 // C++
 #include <fstream>
+#include <geometric_shapes/shape_operations.h>  //Mesh
 #include <jsoncpp/json/json.h>
 #include <vector>
+#include <yaml-cpp/yaml.h>
 
 // ROS
 #include <geometry_msgs/Pose.h>
-#include <ros/package.h>
+#include <ros/package.h>  // getPath
 #include <shape_msgs/SolidPrimitive.h>
 
 // MOVEIT
@@ -22,16 +24,6 @@
 //#############################################################################
 // NAMESPACE ##################################################################
 namespace data_manager {
-
-
-
-//#############################################################################
-// CONSTANTS ###################################################################
-const std::string PACKAGE_NAME = "panda_controller";
-const std::string FOLDER_NAME = "/data/";
-const std::string POSES_RELATIVE = FOLDER_NAME + "poses.json";
-const std::string SCENES_RELATIVE = FOLDER_NAME + "scenes.json";
-
 
 
 //#############################################################################

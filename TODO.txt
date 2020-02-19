@@ -10,6 +10,4 @@ in console:
 
 
 
-- fix cartesianMove in console
-- test pick_place
-- test speed arm
+- exceptions with variadic
