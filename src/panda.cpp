@@ -4,10 +4,30 @@
 
 
 //#############################################################################
-// PRIVATE FUNCTIONS ##########################################################
+// CONFIGS ####################################################################
+namespace config {
+const std::string FRAME_REF = "panda_link0";
+const double GRIPPER_MAX_WIDTH = 0.08;
+const auto READY_JOINTS = std::vector<double>{
+    0.00, -0.25 * M_PI, 0.00, -0.75 * M_PI, 0.00, 0.50 * M_PI, 0.25 * M_PI};
+}  // namespace config
+
+
+
+//#############################################################################
+// PRIVATE IMPREMENTATIONS
 double get_size_object(
     moveit::planning_interface::PlanningSceneInterfacePtr &planning_scene_ptr,
-    const std::string &OBJECT_NAME);
+    const std::string &OBJECT_NAME) {
+    // Get the attach objects
+    auto attach_objects = planning_scene_ptr->getAttachedObjects();
+
+    // Get dimensions object
+    auto &dim = attach_objects[OBJECT_NAME].object.primitives[0].dimensions;
+
+    // extract radius and return diameter
+    return dim[1] * 2;
+}
 
 
 
@@ -15,7 +35,7 @@ double get_size_object(
 // PUBLIC METHODS IMPLEMENTATIONS #############################################
 namespace robot {
 
-Panda::Panda(const bool &HOMING_STARTUP) {
+Panda::Panda(const bool &GRIPPER_IS_ACTIVE) {
     // Init MoveGroupInterface with arm
     try {
         move_group_ptr_.reset(
@@ -39,33 +59,33 @@ Panda::Panda(const bool &HOMING_STARTUP) {
             "Impossible initialize PlanningSceneInterface");
     }
 
+    // Set attributes
+    setArmSpeed(defaults::ARM_SPEED);
+    gripper_speed_ = defaults::GRIPPER_SPEED;
+    gripper_is_active_ = GRIPPER_IS_ACTIVE;
+
+
     // Init Gripper
-    try {
-        // Create action client for homing
-        gripper_homing_client_ptr_.reset(
-            new GripperHomingClient("franka_gripper/homing", true));
+    if (gripper_is_active_) {
+        try {
+            // Create action client for homing
+            gripper_homing_client_ptr_.reset(
+                new GripperHomingClient("franka_gripper/homing", true));
 
-        // Create action client for move
-        gripper_move_client_ptr_.reset(
-            new GripperMoveClient("franka_gripper/move", true));
+            // Create action client for move
+            gripper_move_client_ptr_.reset(
+                new GripperMoveClient("franka_gripper/move", true));
 
-        // Create action client for grasp
-        gripper_grasp_client_ptr_.reset(
-            new GripperGraspClient("franka_gripper/grasp", true));
+            // Create action client for grasp
+            gripper_grasp_client_ptr_.reset(
+                new GripperGraspClient("franka_gripper/grasp", true));
 
-    } catch (const std::runtime_error &e) {
-        throw PCEXC::panda_error("Panda::Panda()" + PCEXC::DIVISOR +
-                                 "Impossible create "
-                                 "action clients for franka_gripper");
+        } catch (const std::runtime_error &e) {
+            throw PCEXC::panda_error("Panda::Panda()" + PCEXC::DIVISOR +
+                                     "Impossible create "
+                                     "action clients for franka_gripper");
+        }
     }
-
-    // Set default speeds
-    setArmSpeed(robot::DEFAULT_ARM_SPEED);
-    gripper_speed_ = robot::DEFAULT_GRIPPER_SPEED;
-
-    // Homing gripper
-    if (HOMING_STARTUP)
-        gripperHoming();
 }
 
 
@@ -95,47 +115,21 @@ void Panda::resetScene() {
 }
 
 
-void Panda::moveToPose(const geometry_msgs::Pose &POSE, const bool &PLAN_ONLY) {
-    // Set the target Pose
-    move_group_ptr_->setPoseTarget(POSE);
-
-    // Perform the planning
-    moveit::planning_interface::MoveGroupInterface::Plan plan;
-    auto res = move_group_ptr_->plan(plan);
-
-    // State of planning check
-    if (res != moveit::planning_interface::MoveItErrorCode::SUCCESS)
-        throw PCEXC::panda_arm_error("Panda::moveToPose()" + PCEXC::DIVISOR +
-                                     "plan()" + PCEXC::DIVISOR + "failure");
-
-    // Execute the move
-    if (!PLAN_ONLY)
-        move_group_ptr_->move();
-}
-
-
-void Panda::moveJoints(const std::vector<double> &JOINTS,
-                       const bool &PLAN_ONLY) {
+void Panda::moveJoints(const std::vector<double> &JOINTS) {
     // Set new joints values
     move_group_ptr_->setJointValueTarget(JOINTS);
 
-    // Perform the planning
-    moveit::planning_interface::MoveGroupInterface::Plan plan;
-    auto res = move_group_ptr_->plan(plan);
+    // Perform movement
+    auto res = move_group_ptr_->move();
 
-    // State of planning check
+    // Errors check
     if (res != moveit::planning_interface::MoveItErrorCode::SUCCESS)
-        throw PCEXC::panda_arm_error("Panda::moveToPose()" + PCEXC::DIVISOR +
-                                     "plan()" + PCEXC::DIVISOR + "failure");
-
-    // Execute the move
-    if (!PLAN_ONLY)
-        move_group_ptr_->move();
+        throw PCEXC::panda_arm_error("Panda::moveJoints()" + PCEXC::DIVISOR +
+                                     "move()" + PCEXC::DIVISOR + "failure");
 }
 
 
-void Panda::moveJointRad(const int &JOINT, const double &VAL,
-                         const bool &PLAN_ONLY) {
+void Panda::moveJointRad(const int &JOINT, const double &VAL) {
     if (JOINT > 7 || JOINT < 1)
         throw PCEXC::panda_arm_error("Panda::moveJointRad()" + PCEXC::DIVISOR +
                                      "'joint_" + std::to_string(JOINT) +
@@ -144,83 +138,81 @@ void Panda::moveJointRad(const int &JOINT, const double &VAL,
     auto joints_state = move_group_ptr_->getCurrentJointValues();
 
     // Update value of specified join
-    joints_state[JOINT - 1] += VAL;  // JOINT-1 to Adjust joint number
+    // Note: joints_state start from 0 not 1
+    joints_state[JOINT - 1] += VAL;
 
     // Perform movement
-    moveJoints(joints_state, PLAN_ONLY);
+    moveJoints(joints_state);
 }
 
 
-void Panda::moveJointDeg(const int &JOINT, const double &VAL,
-                         const bool &PLAN_ONLY) {
+void Panda::moveJointDeg(const int &JOINT, const double &VAL) {
     double rad_val = VAL * M_PI / 180.0;
-    moveJointRad(JOINT, rad_val, PLAN_ONLY);
-}
 
-
-void Panda::cartesianMovement(const std::vector<geometry_msgs::Pose> &WAYPOINTS,
-                              const double &STEP, const double &JUMP_THRESHOLD,
-                              const bool &PLAN_ONLY) {
-    moveit_msgs::RobotTrajectory trajectory;
-    double fraction = move_group_ptr_->computeCartesianPath(
-        WAYPOINTS, STEP, JUMP_THRESHOLD, trajectory);
-
-    // Check Errors
-    if (fraction == -1)
-        throw PCEXC::panda_arm_error("Panda::moveInCartesian()" +
-                                     PCEXC::DIVISOR + "computeCartesianPath()" +
-                                     PCEXC::DIVISOR + "failure");
-    if (fraction != 1)
-        throw PCEXC::panda_arm_error(
-            "Panda::moveInCartesian()" + PCEXC::DIVISOR +
-            "computeCartesianPath()" + PCEXC::DIVISOR + "failure: only " +
-            std::to_string(fraction * 100) + "% completed");
-
-    // Execute the move
-    if (!PLAN_ONLY) {
-        moveit::planning_interface::MoveGroupInterface::Plan plan;
-        plan.trajectory_ = trajectory;
-        move_group_ptr_->execute(plan);
-    }
+    // Perform movement
+    moveJointRad(JOINT, rad_val);
 }
 
 
 void Panda::moveToReadyPose() {
-    moveJoints(robot::HOME_JOINTS);
+    // Perform movement
+    moveJoints(config::READY_JOINTS);
+}
+
+
+void Panda::moveToPose(const geometry_msgs::Pose &POSE) {
+    // Set the target Pose
+    move_group_ptr_->setPoseTarget(POSE);
+
+    // Perform movement
+    auto res = move_group_ptr_->move();
+
+    // Errors check
+    if (res != moveit::planning_interface::MoveItErrorCode::SUCCESS)
+        throw PCEXC::panda_arm_error("Panda::moveToPose()" + PCEXC::DIVISOR +
+                                     "move()" + PCEXC::DIVISOR + "failure");
+}
+
+
+void Panda::cartesianMovement(const std::vector<geometry_msgs::Pose> &WAYPOINTS,
+                              const double &STEP,
+                              const double &JUMP_THRESHOLD) {
+    moveit_msgs::RobotTrajectory trajectory;
+    double progress_percentage = move_group_ptr_->computeCartesianPath(
+        WAYPOINTS, STEP, JUMP_THRESHOLD, trajectory);
+
+    // Check Errors
+    if (progress_percentage == -1)
+        throw PCEXC::panda_arm_error("Panda::moveInCartesian()" +
+                                     PCEXC::DIVISOR + "computeCartesianPath()" +
+                                     PCEXC::DIVISOR + "failure");
+
+    // Abort if the progress percentage is not 100%
+    if (progress_percentage != 1)
+        throw PCEXC::panda_arm_error(
+            "Panda::moveInCartesian()" + PCEXC::DIVISOR +
+            "computeCartesianPath()" + PCEXC::DIVISOR + "failure: only " +
+            std::to_string(progress_percentage * 100) + "% completed");
+
+    // Perform movement
+    moveit::planning_interface::MoveGroupInterface::Plan plan;
+    plan.trajectory_ = trajectory;
+    auto res = move_group_ptr_->execute(plan);
+
+    // Errors check
+    if (res != moveit::planning_interface::MoveItErrorCode::SUCCESS)
+        throw PCEXC::panda_arm_error("Panda::cartesianMovement()" +
+                                     PCEXC::DIVISOR + "execute()" +
+                                     PCEXC::DIVISOR + "failure");
 }
 
 
 void Panda::cartesianMovement(const geometry_msgs::Pose &POSE,
-                              const double &STEP, const double &JUMP_THRESHOLD,
-                              const bool &PLAN_ONLY) {
+                              const double &STEP,
+                              const double &JUMP_THRESHOLD) {
     std::vector<geometry_msgs::Pose> waypoint;
     waypoint.push_back(POSE);
-    cartesianMovement(waypoint, STEP, JUMP_THRESHOLD, PLAN_ONLY);
-}
-
-
-void Panda::pick(const geometry_msgs::Pose &POSE, const double &GRASP_WIDTH,
-                 const double &GRASP_FORCE, const double &GRASP_EPSILON_INNER,
-                 const double &GRASP_EPSILON_OUTER, const bool &PLAN_ONLY) {
-    try {
-        // Open gripper
-        gripperMove(robot::GRIPPER_MAX_WIDTH);  // needs real robot
-
-        // Move arm
-        moveToPose(POSE);
-
-        // Close gripper
-        gripperGrasp(GRASP_WIDTH, GRASP_FORCE, GRASP_EPSILON_INNER,
-                     GRASP_EPSILON_OUTER);  // needs real robot
-
-    } catch (PCEXC::panda_arm_error &e) {
-        throw PCEXC::panda_arm_error("Panda::pick()" + PCEXC::DIVISOR + "" +
-                                     std::string(e.what()));
-
-    } catch (PCEXC::panda_gripper_error &e) {
-        throw PCEXC::panda_gripper_error("Panda::place() >>" +
-                                         std::string(e.what()));
-    }
+    cartesianMovement(waypoint, STEP, JUMP_THRESHOLD);
 }
 
 
@@ -228,10 +220,11 @@ void Panda::pick(const geometry_msgs::Pose &POSE,
                  const geometry_msgs::Vector3 &PRE_GRASP_APPROCH,
                  const double &GRASP_WIDTH, const double &GRASP_FORCE,
                  const double &GRASP_EPSILON_INNER,
-                 const double &GRASP_EPSILON_OUTER, const bool &PLAN_ONLY) {
+                 const double &GRASP_EPSILON_OUTER, const double &STEP,
+                 const double &JUMP_THRESHOLD) {
     try {
         // Open gripper
-        gripperMove(robot::GRIPPER_MAX_WIDTH);  // needs real robot
+        gripperMove(config::GRIPPER_MAX_WIDTH);
 
         // Get pre-grasp-approch pose
         auto pre_pose = POSE;
@@ -243,18 +236,18 @@ void Panda::pick(const geometry_msgs::Pose &POSE,
         moveToPose(pre_pose);
 
         // Move to pose
-        cartesianMovement(POSE);
+        cartesianMovement(POSE, STEP, JUMP_THRESHOLD);
 
         // Close gripper
         gripperGrasp(GRASP_WIDTH, GRASP_FORCE, GRASP_EPSILON_INNER,
-                     GRASP_EPSILON_OUTER);  // needs real robot
+                     GRASP_EPSILON_OUTER);
 
     } catch (PCEXC::panda_arm_error &e) {
-        throw PCEXC::panda_arm_error("Panda::pick()" + PCEXC::DIVISOR + "" +
+        throw PCEXC::panda_arm_error("Panda::pick()" + PCEXC::DIVISOR +
                                      std::string(e.what()));
 
     } catch (PCEXC::panda_gripper_error &e) {
-        throw PCEXC::panda_gripper_error("Panda::place() >>" +
+        throw PCEXC::panda_gripper_error("Panda::pick()" + PCEXC::DIVISOR +
                                          std::string(e.what()));
     }
 }
@@ -263,10 +256,10 @@ void Panda::pick(const geometry_msgs::Pose &POSE,
 void Panda::pick(const geometry_msgs::Pose &POSE,
                  const std::string &OBJECT_NAME, const double &GRASP_FORCE,
                  const double &GRASP_EPSILON_INNER,
-                 const double &GRASP_EPSILON_OUTER, const bool &PLAN_ONLY) {
+                 const double &GRASP_EPSILON_OUTER) {
     try {
         // Open gripper
-        gripperMove(robot::GRIPPER_MAX_WIDTH);  // needs real robot
+        gripperMove(config::GRIPPER_MAX_WIDTH);
 
         // Move arm
         moveToPose(POSE);
@@ -280,7 +273,8 @@ void Panda::pick(const geometry_msgs::Pose &POSE,
 
         // Exit if object not exist
         if (!exist)
-            throw PCEXC::panda_arm_error("'" + OBJECT_NAME + "' not exists");
+            throw PCEXC::panda_arm_error("Panda::pick()" + PCEXC::DIVISOR +
+                                         "'" + OBJECT_NAME + "' not exists");
 
         // Attach object
         move_group_ptr_->attachObject(OBJECT_NAME,
@@ -291,36 +285,14 @@ void Panda::pick(const geometry_msgs::Pose &POSE,
 
         // Close gripper
         gripperGrasp(size, GRASP_FORCE, GRASP_EPSILON_INNER,
-                     GRASP_EPSILON_OUTER);  // needs real robot
+                     GRASP_EPSILON_OUTER);
 
     } catch (PCEXC::panda_arm_error &e) {
-        throw PCEXC::panda_arm_error("Panda::pick()" + PCEXC::DIVISOR + "" +
+        throw PCEXC::panda_arm_error("Panda::pick()" + PCEXC::DIVISOR +
                                      std::string(e.what()));
 
     } catch (PCEXC::panda_gripper_error &e) {
-        throw PCEXC::panda_gripper_error("Panda::place() >>" +
-                                         std::string(e.what()));
-    }
-}
-
-
-void Panda::place(const geometry_msgs::Pose &POSE, const bool &PLAN_ONLY) {
-    try {
-        // Move arm
-        moveToPose(POSE);
-
-        // Detach objects
-        move_group_ptr_->detachObject(move_group_ptr_->getEndEffectorLink());
-
-        // Open gripper
-        gripperMove(robot::GRIPPER_MAX_WIDTH);  // needs real robot
-
-    } catch (PCEXC::panda_arm_error &e) {
-        throw PCEXC::panda_arm_error("Panda::place() >>" +
-                                     std::string(e.what()));
-
-    } catch (PCEXC::panda_gripper_error &e) {
-        throw PCEXC::panda_gripper_error("Panda::place() >>" +
+        throw PCEXC::panda_gripper_error("Panda::pick()" + PCEXC::DIVISOR +
                                          std::string(e.what()));
     }
 }
@@ -329,7 +301,7 @@ void Panda::place(const geometry_msgs::Pose &POSE, const bool &PLAN_ONLY) {
 void Panda::place(const geometry_msgs::Pose &POSE,
                   const geometry_msgs::Vector3 &POST_GRASP_RETREAT,
                   const geometry_msgs::Vector3 &POST_PLACE_RETREAT,
-                  const bool &PLAN_ONLY) {
+                  const double &STEP, const double &JUMP_THRESHOLD) {
     try {
         // Get post-grasp-retrait pose
         auto PGR_pose = getCurrentPose();
@@ -338,13 +310,13 @@ void Panda::place(const geometry_msgs::Pose &POSE,
         PGR_pose.position.z += POST_GRASP_RETREAT.z;
 
         // Move to post-grasp-retrait pose
-        cartesianMovement(PGR_pose);
+        cartesianMovement(PGR_pose, STEP, JUMP_THRESHOLD);
 
         // Move arm
         moveToPose(POSE);
 
         // Open gripper
-        gripperMove(robot::GRIPPER_MAX_WIDTH);  // needs real robot
+        gripperMove(config::GRIPPER_MAX_WIDTH);
 
         // Get post-place-retrait pose
         auto PPR_pose = getCurrentPose();
@@ -353,114 +325,95 @@ void Panda::place(const geometry_msgs::Pose &POSE,
         PPR_pose.position.z += POST_PLACE_RETREAT.z;
 
         // Move to post-place-retrait pose
-        cartesianMovement(PPR_pose);
+        cartesianMovement(PPR_pose, STEP, JUMP_THRESHOLD);
 
     } catch (PCEXC::panda_arm_error &e) {
-        throw PCEXC::panda_arm_error("Panda::place() >>" +
+        throw PCEXC::panda_arm_error("Panda::place()" + PCEXC::DIVISOR +
                                      std::string(e.what()));
 
     } catch (PCEXC::panda_gripper_error &e) {
-        throw PCEXC::panda_gripper_error("Panda::place() >>" +
+        throw PCEXC::panda_gripper_error("Panda::place()" + PCEXC::DIVISOR +
                                          std::string(e.what()));
     }
 }
 
 
-void Panda::gripperHoming() {  // needs real robot
-    // Check if server is connected
-    // if (!gripper_homing_client_ptr_->isServerConnected()) {
-    //     throw PCEXC::panda_gripper_error(
-    //         "Panda::gripperHoming()" + PCEXC::DIVISOR + "isServerConnected()"
-    //         + PCEXC::DIVISOR + "Server is not connected");
-    // }
+void Panda::place(const geometry_msgs::Pose &POSE) {
+    try {
+        // Move arm
+        moveToPose(POSE);
 
-    // Wait for action server
-    if (!gripper_homing_client_ptr_->waitForServer()) {
-        throw PCEXC::panda_gripper_error("Panda::gripperHoming()" +
-                                         PCEXC::DIVISOR + "waitForServer()" +
-                                         PCEXC::DIVISOR + "Timeout");
-    }
+        // Detach objects
+        move_group_ptr_->detachObject(move_group_ptr_->getEndEffectorLink());
 
-    // Create homing goal
-    auto goal = franka_gripper::HomingGoal();
-    gripper_homing_client_ptr_->sendGoal(goal);
+        // Open gripper
+        gripperMove(config::GRIPPER_MAX_WIDTH);
 
-    // Wait for result
-    if (!gripper_homing_client_ptr_->waitForResult()) {
-        throw PCEXC::panda_gripper_error("Panda::gripperHoming()" +
-                                         PCEXC::DIVISOR + "waitForResult()" +
-                                         PCEXC::DIVISOR + "Timeout");
+    } catch (PCEXC::panda_arm_error &e) {
+        throw PCEXC::panda_arm_error("Panda::place()" + PCEXC::DIVISOR +
+                                     std::string(e.what()));
+
+    } catch (PCEXC::panda_gripper_error &e) {
+        throw PCEXC::panda_gripper_error("Panda::place()" + PCEXC::DIVISOR +
+                                         std::string(e.what()));
     }
 }
 
 
-void Panda::gripperMove(const double &WIDTH) {  // needs real robot
+void Panda::gripperHoming() {
+    if (gripper_is_active_) {
+        // Create homing goal
+        auto goal = franka_gripper::HomingGoal();
+        gripper_homing_client_ptr_->sendGoal(goal);
 
-    // Wait for action server
-    if (!gripper_move_client_ptr_->waitForServer()) {
-        throw PCEXC::panda_gripper_error("Panda::gripperMove()" +
-                                         PCEXC::DIVISOR + "waitForServer()" +
-                                         PCEXC::DIVISOR + "Timeout");
+        // Wait for result
+        if (!gripper_homing_client_ptr_->waitForResult()) {
+            throw PCEXC::panda_gripper_error(
+                "Panda::gripperHoming()" + PCEXC::DIVISOR + "waitForResult()" +
+                PCEXC::DIVISOR + "Timeout");
+        }
     }
+}
 
-    // Create move goal
-    auto goal = franka_gripper::MoveGoal();
-    goal.width = WIDTH;
-    goal.speed = gripper_speed_;
-    gripper_move_client_ptr_->sendGoal(goal);
 
-    // Wait for result
-    if (!gripper_move_client_ptr_->waitForResult()) {
-        throw PCEXC::panda_gripper_error("Panda::gripperMove()" +
-                                         PCEXC::DIVISOR + "waitForResult()" +
-                                         PCEXC::DIVISOR + "Timeout");
+void Panda::gripperMove(const double &WIDTH) {
+    if (gripper_is_active_) {
+        // Create move goal
+        auto goal = franka_gripper::MoveGoal();
+        goal.width = WIDTH;
+        goal.speed = gripper_speed_;
+        gripper_move_client_ptr_->sendGoal(goal);
+
+        // Wait for result
+        if (!gripper_move_client_ptr_->waitForResult()) {
+            throw PCEXC::panda_gripper_error(
+                "Panda::gripperMove()" + PCEXC::DIVISOR + "waitForResult()" +
+                PCEXC::DIVISOR + "Timeout");
+        }
     }
 }
 
 
 void Panda::gripperGrasp(const double &WIDTH, const double &FORCE,
                          const double &EPSILON_INNER,
-                         const double &EPSILON_OUTER) {  // needs real robot
+                         const double &EPSILON_OUTER) {
+    if (gripper_is_active_) {
+        // Create move goal
+        auto goal = franka_gripper::GraspGoal();
+        goal.width = WIDTH;
+        goal.speed = gripper_speed_;
+        goal.force = FORCE;
+        goal.epsilon.inner = EPSILON_INNER;
+        goal.epsilon.outer = EPSILON_OUTER;
+        gripper_grasp_client_ptr_->sendGoal(goal);
 
-    // Wait for action server
-    if (!gripper_grasp_client_ptr_->waitForServer()) {
-        throw PCEXC::panda_gripper_error("Panda::gripperGrasp()" +
-                                         PCEXC::DIVISOR + "waitForServer()" +
-                                         PCEXC::DIVISOR + "Timeout");
-    }
-
-    // Create move goal
-    auto goal = franka_gripper::GraspGoal();
-    goal.width = WIDTH;
-    goal.speed = gripper_speed_;
-    goal.force = FORCE;
-    goal.epsilon.inner = EPSILON_INNER;
-    goal.epsilon.outer = EPSILON_OUTER;
-    gripper_grasp_client_ptr_->sendGoal(goal);
-
-    // Wait for result
-    if (!gripper_grasp_client_ptr_->waitForResult()) {
-        throw PCEXC::panda_gripper_error("Panda::gripperGrasp()" +
-                                         PCEXC::DIVISOR + "waitForResult()" +
-                                         PCEXC::DIVISOR + "Timeout");
+        // Wait for result
+        if (!gripper_grasp_client_ptr_->waitForResult()) {
+            throw PCEXC::panda_gripper_error(
+                "Panda::gripperGrasp()" + PCEXC::DIVISOR + "waitForResult()" +
+                PCEXC::DIVISOR + "Timeout");
+        }
     }
 }
 
 }  // namespace robot
-
-
-
-//#############################################################################
-// PRIVATE IMPREMENTATIONS
-double get_size_object(
-    moveit::planning_interface::PlanningSceneInterfacePtr &planning_scene_ptr,
-    const std::string &OBJECT_NAME) {
-    // Get the attach objects
-    auto attach_objects = planning_scene_ptr->getAttachedObjects();
-
-    // Get dimensions object
-    auto &dim = attach_objects[OBJECT_NAME].object.primitives[0].dimensions;
-
-    // extract radius and return diameter
-    return dim[1] * 2;
-}

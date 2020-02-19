@@ -29,38 +29,33 @@
 
 
 //#############################################################################
-// NAMESPACE ##################################################################
-namespace robot {
-
-
-//#############################################################################
-// CONSTANTS ##################################################################
-const std::string FRAME_REF = "panda_link0";
-const double GRIPPER_MAX_WIDTH = 0.08;
-const float DEFAULT_ARM_SPEED = 0.1;
-const float DEFAULT_GRIPPER_SPEED = 0.1;
-const double DEFAULT_MOVE_STEP = 0.01;
-const double DEFAULT_MOVE_JUMP_THRESHOLD = 0.0;
-const double DISTANCE_FROM_GRIPPER_CENTER = 0.105;
-const auto HOME_JOINTS = std::vector<double>{
-    0.00, -0.25 * M_PI, 0.00, -0.75 * M_PI, 0.00, 0.50 * M_PI, 0.25 * M_PI};
+// DEFAULT VALUES #############################################################
+namespace defaults {
+const float ARM_SPEED = 1.0;
+const float GRIPPER_SPEED = 1.0;
+const float STEP = 0.01;
+const float JUMP_THRESHOLD = 0.0;
+}  // namespace defaults
 
 
 
 //#############################################################################
 // TYPEDEF ####################################################################
+namespace robot {
 typedef actionlib::SimpleActionClient<franka_gripper::HomingAction>
     GripperHomingClient;
 typedef actionlib::SimpleActionClient<franka_gripper::MoveAction>
     GripperMoveClient;
 typedef actionlib::SimpleActionClient<franka_gripper::GraspAction>
     GripperGraspClient;
+}  // namespace robot
 
 
 
 //#############################################################################
 // CLASSES ####################################################################
-// Class to easily manage the Panda arm with moveit
+namespace robot {
+
 class Panda {
   private:
     moveit::planning_interface::MoveGroupInterfacePtr move_group_ptr_;
@@ -69,10 +64,11 @@ class Panda {
     boost::shared_ptr<GripperMoveClient> gripper_move_client_ptr_;
     boost::shared_ptr<GripperGraspClient> gripper_grasp_client_ptr_;
     float gripper_speed_;
+    bool gripper_is_active_;
 
   public:
     // Constructors
-    explicit Panda(const bool &HOMING_STARTUP = false);
+    explicit Panda(const bool &GRIPPER_IS_ACTIVE = true);
 
     // Get current pose
     geometry_msgs::Pose getCurrentPose();
@@ -86,66 +82,59 @@ class Panda {
     // Set scene
     void setScene(const moveit_msgs::PlanningScene &SCENE);
 
-    // Set scene
+    // Reset scene
     void resetScene();
 
-    // Move to the specified pose
-    void moveToPose(const geometry_msgs::Pose &POSE,
-                    const bool &PLAN_ONLY = false);
-
-    // Move joints
-    void moveJoints(const std::vector<double> &JOINTS,
-                    const bool &PLAN_ONLY = false);
+    // Move joints in radiands
+    void moveJoints(const std::vector<double> &JOINTS);
 
     // Move the specified joint in radiants
-    void moveJointRad(const int &JOINT, const double &VAL,
-                      const bool &PLAN_ONLY = false);
+    void moveJointRad(const int &JOINT, const double &VAL);
 
     // Move the specified joint in degrees
-    void moveJointDeg(const int &JOINT, const double &VAL,
-                      const bool &PLAN_ONLY = false);
+    void moveJointDeg(const int &JOINT, const double &VAL);
 
     // Go to ready pose
     void moveToReadyPose();
 
+    // Move to the specified pose
+    void moveToPose(const geometry_msgs::Pose &POSE);
+
     // Move in cartesian path
-    void cartesianMovement(
-        const std::vector<geometry_msgs::Pose> &WAYPOINTS,
-        const double &STEP = DEFAULT_MOVE_STEP,
-        const double &JUMP_THRESHOLD = DEFAULT_MOVE_JUMP_THRESHOLD,
-        const bool &PLAN_ONLY = false);
+    void
+    cartesianMovement(const std::vector<geometry_msgs::Pose> &WAYPOINTS,
+                      const double &STEP = defaults::STEP,
+                      const double &JUMP_THRESHOLD = defaults::JUMP_THRESHOLD);
 
     // Move in cartesian path in only one waypoint
-    void cartesianMovement(
-        const geometry_msgs::Pose &POSE, const double &STEP = DEFAULT_MOVE_STEP,
-        const double &JUMP_THRESHOLD = DEFAULT_MOVE_JUMP_THRESHOLD,
-        const bool &PLAN_ONLY = false);
-
-    // Perfom pick without constraints
-    void pick(const geometry_msgs::Pose &POSE, const double &GRASP_WIDTH,
-              const double &GRASP_FORCE, const double &GRASP_EPSILON_INNER,
-              const double &GRASP_EPSILON_OUTER, const bool &PLAN_ONLY = false);
+    void
+    cartesianMovement(const geometry_msgs::Pose &POSE,
+                      const double &STEP = defaults::STEP,
+                      const double &JUMP_THRESHOLD = defaults::JUMP_THRESHOLD);
 
     // Perform pick with pre and post approch
     void pick(const geometry_msgs::Pose &POSE,
               const geometry_msgs::Vector3 &PRE_GRASP_APPROCH,
               const double &GRASP_WIDTH, const double &GRASP_FORCE,
               const double &GRASP_EPSILON_INNER,
-              const double &GRASP_EPSILON_OUTER, const bool &PLAN_ONLY = false);
+              const double &GRASP_EPSILON_OUTER,
+              const double &STEP = defaults::STEP,
+              const double &JUMP_THRESHOLD = defaults::JUMP_THRESHOLD);
 
     // Perform pick with collision object
     void pick(const geometry_msgs::Pose &POSE, const std::string &OBJECT_NAME,
               const double &GRASP_FORCE, const double &GRASP_EPSILON_INNER,
-              const double &GRASP_EPSILON_OUTER, const bool &PLAN_ONLY = false);
-
-    // Perform place without constraints
-    void place(const geometry_msgs::Pose &POSE, const bool &PLAN_ONLY = false);
+              const double &GRASP_EPSILON_OUTER);
 
     // Perform place with pre and post approch
     void place(const geometry_msgs::Pose &POSE,
                const geometry_msgs::Vector3 &POST_GRASP_RETREAT,
                const geometry_msgs::Vector3 &POST_PLACE_RETREAT,
-               const bool &PLAN_ONLY = false);
+               const double &STEP = defaults::STEP,
+               const double &JUMP_THRESHOLD = defaults::JUMP_THRESHOLD);
+
+    // Perform place
+    void place(const geometry_msgs::Pose &POSE);
 
     // Homing gripper
     void gripperHoming();
@@ -158,6 +147,5 @@ class Panda {
                       const double &GRASP_EPSILON_INNER,
                       const double &GRASP_EPSILON_OUTER);
 };
-
 
 }  // namespace robot

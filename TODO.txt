@@ -11,3 +11,5 @@ in console:
 
 
 - exceptions with variadic
+- improve return
+- double size = get_size_object(planning_scene_ptr_, OBJECT_NAME);
