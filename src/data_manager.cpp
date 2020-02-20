@@ -32,8 +32,8 @@ std::string get_path(const std::string &RELATIVE_PATH) {
     auto PACKAGE_PATH = ros::package::getPath(config::PACKAGE_NAME);
 
     if (PACKAGE_PATH.empty())
-        throw PCEXC::data_manager_error("get_path()" + PCEXC::DIVISOR +
-                                        "Package path not found");
+        throw PCEXC::DataManagerException("get_path()",
+                                          "Package path not found");
 
     // Return absolute path
     return PACKAGE_PATH + RELATIVE_PATH;
@@ -131,9 +131,8 @@ scene_object create_scene_object(const YAML::Node &OBJECT) {
             primitive.dimensions[1] = DIMENSIONS["r"].as<double>();
 
         } else {
-            throw PCEXC::data_manager_error("create_scene_object()" +
-                                            PCEXC::DIVISOR +
-                                            "Invalid type selected");
+            throw PCEXC::DataManagerException("create_scene_object()",
+                                              "Invalid type selected");
         }
 
         // Push information in collision object
@@ -173,15 +172,15 @@ void save_pose(const geometry_msgs::Pose &POSE, const std::string &NAME) {
         // Save updates
         std::ofstream fout(FILE_PATH);
         if (fout.fail())
-            throw PCEXC::data_manager_error(
-                "save_pose()" + PCEXC::DIVISOR +
-                "ofstream failure: Can't write file: " + FILE_PATH);
+            throw PCEXC::DataManagerException(
+                "save_pose()",
+                "ofstream failure:", "Can't write to the file: " + FILE_PATH);
         fout << root;
         fout.close();
 
     } catch (const YAML::BadFile &e) {
-        throw PCEXC::data_manager_error("save_pose()" + PCEXC::DIVISOR +
-                                        "YAML Can't open: " + FILE_PATH);
+        throw PCEXC::DataManagerException(
+            "save_pose()", "YAML:", "Can't open the file: " + FILE_PATH);
     }
 }
 
@@ -209,19 +208,17 @@ geometry_msgs::Pose get_pose(const std::string &NAME) {
         return pose;
 
     } catch (const YAML::BadFile &e) {
-        throw PCEXC::data_manager_error("get_pose()" + PCEXC::DIVISOR +
-                                        "YAML Can't open: " + FILE_PATH);
+        throw PCEXC::DataManagerException(
+            "get_pose()", "YAML:", "Can't open the file: " + FILE_PATH);
 
     } catch (const YAML::InvalidNode &e) {
-        throw PCEXC::data_manager_error(
-            "get_pose()" + PCEXC::DIVISOR + "YAML badly formed file" +
-            "(check the documentation to find the correct format): " +
-            FILE_PATH);
+        throw PCEXC::DataManagerException("get_pose()", "YAML:"
+                                                        "Badly formed file: " +
+                                                            FILE_PATH);
 
     } catch (const YAML::BadConversion &e) {
-        throw PCEXC::data_manager_error(
-            "get_pose()" + PCEXC::DIVISOR +
-            "YAML conversion failed while reading: " + NAME);
+        throw PCEXC::DataManagerException(
+            "get_pose()", "YAML:", "Conversion failed while reading: " + NAME);
     }
 }
 
@@ -257,19 +254,16 @@ moveit_msgs::PlanningScene get_scene(const std::string &NAME) {
         return scene;
 
     } catch (const YAML::BadFile &e) {
-        throw PCEXC::data_manager_error("get_scene()" + PCEXC::DIVISOR +
-                                        "YAML Can't open: " + FILE_PATH);
+        throw PCEXC::DataManagerException(
+            "get_scene()", "YAML:", "Can't open the file: " + FILE_PATH);
 
     } catch (const YAML::InvalidNode &e) {
-        throw PCEXC::data_manager_error(
-            "get_scene()" + PCEXC::DIVISOR + "YAML badly formed file" +
-            "(check the documentation to find the correct format): " +
-            FILE_PATH);
+        throw PCEXC::DataManagerException(
+            "get_scene()", "YAML:", "Badly formed file: " + FILE_PATH);
 
     } catch (const YAML::BadConversion &e) {
-        throw PCEXC::data_manager_error(
-            "get_scene()" + PCEXC::DIVISOR +
-            "YAML conversion failed while reading: " + NAME);
+        throw PCEXC::DataManagerException(
+            "get_scene()", "YAML:", "Conversion failed while reading: " + NAME);
     }
 }
 

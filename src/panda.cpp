@@ -42,10 +42,9 @@ Panda::Panda(const bool &GRIPPER_IS_ACTIVE) {
             new moveit::planning_interface::MoveGroupInterface("panda_arm"));
 
     } catch (const std::runtime_error &e) {
-        throw PCEXC::panda_error(
-            "Panda::Panda()" + PCEXC::DIVISOR +
-            "Impossible initialize MoveGroupInterface with "
-            "'panda_arm'");
+        throw PCEXC::PandaArmException(
+            "Panda::Panda()", "Impossible initialize MoveGroupInterface with "
+                              "'panda_arm'");
     }
 
     // Init PlanningSceneInterface
@@ -54,9 +53,8 @@ Panda::Panda(const bool &GRIPPER_IS_ACTIVE) {
             new moveit::planning_interface::PlanningSceneInterface);
 
     } catch (const std::runtime_error &e) {
-        throw PCEXC::panda_error(
-            "Panda::Panda()" + PCEXC::DIVISOR +
-            "Impossible initialize PlanningSceneInterface");
+        throw PCEXC::PandaArmException(
+            "Panda::Panda()", "Impossible initialize PlanningSceneInterface");
     }
 
     // Set attributes
@@ -81,9 +79,9 @@ Panda::Panda(const bool &GRIPPER_IS_ACTIVE) {
                 new GripperGraspClient("franka_gripper/grasp", true));
 
         } catch (const std::runtime_error &e) {
-            throw PCEXC::panda_error("Panda::Panda()" + PCEXC::DIVISOR +
-                                     "Impossible create "
-                                     "action clients for franka_gripper");
+            throw PCEXC::PandaGripperException(
+                "Panda::Panda()", "Impossible create "
+                                  "action clients for franka_gripper");
         }
     }
 }
@@ -124,16 +122,16 @@ void Panda::moveJoints(const std::vector<double> &JOINTS) {
 
     // Errors check
     if (res != moveit::planning_interface::MoveItErrorCode::SUCCESS)
-        throw PCEXC::panda_arm_error("Panda::moveJoints()" + PCEXC::DIVISOR +
-                                     "move()" + PCEXC::DIVISOR + "failure");
+        throw PCEXC::PandaArmException("Panda::moveJoints()", "move()",
+                                       "Failure");
 }
 
 
 void Panda::moveJointRad(const int &JOINT, const double &VAL) {
     if (JOINT > 7 || JOINT < 1)
-        throw PCEXC::panda_arm_error("Panda::moveJointRad()" + PCEXC::DIVISOR +
-                                     "'joint_" + std::to_string(JOINT) +
-                                     "' is a joint invalid");
+        throw PCEXC::PandaArmException("Panda::moveJointRad()",
+                                       "Joint invalid: joint_" +
+                                           std::to_string(JOINT));
 
     auto joints_state = move_group_ptr_->getCurrentJointValues();
 
@@ -169,8 +167,8 @@ void Panda::moveToPose(const geometry_msgs::Pose &POSE) {
 
     // Errors check
     if (res != moveit::planning_interface::MoveItErrorCode::SUCCESS)
-        throw PCEXC::panda_arm_error("Panda::moveToPose()" + PCEXC::DIVISOR +
-                                     "move()" + PCEXC::DIVISOR + "failure");
+        throw PCEXC::PandaArmException("Panda::moveToPose()", "move()",
+                                       "Failure");
 }
 
 
@@ -183,16 +181,15 @@ void Panda::cartesianMovement(const std::vector<geometry_msgs::Pose> &WAYPOINTS,
 
     // Check Errors
     if (progress_percentage == -1)
-        throw PCEXC::panda_arm_error("Panda::moveInCartesian()" +
-                                     PCEXC::DIVISOR + "computeCartesianPath()" +
-                                     PCEXC::DIVISOR + "failure");
+        throw PCEXC::PandaArmException("Panda::moveInCartesian()",
+                                       "computeCartesianPath()", "Failure");
 
     // Abort if the progress percentage is not 100%
     if (progress_percentage != 1)
-        throw PCEXC::panda_arm_error(
-            "Panda::moveInCartesian()" + PCEXC::DIVISOR +
-            "computeCartesianPath()" + PCEXC::DIVISOR + "failure: only " +
-            std::to_string(progress_percentage * 100) + "% completed");
+        throw PCEXC::PandaArmException(
+            "Panda::moveInCartesian()", "computeCartesianPath()", "Failure:",
+            "Only " + std::to_string(progress_percentage * 100) +
+                "% completed");
 
     // Perform movement
     moveit::planning_interface::MoveGroupInterface::Plan plan;
@@ -201,9 +198,8 @@ void Panda::cartesianMovement(const std::vector<geometry_msgs::Pose> &WAYPOINTS,
 
     // Errors check
     if (res != moveit::planning_interface::MoveItErrorCode::SUCCESS)
-        throw PCEXC::panda_arm_error("Panda::cartesianMovement()" +
-                                     PCEXC::DIVISOR + "execute()" +
-                                     PCEXC::DIVISOR + "failure");
+        throw PCEXC::PandaArmException("Panda::cartesianMovement()",
+                                       "execute()", "Failure");
 }
 
 
@@ -242,13 +238,12 @@ void Panda::pick(const geometry_msgs::Pose &POSE,
         gripperGrasp(GRASP_WIDTH, GRASP_FORCE, GRASP_EPSILON_INNER,
                      GRASP_EPSILON_OUTER);
 
-    } catch (PCEXC::panda_arm_error &e) {
-        throw PCEXC::panda_arm_error("Panda::pick()" + PCEXC::DIVISOR +
-                                     std::string(e.what()));
+    } catch (PCEXC::PandaArmException &e) {
+        throw PCEXC::PandaArmException("Panda::pick()", std::string(e.what()));
 
-    } catch (PCEXC::panda_gripper_error &e) {
-        throw PCEXC::panda_gripper_error("Panda::pick()" + PCEXC::DIVISOR +
-                                         std::string(e.what()));
+    } catch (PCEXC::PandaGripperException &e) {
+        throw PCEXC::PandaGripperException("Panda::pick()",
+                                           std::string(e.what()));
     }
 }
 
@@ -273,8 +268,8 @@ void Panda::pick(const geometry_msgs::Pose &POSE,
 
         // Exit if object not exist
         if (!exist)
-            throw PCEXC::panda_arm_error("Panda::pick()" + PCEXC::DIVISOR +
-                                         "'" + OBJECT_NAME + "' not exists");
+            throw PCEXC::PandaArmException("Not exists the object: " +
+                                           OBJECT_NAME);
 
         // Attach object
         move_group_ptr_->attachObject(OBJECT_NAME,
@@ -287,13 +282,12 @@ void Panda::pick(const geometry_msgs::Pose &POSE,
         gripperGrasp(size, GRASP_FORCE, GRASP_EPSILON_INNER,
                      GRASP_EPSILON_OUTER);
 
-    } catch (PCEXC::panda_arm_error &e) {
-        throw PCEXC::panda_arm_error("Panda::pick()" + PCEXC::DIVISOR +
-                                     std::string(e.what()));
+    } catch (PCEXC::PandaArmException &e) {
+        throw PCEXC::PandaArmException("Panda::pick()", std::string(e.what()));
 
-    } catch (PCEXC::panda_gripper_error &e) {
-        throw PCEXC::panda_gripper_error("Panda::pick()" + PCEXC::DIVISOR +
-                                         std::string(e.what()));
+    } catch (PCEXC::PandaGripperException &e) {
+        throw PCEXC::PandaGripperException("Panda::pick()",
+                                           std::string(e.what()));
     }
 }
 
@@ -327,13 +321,12 @@ void Panda::place(const geometry_msgs::Pose &POSE,
         // Move to post-place-retrait pose
         cartesianMovement(PPR_pose, STEP, JUMP_THRESHOLD);
 
-    } catch (PCEXC::panda_arm_error &e) {
-        throw PCEXC::panda_arm_error("Panda::place()" + PCEXC::DIVISOR +
-                                     std::string(e.what()));
+    } catch (PCEXC::PandaArmException &e) {
+        throw PCEXC::PandaArmException("Panda::place()", std::string(e.what()));
 
-    } catch (PCEXC::panda_gripper_error &e) {
-        throw PCEXC::panda_gripper_error("Panda::place()" + PCEXC::DIVISOR +
-                                         std::string(e.what()));
+    } catch (PCEXC::PandaGripperException &e) {
+        throw PCEXC::PandaGripperException("Panda::place()",
+                                           std::string(e.what()));
     }
 }
 
@@ -349,13 +342,12 @@ void Panda::place(const geometry_msgs::Pose &POSE) {
         // Open gripper
         gripperMove(config::GRIPPER_MAX_WIDTH);
 
-    } catch (PCEXC::panda_arm_error &e) {
-        throw PCEXC::panda_arm_error("Panda::place()" + PCEXC::DIVISOR +
-                                     std::string(e.what()));
+    } catch (PCEXC::PandaArmException &e) {
+        throw PCEXC::PandaArmException("Panda::place()", std::string(e.what()));
 
-    } catch (PCEXC::panda_gripper_error &e) {
-        throw PCEXC::panda_gripper_error("Panda::place()" + PCEXC::DIVISOR +
-                                         std::string(e.what()));
+    } catch (PCEXC::PandaGripperException &e) {
+        throw PCEXC::PandaGripperException("Panda::place()",
+                                           std::string(e.what()));
     }
 }
 
@@ -368,9 +360,8 @@ void Panda::gripperHoming() {
 
         // Wait for result
         if (!gripper_homing_client_ptr_->waitForResult()) {
-            throw PCEXC::panda_gripper_error(
-                "Panda::gripperHoming()" + PCEXC::DIVISOR + "waitForResult()" +
-                PCEXC::DIVISOR + "Timeout");
+            throw PCEXC::PandaGripperException("Panda::gripperHoming()",
+                                               "waitForResult()", "Timeout");
         }
     }
 }
@@ -386,9 +377,8 @@ void Panda::gripperMove(const double &WIDTH) {
 
         // Wait for result
         if (!gripper_move_client_ptr_->waitForResult()) {
-            throw PCEXC::panda_gripper_error(
-                "Panda::gripperMove()" + PCEXC::DIVISOR + "waitForResult()" +
-                PCEXC::DIVISOR + "Timeout");
+            throw PCEXC::PandaGripperException("Panda::gripperMove()",
+                                               "waitForResult()", "Timeout");
         }
     }
 }
@@ -409,9 +399,8 @@ void Panda::gripperGrasp(const double &WIDTH, const double &FORCE,
 
         // Wait for result
         if (!gripper_grasp_client_ptr_->waitForResult()) {
-            throw PCEXC::panda_gripper_error(
-                "Panda::gripperGrasp()" + PCEXC::DIVISOR + "waitForResult()" +
-                PCEXC::DIVISOR + "Timeout");
+            throw PCEXC::PandaGripperException("Panda::gripperGrasp()",
+                                               "waitForResult()", "Timeout");
         }
     }
 }

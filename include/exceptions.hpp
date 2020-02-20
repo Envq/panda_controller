@@ -1,6 +1,7 @@
 #pragma once
 
 // C++
+#include <sstream>
 #include <stdexcept>
 
 
@@ -12,7 +13,7 @@ namespace PCEXC {
 
 
 //#############################################################################
-// CONSTANTS ##################################################################
+// CONFIG #####################################################################
 const std::string DIVISOR = "\n --> ";
 
 
@@ -21,37 +22,62 @@ const std::string DIVISOR = "\n --> ";
 // CLASSES ####################################################################
 
 // Exceptions for data_manager
-class data_manager_error : public std::runtime_error {
+class DataManagerException : public std::exception {
+  private:
+    std::string msg_;
+
   public:
-    data_manager_error(const std::string &MSG)
-        : std::runtime_error("data_manager_error()" + DIVISOR + MSG) {
+    template<typename... Args> DataManagerException(Args &&... args) {
+        std::stringstream ss;
+        ss << "DataManagerException()";
+        using expander = int[];
+        (void)expander{0,
+                       (void(ss << DIVISOR << std::forward<Args>(args)), 0)...};
+        msg_ = ss.str();
+    }
+
+    const char *what() const throw() {
+        return msg_.c_str();
     }
 };
-
-
-// Exceptions for Panda
-class panda_error : public std::runtime_error {
-  public:
-    panda_error(const std::string &MSG)
-        : std::runtime_error("panda_error()" + DIVISOR + MSG) {
-    }
-};
-
 
 // Exceptions for Panda arm
-class panda_arm_error : public panda_error {
+class PandaArmException : public std::exception {
+  private:
+    std::string msg_;
+
   public:
-    panda_arm_error(const std::string &MSG)
-        : panda_error("panda_arm_error()" + DIVISOR + MSG) {
+    template<typename... Args> PandaArmException(Args &&... args) {
+        std::stringstream ss;
+        ss << "PandaArmException()";
+        using expander = int[];
+        (void)expander{0,
+                       (void(ss << DIVISOR << std::forward<Args>(args)), 0)...};
+        msg_ = ss.str();
+    }
+
+    const char *what() const throw() {
+        return msg_.c_str();
     }
 };
 
-
 // Execeptions for Panda gripper
-class panda_gripper_error : public panda_error {
+class PandaGripperException : public std::exception {
+  private:
+    std::string msg_;
+
   public:
-    panda_gripper_error(const std::string &MSG)
-        : panda_error("panda_gripper_error()" + DIVISOR + MSG) {
+    template<typename... Args> PandaGripperException(Args &&... args) {
+        std::stringstream ss;
+        ss << "PandaGripperException()";
+        using expander = int[];
+        (void)expander{0,
+                       (void(ss << DIVISOR << std::forward<Args>(args)), 0)...};
+        msg_ = ss.str();
+    }
+
+    const char *what() const throw() {
+        return msg_.c_str();
     }
 };
 
@@ -61,8 +87,7 @@ class panda_gripper_error : public panda_error {
 // INLINE FUNCTIONS ###########################################################
 inline std::string get_err_msg(const std::string &NAME,
                                const std::string &MSG) {
-    return "In: " + NAME + ".cpp" + DIVISOR + MSG;
+    return "In '" + NAME + ".cpp'" + DIVISOR + MSG;
 }
-
 
 }  // namespace PCEXC

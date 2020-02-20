@@ -33,12 +33,9 @@ int main(int argc, char **argv) {
     ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "START NODE: ", NAME);
 
     try {
-        auto panda = robot::Panda();
-        auto pose = panda.getCurrentPose();
-        pose.position.x += 0.2;
-        panda.cartesianMovement(pose);
+        throw PCEXC::PandaArmException("1", 2);
 
-    } catch (const PCEXC::panda_error &e) {
+    } catch (const PCEXC::PandaArmException &e) {
         ROS_FATAL_STREAM(PCEXC::get_err_msg(NAME, e.what()));
     }
 

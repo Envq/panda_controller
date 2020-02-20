@@ -30,12 +30,14 @@
 
 //#############################################################################
 // DEFAULT VALUES #############################################################
+namespace robot {
 namespace defaults {
 const float ARM_SPEED = 1.0;
 const float GRIPPER_SPEED = 1.0;
 const float STEP = 0.01;
 const float JUMP_THRESHOLD = 0.0;
 }  // namespace defaults
+}  // namespace robot
 
 
 
