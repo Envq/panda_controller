@@ -179,8 +179,8 @@ class Panda {
      * @brief Move the arm in cartesian path with waypoints.
      *
      * @param WAYPOINTS Poses that the Cartesian path must follow.
-     * @param STEP The step size of at most eef_step meters between end effector.
-     * configurations of consecutive points in the result trajectory.
+     * @param STEP The step size of at most eef_step meters between end
+     * effector. configurations of consecutive points in the result trajectory.
      * @param JUMP_THRESHOLD No more than jump_threshold is allowed as change in
      * distance in the configuration space of the robot (this is to prevent
      * 'jumps' in IK solutions).
@@ -194,8 +194,8 @@ class Panda {
      * @brief Move the arm in cartesian path with target point.
      *
      * @param POSE The target pose.
-     * @param STEP The step size of at most eef_step meters between end effector.
-     * configurations of consecutive points in the result trajectory.
+     * @param STEP The step size of at most eef_step meters between end
+     * effector. configurations of consecutive points in the result trajectory.
      * @param JUMP_THRESHOLD No more than jump_threshold is allowed as change in
      * distance in the configuration space of the robot (this is to prevent
      * 'jumps' in IK solutions).

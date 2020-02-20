@@ -1,12 +1,12 @@
 /**
  * @file data_manager.cpp
- * @author Enrico Sgarbanti 
+ * @author Enrico Sgarbanti
  * @brief data_manager implementations
  * @version 0.1
  * @date 20-02-2020
- * 
+ *
  * @copyright Copyright (c) 2020 by Enrico Sgarbanti. License GPLv3.
- * 
+ *
  */
 // PANDA CONTROLLER
 #include "data_manager.hpp"

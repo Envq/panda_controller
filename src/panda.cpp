@@ -1,12 +1,12 @@
 /**
  * @file panda.cpp
- * @author Enrico Sgarbanti 
+ * @author Enrico Sgarbanti
  * @brief panda implementations
  * @version 0.1
  * @date 20-02-2020
- * 
+ *
  * @copyright Copyright (c) 2020 by Enrico Sgarbanti. License GPLv3.
- * 
+ *
  */
 #include "panda.hpp"
 
