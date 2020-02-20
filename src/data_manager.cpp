@@ -1,18 +1,15 @@
+/**
+ * @file data_manager.cpp
+ * @author Enrico Sgarbanti 
+ * @brief data_manager implementations
+ * @version 0.1
+ * @date 20-02-2020
+ * 
+ * @copyright Copyright (c) 2020 by Enrico Sgarbanti. License GPLv3.
+ * 
+ */
 // PANDA CONTROLLER
 #include "data_manager.hpp"
-
-
-
-//#############################################################################
-// CONFIGS ####################################################################
-namespace config {
-const std::string FRAME_REF = "panda_link0";
-const std::string PACKAGE_NAME = "panda_controller";
-const std::string DATA_FOLDER_NAME = "/data/";
-const std::string MESHES_FOLDER_NAME = DATA_FOLDER_NAME + "meshes/";
-const std::string POSES_RELATIVE = DATA_FOLDER_NAME + "poses.yaml";
-const std::string SCENES_RELATIVE = DATA_FOLDER_NAME + "scenes.yaml";
-}  // namespace config
 
 
 
@@ -29,7 +26,8 @@ struct scene_object {
 // PRIVATE FUNCTIONS IMPLEMENTATIONS ##########################################
 std::string get_path(const std::string &RELATIVE_PATH) {
     // Get package path
-    auto PACKAGE_PATH = ros::package::getPath(config::PACKAGE_NAME);
+    auto PACKAGE_PATH =
+        ros::package::getPath(data_manager::config::PACKAGE_NAME);
 
     if (PACKAGE_PATH.empty())
         throw PCEXC::DataManagerException("get_path()",
@@ -72,7 +70,7 @@ scene_object create_scene_object(const YAML::Node &OBJECT) {
 
     // Define collision object
     collision_object.id = NAME;
-    collision_object.header.frame_id = config::FRAME_REF;
+    collision_object.header.frame_id = data_manager::config::FRAME_REF;
     collision_object.operation = collision_object.ADD;
 
     // Get the type of object
@@ -90,8 +88,8 @@ scene_object create_scene_object(const YAML::Node &OBJECT) {
         shape_msgs::Mesh mesh;
         shapes::ShapeMsg mesh_msg;
         shapes::Mesh *mesh_shape = shapes::createMeshFromResource(
-            "package://" + config::PACKAGE_NAME + config::MESHES_FOLDER_NAME +
-                FILE_NAME,
+            "package://" + data_manager::config::PACKAGE_NAME +
+                data_manager::config::MESHES_FOLDER_NAME + FILE_NAME,
             vector_scale);
         shapes::constructMsgFromShape(mesh_shape, mesh_msg);
         mesh = boost::get<shape_msgs::Mesh>(mesh_msg);

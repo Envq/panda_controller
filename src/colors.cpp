@@ -1,3 +1,13 @@
+/**
+ * @file colors.cpp
+ * @author Enrico Sgarbanti 
+ * @brief colors implementations
+ * @version 0.1
+ * @date 20-02-2020
+ * 
+ * @copyright Copyright (c) 2020 by Enrico Sgarbanti. License GPLv3.
+ * 
+ */
 // PANDA CONTROLLER
 #include "colors.hpp"
 
@@ -12,6 +22,7 @@ std::string Colors::getColorFG(const int &R, const int &G, const int &B) {
     res += std::to_string(B) + "m";
     return res;
 }
+
 
 std::string Colors::getColorBG(const int &R, const int &G, const int &B) {
     std::string res = "\033[48;2;";
@@ -40,6 +51,7 @@ void Colors::printColorsTest() {
                   << Colors::Code::RESET << std::endl;
     }
 }
+
 
 std::ostream &operator<<(std::ostream &stream, const Colors::Code &color) {
     stream << "\033[" << static_cast<int>(color) << "m";

@@ -1,3 +1,14 @@
+/**
+ * @file colors.hpp
+ * @author Enrico Sgarbanti
+ * @brief This file contains the classes and function that allows you to manage
+ * the font colors on the terminal.
+ * @version 0.1
+ * @date 20-02-2020
+ *
+ * @copyright Copyright (c) 2020 by Enrico Sgarbanti. License GPLv3.
+ *
+ */
 #pragma once
 
 // C++
@@ -10,7 +21,18 @@
 
 
 //#############################################################################
+// CONFIGS ####################################################################
+/// @brief This namespace contains the configurations of this file.
+namespace config {
+const std::string START_STRING = "## ";
+}  // namespace config
+
+
+
+//#############################################################################
 // ENUMERATIONS ###############################################################
+/// @brief This class contains the string to be used to modify the terminal.
+/// output.
 class Colors {
   public:
     enum Code {
@@ -67,14 +89,49 @@ class Colors {
         CROSSEDOUT_OFF = 29
     };
 
+    /**
+     * @brief Construct a new Colors object.
+     *
+     */
     Colors() = default;
 
+    /**
+     * @brief Returns the string that changes the foreground color of the
+     * specified RGB color.
+     *
+     * @param R red value.
+     * @param G green value.
+     * @param B blue value.
+     * @return std::string string to change the foreground color.
+     */
     static std::string getColorFG(const int &R, const int &G, const int &B);
 
+    /**
+     * @brief Returns the string that changes the background color of the
+     * specified RGB color.
+     *
+     * @param R red value.
+     * @param G green value.
+     * @param B blue value.
+     * @return std::string string to change the background color.
+     */
     static std::string getColorBG(const int &R, const int &G, const int &B);
 
+    /**
+     * @brief This method print a test of colors.
+     *
+     */
     static void printColorsTest();
 
+    /**
+     * @brief Operator overload << for easier modification of the terminal
+     * output. Example to change the foreground color to red: std::cout <<
+     * Colors::FG_RED << "text" << Colors::RESET << std::endl;
+     *
+     * @param stream
+     * @param color
+     * @return std::ostream&
+     */
     friend std::ostream &operator<<(std::ostream &stream,
                                     const Colors::Code &color);
 };
@@ -82,14 +139,23 @@ class Colors {
 
 //#############################################################################
 // FUNCTIONS ##################################################################
-template<typename... Args>  // C++14 compatible
+/**
+ * @brief Function to extend ROS_INFO_STREAM with a START_STRING (e.g.: ##)
+ * and with foreground and background color.
+ *
+ * @tparam Args
+ * @param COLOR_FG foreground color.
+ * @param COLOR_BG background color.
+ * @param args strings to be printed.
+ */
+template<typename... Args>
 void ROS_STRONG_INFO(const Colors::Code &COLOR_FG, const Colors::Code &COLOR_BG,
                      Args &&... args) {
     std::stringstream ss;
     ss << Colors::BOLD_INTENSITY;
     ss << COLOR_FG;
     ss << COLOR_BG;
-    ss << "## ";
+    ss << config::START_STRING;
 
     using expander = int[];
     (void)expander{0, (void(ss << std::forward<Args>(args)), 0)...};

@@ -133,22 +133,6 @@
             }
         },
         {
-            "label": "format-all",
-            "type": "shell",
-            "command": "clang-format",
-            "args": [
-                "-i",
-                "${workspaceFolder}/examples/*.cpp",
-                "${workspaceFolder}/src/*.cpp",
-                "${workspaceFolder}/include/*.hpp"
-            ],
-            "problemMatcher": [],
-            "group": "none",
-            "presentation": {
-                "reveal": "never"
-            }
-        },
-        {
             "label": "build-all",
             "type": "shell",
             "command": "catkin",
@@ -167,6 +151,65 @@
             "command": "catkin",
             "args": [
                 "clean"
+            ],
+            "problemMatcher": [],
+            "group": "none",
+            "presentation": {
+                "focus": true
+            }
+        },
+        {
+            "label": "format",
+            "type": "shell",
+            "command": "clang-format",
+            "args": [
+                "-i",
+                "${workspaceFolder}/examples/*.cpp",
+                "${workspaceFolder}/src/*.cpp",
+                "${workspaceFolder}/include/*.hpp"
+            ],
+            "problemMatcher": [],
+            "group": "none",
+            "presentation": {
+                "reveal": "never"
+            }
+        },
+        {
+            "label": "cloc",
+            "type": "shell",
+            "command": "cloc",
+            "args": [
+                "${workspaceFolder}/examples/*.cpp",
+                "${workspaceFolder}/src/*.cpp",
+                "${workspaceFolder}/include/*.hpp"
+            ],
+            "problemMatcher": [],
+            "group": "none",
+            "presentation": {
+                "focus": true
+            }
+        },
+        {
+            "label": "doxygen",
+            "type": "shell",
+            "command": "doxygen",
+            "args": [
+                "${workspaceFolder}/doxygen.cfg"
+            ],
+            "problemMatcher": [],
+            "group": "none",
+            "presentation": {
+                "focus": true
+            }
+        },
+        {
+            "label": "lizard-cyclo",
+            "type": "shell",
+            "command": "lizard",
+            "args": [
+                "${workspaceFolder}/examples/",
+                "${workspaceFolder}/src/",
+                "${workspaceFolder}/include/"
             ],
             "problemMatcher": [],
             "group": "none",

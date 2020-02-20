@@ -9,7 +9,7 @@
 
 
 
-//#############################################################################
+//##############################################################################
 // DEFAULT VALUES ##############################################################
 const auto FG_COLOR = Colors::FG_BLUE;
 const auto BG_COLOR = Colors::BG_BLACK;
@@ -31,6 +31,8 @@ int main(int argc, char **argv) {
     ros::AsyncSpinner spinner(1);
     spinner.start();
     ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "START NODE: ", NAME);
+
+    Colors::printColorsTest();
 
     try {
         throw PCEXC::PandaArmException("1", 2);

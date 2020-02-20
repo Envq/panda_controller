@@ -1,15 +1,5 @@
-- convert PLAN_ONLY in PREVIEW -> you see plan and then use topic for move arm
 - gif in README
-- create correct rviz-robot launcher
-- in panda.cpp get_size_object(): now get r of cylinder. Extend it
-
-
-in console:
-- history with arrows
+- in panda.cpp get_size_object():
+- in console: history with arrows
 - POSE of EEF in gripper center
-
-
-
-- exceptions with variadic
-- improve return
-- double size = get_size_object(planning_scene_ptr_, OBJECT_NAME);
+- try franka_gripper::GraspAction(width, epsilon_inner, epsilon_outer, speed, force)

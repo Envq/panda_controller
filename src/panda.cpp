@@ -1,16 +1,14 @@
-// PANDA CONTROLLER
+/**
+ * @file panda.cpp
+ * @author Enrico Sgarbanti 
+ * @brief panda implementations
+ * @version 0.1
+ * @date 20-02-2020
+ * 
+ * @copyright Copyright (c) 2020 by Enrico Sgarbanti. License GPLv3.
+ * 
+ */
 #include "panda.hpp"
-
-
-
-//#############################################################################
-// CONFIGS ####################################################################
-namespace config {
-const std::string FRAME_REF = "panda_link0";
-const double GRIPPER_MAX_WIDTH = 0.08;
-const auto READY_JOINTS = std::vector<double>{
-    0.00, -0.25 * M_PI, 0.00, -0.75 * M_PI, 0.00, 0.50 * M_PI, 0.25 * M_PI};
-}  // namespace config
 
 
 
@@ -113,7 +111,7 @@ void Panda::resetScene() {
 }
 
 
-void Panda::moveJoints(const std::vector<double> &JOINTS) {
+void Panda::moveJointsTo(const std::vector<double> &JOINTS) {
     // Set new joints values
     move_group_ptr_->setJointValueTarget(JOINTS);
 
@@ -122,7 +120,7 @@ void Panda::moveJoints(const std::vector<double> &JOINTS) {
 
     // Errors check
     if (res != moveit::planning_interface::MoveItErrorCode::SUCCESS)
-        throw PCEXC::PandaArmException("Panda::moveJoints()", "move()",
+        throw PCEXC::PandaArmException("Panda::moveJointsTo()", "move()",
                                        "Failure");
 }
 
@@ -140,7 +138,7 @@ void Panda::moveJointRad(const int &JOINT, const double &VAL) {
     joints_state[JOINT - 1] += VAL;
 
     // Perform movement
-    moveJoints(joints_state);
+    moveJointsTo(joints_state);
 }
 
 
@@ -154,7 +152,7 @@ void Panda::moveJointDeg(const int &JOINT, const double &VAL) {
 
 void Panda::moveToReadyPose() {
     // Perform movement
-    moveJoints(config::READY_JOINTS);
+    moveJointsTo(config::READY_JOINTS);
 }
 
 

@@ -1,3 +1,13 @@
+/**
+ * @file panda.hpp
+ * @author Enrico Sgarbanti
+ * @brief This file contains the Panda Franka Emika robot management class.
+ * @version 0.1
+ * @date 20-02-2020
+ *
+ * @copyright Copyright (c) 2020 by Enrico Sgarbanti. License GPLv3.
+ *
+ */
 #pragma once
 
 // PANDA CONTROLLER
@@ -29,35 +39,53 @@
 
 
 //#############################################################################
-// DEFAULT VALUES #############################################################
+// NAMESPACE ##################################################################
+/// @brief Namespace of Panda robot.
 namespace robot {
+
+
+
+//#############################################################################
+// CONFIGS ####################################################################
+/// @brief This namespace contains the configurations of this file.
+namespace config {
+const std::string FRAME_REF = "panda_link0";
+const double GRIPPER_MAX_WIDTH = 0.08;
+const auto READY_JOINTS = std::vector<double>{
+    0.00, -0.25 * M_PI, 0.00, -0.75 * M_PI, 0.00, 0.50 * M_PI, 0.25 * M_PI};
+}  // namespace config
+
+
+
+//#############################################################################
+// DEFAULT VALUES #############################################################
+/// @brief This namespace contains the default values.
 namespace defaults {
 const float ARM_SPEED = 1.0;
 const float GRIPPER_SPEED = 1.0;
 const float STEP = 0.01;
 const float JUMP_THRESHOLD = 0.0;
 }  // namespace defaults
-}  // namespace robot
 
 
 
 //#############################################################################
 // TYPEDEF ####################################################################
-namespace robot {
+/// @brief ROS action client for gripper homing.
 typedef actionlib::SimpleActionClient<franka_gripper::HomingAction>
     GripperHomingClient;
+/// @brief ROS action client for gripper move.
 typedef actionlib::SimpleActionClient<franka_gripper::MoveAction>
     GripperMoveClient;
+/// @brief ROS action client for gripper grasp.
 typedef actionlib::SimpleActionClient<franka_gripper::GraspAction>
     GripperGraspClient;
-}  // namespace robot
 
 
 
 //#############################################################################
 // CLASSES ####################################################################
-namespace robot {
-
+/// @brief The Panda Franka Emika robot management class.
 class Panda {
   private:
     moveit::planning_interface::MoveGroupInterfacePtr move_group_ptr_;
@@ -69,52 +97,129 @@ class Panda {
     bool gripper_is_active_;
 
   public:
-    // Constructors
+    /**
+     * @brief Construct a new Panda object.
+     *
+     * @param GRIPPER_IS_ACTIVE Used for disable the gripper actions (default is
+     * true).
+     */
     explicit Panda(const bool &GRIPPER_IS_ACTIVE = true);
 
-    // Get current pose
+    /**
+     * @brief Get the current Pose.
+     *
+     * @return geometry_msgs::Pose The Pose object of current pose.
+     */
     geometry_msgs::Pose getCurrentPose();
 
-    // Set arm speed
+    /**
+     * @brief Set the arm speed.
+     *
+     * @param SPEED The speed value.
+     */
     void setArmSpeed(const float &SPEED);
 
-    // Set gripper speed
+    /**
+     * @brief Set the Gripper Speed object.
+     *
+     * @param SPEED The speed value.
+     */
     void setGripperSpeed(const float &SPEED);
 
-    // Set scene
+    /**
+     * @brief Load the scene.
+     *
+     * @param SCENE The scene to use.
+     */
     void setScene(const moveit_msgs::PlanningScene &SCENE);
 
-    // Reset scene
+    /**
+     * @brief Load a empty scene.
+     *
+     */
     void resetScene();
 
-    // Move joints in radiands
-    void moveJoints(const std::vector<double> &JOINTS);
+    /**
+     * @brief Move the joints in the angles specified (radiants).
+     *
+     * @param JOINTS the vector of angles.
+     */
+    void moveJointsTo(const std::vector<double> &JOINTS);
 
-    // Move the specified joint in radiants
+    /**
+     * @brief Move the specified joint in radiants.
+     *
+     * @param JOINT The name of the joint to be moved (1 to 7).
+     * @param VAL The value of angle.
+     */
     void moveJointRad(const int &JOINT, const double &VAL);
 
-    // Move the specified joint in degrees
+    /**
+     * @brief Move the specified joint in degrees.
+     *
+     * @param JOINT The name of the joint to be moved (1 to 7).
+     * @param VAL The value of angle.
+     */
     void moveJointDeg(const int &JOINT, const double &VAL);
 
-    // Go to ready pose
+    /**
+     * @brief Move the arm in 'Ready' Pose.
+     *
+     */
     void moveToReadyPose();
 
-    // Move to the specified pose
+    /**
+     * @brief Move the arm in the specified pose.
+     *
+     * @param POSE The pose where to go.
+     */
     void moveToPose(const geometry_msgs::Pose &POSE);
 
-    // Move in cartesian path
+    /**
+     * @brief Move the arm in cartesian path with waypoints.
+     *
+     * @param WAYPOINTS Poses that the Cartesian path must follow.
+     * @param STEP The step size of at most eef_step meters between end effector.
+     * configurations of consecutive points in the result trajectory.
+     * @param JUMP_THRESHOLD No more than jump_threshold is allowed as change in
+     * distance in the configuration space of the robot (this is to prevent
+     * 'jumps' in IK solutions).
+     */
     void
     cartesianMovement(const std::vector<geometry_msgs::Pose> &WAYPOINTS,
                       const double &STEP = defaults::STEP,
                       const double &JUMP_THRESHOLD = defaults::JUMP_THRESHOLD);
 
-    // Move in cartesian path in only one waypoint
+    /**
+     * @brief Move the arm in cartesian path with target point.
+     *
+     * @param POSE The target pose.
+     * @param STEP The step size of at most eef_step meters between end effector.
+     * configurations of consecutive points in the result trajectory.
+     * @param JUMP_THRESHOLD No more than jump_threshold is allowed as change in
+     * distance in the configuration space of the robot (this is to prevent
+     * 'jumps' in IK solutions).
+     */
     void
     cartesianMovement(const geometry_msgs::Pose &POSE,
                       const double &STEP = defaults::STEP,
                       const double &JUMP_THRESHOLD = defaults::JUMP_THRESHOLD);
 
-    // Perform pick with pre and post approch
+    /**
+     * @brief Pick up an object with pre-grasp-approch. Moves the arm to the
+     * desired position, starting from the pre-approach-pose, and proceeds
+     * moving linearly with respect to the target.
+     *
+     * @param POSE The pose where the robot grasp object.
+     * @param PRE_GRASP_APPROCH The vector of grasp-pre-approch. It contains the
+     * offset from target pose in meters.
+     * @param GRASP_WIDTH The width value for gripperGrasp().
+     * @param GRASP_FORCE The force value for gripperGrasp().
+     * @param GRASP_EPSILON_INNER The epsilon_inner value for gripperGrasp().
+     * @param GRASP_EPSILON_OUTER The epsilon_outer value for gripperGrasp().
+     * @param STEP Step value for cartesianMovement().
+     * @param JUMP_THRESHOLD Jumpo threshold value for cartesianMovement().
+     */
     void pick(const geometry_msgs::Pose &POSE,
               const geometry_msgs::Vector3 &PRE_GRASP_APPROCH,
               const double &GRASP_WIDTH, const double &GRASP_FORCE,
@@ -123,31 +228,71 @@ class Panda {
               const double &STEP = defaults::STEP,
               const double &JUMP_THRESHOLD = defaults::JUMP_THRESHOLD);
 
-    // Perform pick with collision object
+    /**
+     * @brief Pick up the object specified.
+     *
+     * @param POSE The pose where the robot grasp object.
+     * @param OBJECT_NAME The name of the target object.
+     * @param GRASP_FORCE The force value for gripperGrasp().
+     * @param GRASP_EPSILON_INNER The epsilon_inner value for gripperGrasp().
+     * @param GRASP_EPSILON_OUTER The epsilon_outer value for gripperGrasp().
+     */
     void pick(const geometry_msgs::Pose &POSE, const std::string &OBJECT_NAME,
               const double &GRASP_FORCE, const double &GRASP_EPSILON_INNER,
               const double &GRASP_EPSILON_OUTER);
 
-    // Perform place with pre and post approch
+    /**
+     * @brief Place the object with post-grasp-retreat and post-place-retreat.
+     * Moves the arm linearly to post-grasp-pose and then move to the desired
+     * position. After that proceeds moving linearly in the post-place-pose.
+     *
+     * @param POSE The object to the pose specified.
+     * @param POST_GRASP_RETREAT The vector of post-grasp-retreat. It contains
+     * the offset from current pose in meters.
+     * @param POST_PLACE_RETREAT The vector of post-place-retreat. It contains
+     * the offset from target pose in meters.
+     * @param STEP Step value for cartesianMovement().
+     * @param JUMP_THRESHOLD Jumpo threshold value for cartesianMovement().
+     */
     void place(const geometry_msgs::Pose &POSE,
                const geometry_msgs::Vector3 &POST_GRASP_RETREAT,
                const geometry_msgs::Vector3 &POST_PLACE_RETREAT,
                const double &STEP = defaults::STEP,
                const double &JUMP_THRESHOLD = defaults::JUMP_THRESHOLD);
 
-    // Perform place
+    /**
+     * @brief Place the object to the pose specified.
+     *
+     * @param POSE The pose in which place the object
+     */
     void place(const geometry_msgs::Pose &POSE);
 
-    // Homing gripper
+    /**
+     * @brief Homes the gripper and updates the maximum width given the mounted
+     * fingers.
+     *
+     */
     void gripperHoming();
 
-    // Move gripper
+    /**
+     * @brief Moves to a target WIDTH.
+     *
+     * @param WIDTH Target width.
+     */
     void gripperMove(const double &WIDTH);
 
-    // Grasp gripper
-    void gripperGrasp(const double &WIDTH, const double &GRASP_FORCE,
-                      const double &GRASP_EPSILON_INNER,
-                      const double &GRASP_EPSILON_OUTER);
+    /**
+     * @brief Tries to grasp at the desired width with a desired force while
+     * closing. The operation is successful if the distance WIDTH between the
+     * gripper fingers is: width−epsilon_inner<width<width+epsilon_outer.
+     *
+     * @param WIDTH Distante between the gripper fingers.
+     * @param FORCE Desired force applied while closing fingers.
+     * @param EPSILON_INNER The value of epsilon inner.
+     * @param EPSILON_OUTER The value of epsilon outer.
+     */
+    void gripperGrasp(const double &WIDTH, const double &FORCE,
+                      const double &EPSILON_INNER, const double &EPSILON_OUTER);
 };
 
 }  // namespace robot
