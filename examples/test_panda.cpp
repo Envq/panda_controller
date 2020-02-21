@@ -32,12 +32,11 @@ int main(int argc, char **argv) {
     spinner.start();
     ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "START NODE: ", NAME);
 
-    Colors::printColorsTest();
 
     try {
         throw PCEXC::PandaArmException("1", 2);
 
-    } catch (const PCEXC::PandaArmException &e) {
+    } catch (const PCEXC::PandaControllerException &e) {
         ROS_FATAL_STREAM(PCEXC::get_err_msg(NAME, e.what()));
     }
 

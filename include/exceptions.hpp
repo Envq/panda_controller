@@ -34,11 +34,23 @@ const std::string DIVISOR = "\n --> ";
 
 //#############################################################################
 // CLASSES ####################################################################
-/// @brief Exceptions for data_manager.
-class DataManagerException : public std::exception {
-  private:
+/// @brief Exceptions for panda_controller
+class PandaControllerException : public std::exception {
+  protected:
+    /// @brief The exception message.
     std::string msg_;
 
+  public:
+    PandaControllerException() : std::exception() {
+    }
+
+    const char *what() const noexcept {
+        return msg_.c_str();
+    }
+};
+
+/// @brief Exceptions for data_manager.
+class DataManagerException : public PandaControllerException {
   public:
     /**
      * @brief Construct a new DataManagerException object with variadic
@@ -55,17 +67,10 @@ class DataManagerException : public std::exception {
             0, (void(ss << config::DIVISOR << std::forward<Args>(args)), 0)...};
         msg_ = ss.str();
     }
-
-    const char *what() const throw() {
-        return msg_.c_str();
-    }
 };
 
 /// @brief Exceptions for Panda arm.
-class PandaArmException : public std::exception {
-  private:
-    std::string msg_;
-
+class PandaArmException : public PandaControllerException {
   public:
     /**
      * @brief Construct a new PandaArmException object with variadic
@@ -82,17 +87,10 @@ class PandaArmException : public std::exception {
             0, (void(ss << config::DIVISOR << std::forward<Args>(args)), 0)...};
         msg_ = ss.str();
     }
-
-    const char *what() const throw() {
-        return msg_.c_str();
-    }
 };
 
 /// @brief Execeptions for Panda gripper.
-class PandaGripperException : public std::exception {
-  private:
-    std::string msg_;
-
+class PandaGripperException : public PandaControllerException {
   public:
     /**
      * @brief Construct a new PandaGripperException object with variadic
@@ -109,10 +107,6 @@ class PandaGripperException : public std::exception {
             0, (void(ss << config::DIVISOR << std::forward<Args>(args)), 0)...};
         msg_ = ss.str();
     }
-
-    const char *what() const throw() {
-        return msg_.c_str();
-    }
 };
 
 
@@ -124,7 +118,7 @@ class PandaGripperException : public std::exception {
  * adds the file name to the exception error message.
  *
  * @param NAME The name of the file that throw exception with extension (.cpp).
- * @param MSG The error message of exceptions (exception.what())
+ * @param MSG The error message of exceptions (exception.what()).
  * @return std::string The complete message of error
  */
 inline std::string get_err_msg(const std::string &NAME,
