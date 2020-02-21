@@ -9,6 +9,9 @@
  *
  */
 #include "panda.hpp"
+#include <moveit/robot_model/robot_model.h>
+#include <moveit/robot_model_loader/robot_model_loader.h>
+#include <moveit/robot_state/robot_state.h>
 
 
 
@@ -106,14 +109,28 @@ void Panda::setScene(const moveit_msgs::PlanningScene &SCENE) {
 
 
 void Panda::resetScene() {
-    moveit_msgs::PlanningScene scene_empty;
-    planning_scene_ptr_->applyPlanningScene(scene_empty);
+    // Remove all collision objects
+    planning_scene_ptr_->removeCollisionObjects(
+        planning_scene_ptr_->getKnownObjectNames());
+    // Load empty scene
+    moveit_msgs::PlanningScene empty_scene;
+    empty_scene.is_diff = true;
+    empty_scene.name = "empty";
+    planning_scene_ptr_->applyPlanningScene(empty_scene);
 }
 
 
-void Panda::moveJointsTo(const std::vector<double> &JOINTS) {
+void Panda::moveJointsTo(const std::vector<double> &JOINTS,
+                         const bool &ADJUST_IN_BOUNDS) {
     // Set new joints values
-    move_group_ptr_->setJointValueTarget(JOINTS);
+    bool in_bounds = move_group_ptr_->setJointValueTarget(JOINTS);
+
+    // Errors check
+    if (!ADJUST_IN_BOUNDS && !in_bounds)
+        throw PCEXC::PandaArmException("Panda::moveJointsTo()",
+                                       "setJointValueTarget()",
+                                       "Joint panda_joint1 is constrained to "
+                                       "be above the maximum bounds.");
 
     // Perform movement
     auto res = move_group_ptr_->move();
@@ -125,7 +142,8 @@ void Panda::moveJointsTo(const std::vector<double> &JOINTS) {
 }
 
 
-void Panda::moveJointRad(const int &JOINT, const double &VAL) {
+void Panda::moveJointRad(const int &JOINT, const double &VAL,
+                         const bool &ADJUST_IN_BOUNDS) {
     if (JOINT > 7 || JOINT < 1)
         throw PCEXC::PandaArmException("Panda::moveJointRad()",
                                        "Joint invalid: joint_" +
@@ -138,15 +156,16 @@ void Panda::moveJointRad(const int &JOINT, const double &VAL) {
     joints_state[JOINT - 1] += VAL;
 
     // Perform movement
-    moveJointsTo(joints_state);
+    moveJointsTo(joints_state, ADJUST_IN_BOUNDS);
 }
 
 
-void Panda::moveJointDeg(const int &JOINT, const double &VAL) {
+void Panda::moveJointDeg(const int &JOINT, const double &VAL,
+                         const bool &ADJUST_IN_BOUNDS) {
     double rad_val = VAL * M_PI / 180.0;
 
     // Perform movement
-    moveJointRad(JOINT, rad_val);
+    moveJointRad(JOINT, rad_val, ADJUST_IN_BOUNDS);
 }
 
 

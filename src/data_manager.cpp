@@ -191,6 +191,11 @@ geometry_msgs::Pose get_pose(const std::string &NAME) {
         // Load file
         auto root = YAML::LoadFile(FILE_PATH);
 
+        // Check if pose name is correct
+        if (!root[NAME])
+            throw PCEXC::DataManagerException("get_pose()",
+                                              "Invalid name: " + NAME);
+
         // Get pose
         geometry_msgs::Pose pose;
         const auto &POSITION = root[NAME]["position"];
@@ -228,6 +233,11 @@ moveit_msgs::PlanningScene get_scene(const std::string &NAME) {
     try {
         // Load file
         auto root = YAML::LoadFile(FILE_PATH);
+
+        // Check if scene name is correct
+        if (!root[NAME])
+            throw PCEXC::DataManagerException("get_scene()",
+                                              "Invalid name: " + NAME);
 
         // Get scene
         moveit_msgs::PlanningScene scene;

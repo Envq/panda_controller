@@ -72,12 +72,12 @@ include_directories(
 )
 
 # Executables config
-# set(TASK console)
-# add_executable(${TASK}  examples/${TASK}.cpp
-#     src/data_manager.cpp
-#     src/colors.cpp
-#     src/panda.cpp)
-# target_link_libraries(${TASK} ${catkin_LIBRARIES} yaml-cpp)
+set(TASK console)
+add_executable(${TASK}  examples/${TASK}.cpp
+    src/data_manager.cpp
+    src/colors.cpp
+    src/panda.cpp)
+target_link_libraries(${TASK} ${catkin_LIBRARIES} yaml-cpp)
 
 
 # set(TASK pick_place)

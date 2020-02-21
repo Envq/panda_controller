@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
 
 
     try {
-        throw PCEXC::PandaArmException("1", 2);
+        data_manager::get_pose("pick");
 
     } catch (const PCEXC::PandaControllerException &e) {
         ROS_FATAL_STREAM(PCEXC::get_err_msg(NAME, e.what()));

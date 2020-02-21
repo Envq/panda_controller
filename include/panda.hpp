@@ -143,24 +143,33 @@ class Panda {
      * @brief Move the joints in the angles specified (radiants).
      *
      * @param JOINTS the vector of angles.
+     * @param ADJUST_IN_BOUNDS If the specified values exceed the joint limits,
+     * the maximum bounds are assumed instead.
      */
-    void moveJointsTo(const std::vector<double> &JOINTS);
+    void moveJointsTo(const std::vector<double> &JOINTS,
+                      const bool &ADJUST_IN_BOUNDS = true);
 
     /**
      * @brief Move the specified joint in radiants.
      *
      * @param JOINT The name of the joint to be moved (1 to 7).
      * @param VAL The value of angle.
+     * @param ADJUST_IN_BOUNDS If the specified values exceed the joint limits,
+     * the maximum bounds are assumed instead.
      */
-    void moveJointRad(const int &JOINT, const double &VAL);
+    void moveJointRad(const int &JOINT, const double &VAL,
+                      const bool &ADJUST_IN_BOUNDS = true);
 
     /**
      * @brief Move the specified joint in degrees.
      *
      * @param JOINT The name of the joint to be moved (1 to 7).
      * @param VAL The value of angle.
+     * @param ADJUST_IN_BOUNDS If the specified values exceed the joint limits,
+     * the maximum bounds are assumed instead.
      */
-    void moveJointDeg(const int &JOINT, const double &VAL);
+    void moveJointDeg(const int &JOINT, const double &VAL,
+                      const bool &ADJUST_IN_BOUNDS = true);
 
     /**
      * @brief Move the arm in 'Ready' Pose.
