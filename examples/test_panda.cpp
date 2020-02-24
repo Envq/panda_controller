@@ -34,12 +34,12 @@ int main(int argc, char **argv) {
 
 
     try {
-        auto panda = robot::Panda(false);
-        auto pose = panda.getCurrentPose();
-        pose.position.x -= 0.3;
-        pose.position.z += 0.5;
+        moveit::planning_interface::MoveGroupInterface hand("hand");
 
-        panda.cartesianMovement(pose);
+        hand.setNamedTarget("open");
+        ros::WallDuration(1.0);
+        hand.setNamedTarget("close");
+        ros::WallDuration(1.0);
 
     } catch (const PCEXC::PandaControllerException &e) {
         ROS_FATAL_STREAM(PCEXC::get_err_msg(NAME, e.what()));
