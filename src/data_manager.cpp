@@ -79,25 +79,32 @@ scene_object create_scene_object(const YAML::Node &OBJECT) {
         const auto &SCALE = OBJECT["scale"];
 
         // Vector to scale 3D file units
-        Eigen::Vector3d vector_scale;
-        vector_scale(0) = SCALE["x"].as<double>();
-        vector_scale(1) = SCALE["y"].as<double>();
-        vector_scale(2) = SCALE["z"].as<double>();
+        Eigen::Vector3d scale;
+        scale(0) = SCALE["x"].as<double>();
+        scale(1) = SCALE["y"].as<double>();
+        scale(2) = SCALE["z"].as<double>();
 
         // Get mesh
         shape_msgs::Mesh mesh;
         shapes::ShapeMsg mesh_msg;
-        shapes::Mesh *mesh_shape = shapes::createMeshFromResource(
+        shapes::Mesh *mesh_shape;
+
+        mesh_shape = shapes::createMeshFromResource(
             "package://" + data_manager::config::PACKAGE_NAME +
                 data_manager::config::MESHES_FOLDER_NAME + FILE_NAME,
-            vector_scale);
+            scale);
+
+        // Check errors
+        if (!mesh_shape)
+            throw PCEXC::DataManagerException("create_scene_object()",
+                                              "Can't open file: " + FILE_NAME);
+
         shapes::constructMsgFromShape(mesh_shape, mesh_msg);
         mesh = boost::get<shape_msgs::Mesh>(mesh_msg);
 
         // Push information in collision object
         collision_object.meshes.push_back(mesh);
         collision_object.mesh_poses.push_back(pose);
-
     } else {
         // Get informations
         const auto &DIMENSIONS = OBJECT["dimensions"];

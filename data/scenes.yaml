@@ -9,17 +9,17 @@
 #    scale: xyz (double) #for mesh
 #    dimensions: xyz/rh (double) #for others
 
-pick_place:
-  - name: table
+pick_place2:
+  - name: box
     color:
-      r: 0.6
-      g: 0.4
-      b: 0.2
+      r: 1.0
+      g: 1.0
+      b: 1.0
       a: 1.0
     position:
-      x: 0.0
-      y: 0.0
-      z: -0.016
+      x: 0.60
+      y: 0.30
+      z: 0.055
     orientation:
       x: 0.0
       y: 0.0
@@ -27,73 +27,161 @@ pick_place:
       w: 1.0
     type: box
     dimensions:
-      x: 1.6
-      y: 1.6
-      z: 0.03
+      x: 0.335
+      y: 0.240
+      z: 0.110
 
-  - name: toy1
-    color:
-      r: 0.0
-      g: 0.0
-      b: 1.0
-      a: 0.5
-    position:
-      x: 0.2
-      y: 0.15
-      z: 0.2
-    orientation:
-      x: 1.0
-      y: 0.0
-      z: 0.0
-      w: 0.0
-    type: mesh
-    file: toy1.stl
-    scale:
-      x: 0.001
-      y: 0.001
-      z: 0.001
-
-  - name: toy2
+  - name: object1
     color:
       r: 1.0
       g: 0.0
       b: 0.0
       a: 0.5
     position:
-      x: 0.2
-      y: -0.15
-      z: 0.2
+      x: 0.5425
+      y: 0.19
+      z: 0.120
     orientation:
-      x: 1.0
+      x: 0.0
       y: 0.0
-      z: 0.0
-      w: 0.0
+      z: 0.5
+      w: 0.5
     type: mesh
-    file: toy2.stl
+    file: object1.stl
     scale:
       x: 0.001
       y: 0.001
       z: 0.001
+
+  - name: object2
+    color:
+      r: 0.0
+      g: 0.0
+      b: 1.0
+      a: 0.5
+    position:
+      x: 0.6425
+      y: 0.19
+      z: 0.120
+    orientation:
+      x: 0.0
+      y: 0.0
+      z: 0.5
+      w: 0.5
+    type: mesh
+    file: object2.stl
+    scale:
+      x: 0.001
+      y: 0.001
+      z: 0.001
+
+pick_place1:
+  - name: object1
+    color:
+      r: 1.0
+      g: 0.0
+      b: 0.0
+      a: 0.5
+    position:
+      x: 0.5
+      y: 0.25
+      z: 0.01
+    orientation:
+      x: 0.0
+      y: 0.0
+      z: 0.0
+      w: 1.0
+    type: mesh
+    file: object1.stl
+    scale:
+      x: 0.001
+      y: 0.001
+      z: 0.001
+
+  - name: object2
+    color:
+      r: 0.0
+      g: 0.0
+      b: 1.0
+      a: 0.5
+    position:
+      x: 0.5
+      y: -0.25
+      z: 0.01
+    orientation:
+      x: 0.0
+      y: 0.0
+      z: 0.0
+      w: 1.0
+    type: mesh
+    file: object2.stl
+    scale:
+      x: 0.001
+      y: 0.001
+      z: 0.001
+
+base:
+  - name: table1
+    color:
+      r: 0.7
+      g: 0.4
+      b: 0.2
+      a: 1.0
+    position:
+      x: 0.1
+      y: 0.0
+      z: -0.02
+    orientation:
+      x: 0.0
+      y: 0.0
+      z: 0.0
+      w: 1.0
+    type: box
+    dimensions:
+      x: 0.6
+      y: 0.8
+      z: 0.04
+      
+  - name: table2
+    color:
+      r: 0.6
+      g: 0.4
+      b: 0.2
+      a: 1.0
+    position:
+      x: 0.9
+      y: 0.0
+      z: -0.02
+    orientation:
+      x: 0.0
+      y: 0.0
+      z: 0.0
+      w: 1.0
+    type: box
+    dimensions:
+      x: 1.0
+      y: 1.0
+      z: 0.04
 
   - name: shield_bottom
     color:
       r: 1.0
       g: 1.0
       b: 1.0
-      a: 0.3
+      a: 0.05
     position:
       x: -0.25
       y: 0.0
       z: 0.5
     orientation:
-      x: 1.0
+      x: 0.0
       y: 0.0
       z: 0.0
-      w: 0.0
+      w: 1.0
     type: box
     dimensions:
       x: 0.02
-      y: 0.6
+      y: 1.0
       z: 1.0
 
   - name: shield_left
@@ -101,16 +189,16 @@ pick_place:
       r: 1.0
       g: 1.0
       b: 1.0
-      a: 0.3
+      a: 0.05
     position:
       x: 0.35
-      y: 0.3
+      y: 0.5
       z: 0.5
     orientation:
-      x: 1.0
+      x: 0.0
       y: 0.0
       z: 0.0
-      w: 0.0
+      w: 1.0
     type: box
     dimensions:
       x: 1.2
@@ -122,16 +210,16 @@ pick_place:
       r: 1.0
       g: 1.0
       b: 1.0
-      a: 0.3
+      a: 0.05
     position:
       x: 0.35
-      y: -0.3
+      y: -0.5
       z: 0.5
     orientation:
-      x: 1.0
+      x: 0.0
       y: 0.0
       z: 0.0
-      w: 0.0
+      w: 1.0
     type: box
     dimensions:
       x: 1.2

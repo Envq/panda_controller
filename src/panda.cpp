@@ -17,17 +17,20 @@
 
 //#############################################################################
 // PRIVATE IMPREMENTATIONS
-double get_size_object(
-    moveit::planning_interface::PlanningSceneInterfacePtr &planning_scene_ptr,
-    const std::string &OBJECT_NAME) {
-    // Get the attach objects
-    auto attach_objects = planning_scene_ptr->getAttachedObjects();
+double
+get_size_object(const moveit::planning_interface::PlanningSceneInterfacePtr
+                    &planning_scene_ptr,
+                const std::string &OBJECT_NAME,
+                const geometry_msgs::Pose &POSE) {
+    // Get collision object from id
+    auto object = planning_scene_ptr->getObjects(
+        std::vector<std::string>{OBJECT_NAME.c_str()})[OBJECT_NAME];
 
-    // Get dimensions object
-    auto &dim = attach_objects[OBJECT_NAME].object.primitives[0].dimensions;
+    auto mesh = object.meshes;
 
-    // extract radius and return diameter
-    return dim[1] * 2;
+    // TODO...
+
+    return 0.02;
 }
 
 
@@ -266,8 +269,8 @@ void Panda::pick(const geometry_msgs::Pose &POSE,
 
 
 void Panda::pick(const geometry_msgs::Pose &POSE,
-                 const std::string &OBJECT_NAME, const double &GRASP_FORCE,
-                 const double &GRASP_EPSILON_INNER,
+                 const std::string &OBJECT_NAME, const double &GRASP_WIDTH,
+                 const double &GRASP_FORCE, const double &GRASP_EPSILON_INNER,
                  const double &GRASP_EPSILON_OUTER) {
     try {
         // Open gripper
@@ -292,11 +295,8 @@ void Panda::pick(const geometry_msgs::Pose &POSE,
         move_group_ptr_->attachObject(OBJECT_NAME,
                                       move_group_ptr_->getEndEffectorLink());
 
-        // Get size object
-        double size = get_size_object(planning_scene_ptr_, OBJECT_NAME);
-
         // Close gripper
-        gripperGrasp(size, GRASP_FORCE, GRASP_EPSILON_INNER,
+        gripperGrasp(GRASP_WIDTH, GRASP_FORCE, GRASP_EPSILON_INNER,
                      GRASP_EPSILON_OUTER);
 
     } catch (PCEXC::PandaArmException &e) {

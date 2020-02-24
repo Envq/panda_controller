@@ -6,10 +6,10 @@
         {
             "label": "buildAndRun",
             "type": "shell",
-            "command": "rosrun",
+            "command": "roslaunch",
             "args": [
                 "${workspaceFolderBasename}",
-                "pick_place"
+                "pick_place.launch"
             ],
             "problemMatcher": [],
             "group": "build",
@@ -19,6 +19,20 @@
             "dependsOn": [
                 "build"
             ]
+        },
+        {
+            "label": "test_panda",
+            "type": "shell",
+            "command": "rosrun",
+            "args": [
+                "${workspaceFolderBasename}",
+                "test_panda"
+            ],
+            "problemMatcher": [],
+            "group": "none",
+            "presentation": {
+                "focus": true
+            }
         },
         {
             "label": "pick_place",

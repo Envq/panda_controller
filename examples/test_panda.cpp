@@ -34,7 +34,12 @@ int main(int argc, char **argv) {
 
 
     try {
-        data_manager::get_pose("pick");
+        auto panda = robot::Panda(false);
+        auto pose = panda.getCurrentPose();
+        pose.position.x -= 0.3;
+        pose.position.z += 0.5;
+
+        panda.cartesianMovement(pose);
 
     } catch (const PCEXC::PandaControllerException &e) {
         ROS_FATAL_STREAM(PCEXC::get_err_msg(NAME, e.what()));

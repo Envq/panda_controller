@@ -242,12 +242,14 @@ class Panda {
      *
      * @param POSE The pose where the robot grasp object.
      * @param OBJECT_NAME The name of the target object.
+     * @param GRASP_WIDTH The width value for gripperGrasp().
      * @param GRASP_FORCE The force value for gripperGrasp().
      * @param GRASP_EPSILON_INNER The epsilon_inner value for gripperGrasp().
      * @param GRASP_EPSILON_OUTER The epsilon_outer value for gripperGrasp().
      */
     void pick(const geometry_msgs::Pose &POSE, const std::string &OBJECT_NAME,
-              const double &GRASP_FORCE, const double &GRASP_EPSILON_INNER,
+              const double &GRASP_WIDTH, const double &GRASP_FORCE,
+              const double &GRASP_EPSILON_INNER,
               const double &GRASP_EPSILON_OUTER);
 
     /**

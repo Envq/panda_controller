@@ -1,12 +1,21 @@
 <launch>
+    <arg name="gripper_is_active" default="false"/>
+    <arg name="grasp_force" default="20.0"/>
+    <arg name="grasp_epsilon_inner" default="0.002"/>
+    <arg name="grasp_epsilon_outer" default="0.002"/>
+    <arg name="cartesian_step" default="0.01"/>
+    <arg name="cartesian_jump" default="0.0"/>
+    <arg name="joint_adjust_in_bounds" default="true"/>
+
+    
     <node name="console" pkg="panda_controller" 
     type="console" respawn="false" output="screen">
-        <param name="gripper_is_active" value="false"/>
-        <param name="grasp_force" value="20.0"/>
-        <param name="grasp_epsilon_inner" value="0.002"/>
-        <param name="grasp_epsilon_outer" value="0.002"/>
-        <param name="cartesian_step" value="0.01"/>
-        <param name="cartesian_jump" value="0.0"/>
-        <param name="joint_adjust_in_bounds" value="true"/>
+        <param name="gripper_is_active" value="$(arg gripper_is_active)"/>
+        <param name="grasp_force" value="$(arg grasp_force)"/>
+        <param name="grasp_epsilon_inner" value="$(arg grasp_epsilon_inner)"/>
+        <param name="grasp_epsilon_outer" value="$(arg grasp_epsilon_outer)"/>
+        <param name="cartesian_step" value="$(arg cartesian_step)"/>
+        <param name="cartesian_jump" value="$(arg cartesian_jump)"/>
+        <param name="joint_adjust_in_bounds" value="$(arg joint_adjust_in_bounds)"/>
     </node>
 </launch>
