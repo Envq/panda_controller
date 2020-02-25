@@ -75,34 +75,13 @@ pick_place2:
       y: 0.001
       z: 0.001
 
+
 pick_place1:
-  - name: object1
+  - name: object_male
     color:
       r: 1.0
       g: 0.0
       b: 0.0
-      a: 0.5
-    position:
-      x: 0.5
-      y: 0.25
-      z: 0.01
-    orientation:
-      x: 0.0
-      y: 0.0
-      z: 0.0
-      w: 1.0
-    type: mesh
-    file: object1.stl
-    scale:
-      x: 0.001
-      y: 0.001
-      z: 0.001
-
-  - name: object2
-    color:
-      r: 0.0
-      g: 0.0
-      b: 1.0
       a: 0.5
     position:
       x: 0.5
@@ -114,11 +93,34 @@ pick_place1:
       z: 0.0
       w: 1.0
     type: mesh
-    file: object2.stl
+    file: object_male.stl
     scale:
       x: 0.001
       y: 0.001
       z: 0.001
+
+  - name: object_female
+    color:
+      r: 0.0
+      g: 0.0
+      b: 1.0
+      a: 0.5
+    position:
+      x: 0.5
+      y: 0.25
+      z: 0.01
+    orientation:
+      x: 0.0
+      y: 0.0
+      z: 0.0
+      w: 1.0
+    type: mesh
+    file: object_female.stl
+    scale:
+      x: 0.001
+      y: 0.001
+      z: 0.001
+
 
 base:
   - name: table1

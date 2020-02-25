@@ -1,0 +1,9 @@
+<launch>
+    <arg name="link" default="panda_gripper_center"/>
+
+    
+    <node name="test_panda" pkg="panda_controller" 
+    type="test_panda" respawn="false" output="screen">
+        <param name="link" value="$(arg link)"/>
+    </node>
+</launch>

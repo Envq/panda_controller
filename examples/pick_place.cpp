@@ -79,8 +79,6 @@ int main(int argc, char **argv) {
         panda.gripperHoming();
 
         // Pick
-        ROS_STRONG_INFO(FG_COLOR, BG_COLOR,
-                        "SELECTED METHOD3: pose and collision object");
         ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "OBJECT PICKING");
         ROS_INFO_STREAM("Object name: " << OBJECT_NAME);
         ROS_INFO_STREAM("Pick-Pose object: " << PICK_POSE_NAME);

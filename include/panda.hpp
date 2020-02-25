@@ -88,7 +88,8 @@ typedef actionlib::SimpleActionClient<franka_gripper::GraspAction>
 /// @brief The Panda Franka Emika robot management class.
 class Panda {
   private:
-    moveit::planning_interface::MoveGroupInterfacePtr move_group_ptr_;
+    moveit::planning_interface::MoveGroupInterfacePtr arm_ptr_;
+    moveit::planning_interface::MoveGroupInterfacePtr hand_ptr_;
     moveit::planning_interface::PlanningSceneInterfacePtr planning_scene_ptr_;
     boost::shared_ptr<GripperHomingClient> gripper_homing_client_ptr_;
     boost::shared_ptr<GripperMoveClient> gripper_move_client_ptr_;

@@ -39,7 +39,7 @@ namespace robot {
 Panda::Panda(const bool &GRIPPER_IS_ACTIVE) {
     // Init MoveGroupInterface with arm
     try {
-        move_group_ptr_.reset(
+        arm_ptr_.reset(
             new moveit::planning_interface::MoveGroupInterface("panda_arm"));
 
     } catch (const std::runtime_error &e) {
@@ -84,17 +84,29 @@ Panda::Panda(const bool &GRIPPER_IS_ACTIVE) {
                 "Panda::Panda()", "Impossible create "
                                   "action clients for franka_gripper");
         }
+    } else {
+        // Init MoveGroupInterface with hand
+        try {
+            hand_ptr_.reset(
+                new moveit::planning_interface::MoveGroupInterface("hand"));
+
+        } catch (const std::runtime_error &e) {
+            throw PCEXC::PandaArmException(
+                "Panda::Panda()",
+                "Impossible initialize MoveGroupInterface with "
+                "'hand'");
+        }
     }
 }
 
 
 geometry_msgs::Pose Panda::getCurrentPose() {
-    return move_group_ptr_->getCurrentPose().pose;
+    return arm_ptr_->getCurrentPose().pose;
 }
 
 
 void Panda::setArmSpeed(const float &SPEED) {
-    move_group_ptr_->setMaxVelocityScalingFactor(SPEED);
+    arm_ptr_->setMaxVelocityScalingFactor(SPEED);
 }
 
 
@@ -123,7 +135,7 @@ void Panda::resetScene() {
 void Panda::moveJointsTo(const std::vector<double> &JOINTS,
                          const bool &ADJUST_IN_BOUNDS) {
     // Set new joints values
-    bool in_bounds = move_group_ptr_->setJointValueTarget(JOINTS);
+    bool in_bounds = arm_ptr_->setJointValueTarget(JOINTS);
 
     // Errors check
     if (!ADJUST_IN_BOUNDS && !in_bounds)
@@ -133,7 +145,7 @@ void Panda::moveJointsTo(const std::vector<double> &JOINTS,
                                        "be above the maximum bounds.");
 
     // Perform movement
-    auto res = move_group_ptr_->move();
+    auto res = arm_ptr_->move();
 
     // Errors check
     if (res != moveit::planning_interface::MoveItErrorCode::SUCCESS)
@@ -149,7 +161,7 @@ void Panda::moveJointRad(const int &JOINT, const double &VAL,
                                        "Joint invalid: joint_" +
                                            std::to_string(JOINT));
 
-    auto joints_state = move_group_ptr_->getCurrentJointValues();
+    auto joints_state = arm_ptr_->getCurrentJointValues();
 
     // Update value of specified join
     // Note: joints_state start from 0 not 1
@@ -177,10 +189,10 @@ void Panda::moveToReadyPose() {
 
 void Panda::moveToPose(const geometry_msgs::Pose &POSE) {
     // Set the target Pose
-    move_group_ptr_->setPoseTarget(POSE);
+    arm_ptr_->setPoseTarget(POSE);
 
     // Perform movement
-    auto res = move_group_ptr_->move();
+    auto res = arm_ptr_->move();
 
     // Errors check
     if (res != moveit::planning_interface::MoveItErrorCode::SUCCESS)
@@ -193,7 +205,7 @@ void Panda::cartesianMovement(const std::vector<geometry_msgs::Pose> &WAYPOINTS,
                               const double &STEP,
                               const double &JUMP_THRESHOLD) {
     moveit_msgs::RobotTrajectory trajectory;
-    double progress_percentage = move_group_ptr_->computeCartesianPath(
+    double progress_percentage = arm_ptr_->computeCartesianPath(
         WAYPOINTS, STEP, JUMP_THRESHOLD, trajectory);
 
     // Check Errors
@@ -211,7 +223,7 @@ void Panda::cartesianMovement(const std::vector<geometry_msgs::Pose> &WAYPOINTS,
     // Perform movement
     moveit::planning_interface::MoveGroupInterface::Plan plan;
     plan.trajectory_ = trajectory;
-    auto res = move_group_ptr_->execute(plan);
+    auto res = arm_ptr_->execute(plan);
 
     // Errors check
     if (res != moveit::planning_interface::MoveItErrorCode::SUCCESS)
@@ -289,8 +301,8 @@ void Panda::pick(const geometry_msgs::Pose &POSE,
                                            OBJECT_NAME);
 
         // Attach object
-        move_group_ptr_->attachObject(OBJECT_NAME,
-                                      move_group_ptr_->getEndEffectorLink());
+        arm_ptr_->attachObject(OBJECT_NAME,
+                                      arm_ptr_->getEndEffectorLink());
 
         // Close gripper
         gripperGrasp(GRASP_WIDTH, GRASP_FORCE, GRASP_EPSILON_INNER,
@@ -351,7 +363,7 @@ void Panda::place(const geometry_msgs::Pose &POSE) {
         moveToPose(POSE);
 
         // Detach objects
-        move_group_ptr_->detachObject(move_group_ptr_->getEndEffectorLink());
+        arm_ptr_->detachObject(arm_ptr_->getEndEffectorLink());
 
         // Open gripper
         gripperMove(config::GRIPPER_MAX_WIDTH);
@@ -394,6 +406,12 @@ void Panda::gripperMove(const double &WIDTH) {
             throw PCEXC::PandaGripperException("Panda::gripperMove()",
                                                "waitForResult()", "Timeout");
         }
+    } else {
+        std::vector<double> joints;
+        joints.push_back(WIDTH / 2);
+        joints.push_back(WIDTH / 2);
+        hand_ptr_->setJointValueTarget(joints);
+        hand_ptr_->move();
     }
 }
 
@@ -416,6 +434,8 @@ void Panda::gripperGrasp(const double &WIDTH, const double &FORCE,
             throw PCEXC::PandaGripperException("Panda::gripperGrasp()",
                                                "waitForResult()", "Timeout");
         }
+    } else {
+        gripperMove(WIDTH);
     }
 }
 
