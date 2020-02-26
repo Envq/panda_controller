@@ -50,6 +50,7 @@ namespace robot {
 /// @brief This namespace contains the configurations of this file.
 namespace config {
 const std::string FRAME_REF = "panda_link0";
+const std::string EEF_LINK = "panda_link8";
 const double GRIPPER_MAX_WIDTH = 0.08;
 const auto READY_JOINTS = std::vector<double>{
     0.00, -0.25 * M_PI, 0.00, -0.75 * M_PI, 0.00, 0.50 * M_PI, 0.25 * M_PI};
@@ -110,8 +111,10 @@ class Panda {
      * @brief Get the current Pose.
      *
      * @return geometry_msgs::Pose The Pose object of current pose.
+     * @param EEF The end effector name of pose
      */
-    geometry_msgs::Pose getCurrentPose();
+    geometry_msgs::Pose
+    getCurrentPose(const std::string &EEF = config::EEF_LINK);
 
     /**
      * @brief Set the arm speed.
@@ -139,6 +142,13 @@ class Panda {
      *
      */
     void resetScene();
+
+    /**
+     * @brief Get a string with link names.
+     *
+     * @return std::string String with link names.
+     */
+    std::string getLinkNames();
 
     /**
      * @brief Move the joints in the angles specified (radiants).
@@ -182,8 +192,10 @@ class Panda {
      * @brief Move the arm in the specified pose.
      *
      * @param POSE The pose where to go.
+     * @param EEF The end effector name of pose
      */
-    void moveToPose(const geometry_msgs::Pose &POSE);
+    void moveToPose(const geometry_msgs::Pose &POSE,
+                    const std::string &EEF = config::EEF_LINK);
 
     /**
      * @brief Move the arm in cartesian path with waypoints.

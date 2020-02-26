@@ -23,10 +23,10 @@
         {
             "label": "test_panda",
             "type": "shell",
-            "command": "rosrun",
+            "command": "roslaunch",
             "args": [
                 "${workspaceFolderBasename}",
-                "test_panda"
+                "test.launch"
             ],
             "problemMatcher": [],
             "group": "none",

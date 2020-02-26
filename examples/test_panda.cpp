@@ -42,36 +42,47 @@ int main(int argc, char **argv) {
         // joints[1] = 0.0;
         // hand.setJointValueTarget(joints);
         // hand.move();
-        // ros::WallDuration(1.0);
+        // ros::WallDuration(1.0).sleep();
         // // hand.setNamedTarget("open");
         // joints[0] = 0.035;
         // joints[1] = 0.035;
         // hand.setJointValueTarget(joints);
         // hand.move();
-        // ros::WallDuration(1.0);
+        // ros::WallDuration(1.0).sleep();
 
 
+        std::string LINK;
+        node.getParam("link", LINK);
         auto panda = robot::Panda(false);
-        panda.gripperMove(0.0);
-        ros::WallDuration(2.0);
-        panda.gripperMove(robot::config::GRIPPER_MAX_WIDTH);
-        ros::WallDuration(2.0);
+        ROS_INFO_STREAM(panda.getLinkNames());
+        ROS_WARN_STREAM(LINK);
+        panda.setScene(data_manager::get_scene("test"));
+        panda.moveToPose(data_manager::get_pose("test"), LINK);
 
 
-        // std::string STR;
-        // node.getParam("link", STR);
-        // moveit::planning_interface::MoveGroupInterface
-        // panda("panda_arm_hand"); ros::WallTime(2.0); std::cout << "eef link:"
-        // << panda.getEndEffectorLink() << std::endl; std::cout << "eef name:"
-        // << panda.getEndEffector() << std::endl;
+        // std::string LINK;
+        // double R, P, Y;
+        // node.getParam("link", LINK);
+        // node.getParam("r", R);
+        // node.getParam("p", P);
+        // node.getParam("y", Y);
+        // auto panda = robot::Panda(false);
+        // ROS_INFO_STREAM(panda.getLinkNames());
+        // panda.setScene(data_manager::get_scene("test"));
 
-        // for (auto var : panda.getLinkNames()) {
-        //     std::cout << var << std::endl;
-        // }
+        // auto target_pose = panda.getCurrentPose(LINK);
+        // tf2::Quaternion original, orientation, rotation;
+        // target_pose.position.z = 0.3;
+        // tf2::convert(target_pose.orientation,
+        //              original);  // get original orientation
+        // rotation.setRPY(R * M_PI / 180.0, P * M_PI / 180.0,
+        //                 Y * M_PI / 180.0);  // get rotation orientation
+        // orientation = rotation * original;  // get new orientation
+        // orientation.normalize();            // normalize new orientation
+        // target_pose.orientation = tf2::toMsg(orientation);  // Update
 
-        // ROS_WARN_STREAM(STR);
-        // panda.setPoseTarget(data_manager::get_pose("test"), STR);
-        // panda.move();
+        // ros::WallDuration(2.0).sleep();
+        // panda.moveToPose(target_pose, LINK);
 
     } catch (const PCEXC::PandaControllerException &e) {
         ROS_FATAL_STREAM(PCEXC::get_err_msg(NAME, e.what()));

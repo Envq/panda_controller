@@ -9,6 +9,29 @@
 #    scale: xyz (double) #for mesh
 #    dimensions: xyz/rh (double) #for others
 
+test:
+  - name: obj
+    color:
+      r: 0.0
+      g: 1.0
+      b: 1.0
+      a: 1.0
+    position:
+      x: 0.3
+      y: 0.2
+      z: 0.0
+    orientation:
+      x: 0.0
+      y: 0.0
+      z: 0.383
+      w: 0.924
+    type: box
+    dimensions:
+      x: 0.04
+      y: 0.02
+      z: 0.02
+
+
 pick_place2:
   - name: box
     color:
@@ -31,7 +54,7 @@ pick_place2:
       y: 0.240
       z: 0.110
 
-  - name: object1
+  - name: object_male
     color:
       r: 1.0
       g: 0.0
@@ -47,13 +70,13 @@ pick_place2:
       z: 0.5
       w: 0.5
     type: mesh
-    file: object1.stl
+    file: object_male.stl
     scale:
       x: 0.001
       y: 0.001
       z: 0.001
 
-  - name: object2
+  - name: object_female
     color:
       r: 0.0
       g: 0.0
@@ -69,7 +92,7 @@ pick_place2:
       z: 0.5
       w: 0.5
     type: mesh
-    file: object2.stl
+    file: object_female.stl
     scale:
       x: 0.001
       y: 0.001

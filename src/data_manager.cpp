@@ -114,26 +114,34 @@ scene_object create_scene_object(const YAML::Node &OBJECT) {
         if (TYPE == "box") {
             primitive.type = primitive.BOX;
             primitive.dimensions.resize(3);
-            primitive.dimensions[0] = DIMENSIONS["x"].as<double>();
-            primitive.dimensions[1] = DIMENSIONS["y"].as<double>();
-            primitive.dimensions[2] = DIMENSIONS["z"].as<double>();
+            primitive.dimensions[primitive.BOX_X] =
+                DIMENSIONS["x"].as<double>();
+            primitive.dimensions[primitive.BOX_Y] =
+                DIMENSIONS["y"].as<double>();
+            primitive.dimensions[primitive.BOX_Z] =
+                DIMENSIONS["z"].as<double>();
 
         } else if (TYPE == "sphere") {
             primitive.type = primitive.SPHERE;
             primitive.dimensions.resize(1);
-            primitive.dimensions[0] = DIMENSIONS["r"].as<double>();
+            primitive.dimensions[primitive.SPHERE_RADIUS] =
+                DIMENSIONS["r"].as<double>();
 
         } else if (TYPE == "cylinder") {
             primitive.type = primitive.CYLINDER;
             primitive.dimensions.resize(2);
-            primitive.dimensions[0] = DIMENSIONS["h"].as<double>();
-            primitive.dimensions[1] = DIMENSIONS["r"].as<double>();
+            primitive.dimensions[primitive.CYLINDER_HEIGHT] =
+                DIMENSIONS["h"].as<double>();
+            primitive.dimensions[primitive.CYLINDER_RADIUS] =
+                DIMENSIONS["r"].as<double>();
 
         } else if (TYPE == "cone") {
             primitive.type = primitive.CONE;
             primitive.dimensions.resize(2);
-            primitive.dimensions[0] = DIMENSIONS["h"].as<double>();
-            primitive.dimensions[1] = DIMENSIONS["r"].as<double>();
+            primitive.dimensions[primitive.CONE_HEIGHT] =
+                DIMENSIONS["h"].as<double>();
+            primitive.dimensions[primitive.CONE_RADIUS] =
+                DIMENSIONS["r"].as<double>();
 
         } else {
             throw PCEXC::DataManagerException("create_scene_object()",

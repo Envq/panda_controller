@@ -22,11 +22,11 @@ place1:
 
 test:
   position:
-    x: 0.4
-    y: 0.0
-    z: 0.0
+    x: 0.3
+    y: 0.2
+    z: 0.1
   orientation:
-    x: 1.0
+    x: 0.0
     y: 0.0
-    z: 0.0
-    w: 0.0
+    z: 0.383
+    w: 0.924

@@ -100,8 +100,8 @@ Panda::Panda(const bool &GRIPPER_IS_ACTIVE) {
 }
 
 
-geometry_msgs::Pose Panda::getCurrentPose() {
-    return arm_ptr_->getCurrentPose().pose;
+geometry_msgs::Pose Panda::getCurrentPose(const std::string &EEF) {
+    return arm_ptr_->getCurrentPose(EEF).pose;
 }
 
 
@@ -129,6 +129,22 @@ void Panda::resetScene() {
     empty_scene.is_diff = true;
     empty_scene.name = "empty";
     planning_scene_ptr_->applyPlanningScene(empty_scene);
+}
+
+
+std::string Panda::getLinkNames() {
+    std::string res = "Link names:\n";
+    res += "panda_arm:\n";
+    for (auto link : arm_ptr_->getLinkNames()) {
+        res = res + " - " + link + "\n";
+    }
+    if (gripper_is_active_) {
+        res += "hand:\n";
+        for (auto link : hand_ptr_->getLinkNames()) {
+            res = res + " - " + link + "\n";
+        }
+    }
+    return res;
 }
 
 
@@ -187,9 +203,10 @@ void Panda::moveToReadyPose() {
 }
 
 
-void Panda::moveToPose(const geometry_msgs::Pose &POSE) {
+void Panda::moveToPose(const geometry_msgs::Pose &POSE,
+                       const std::string &EEF) {
     // Set the target Pose
-    arm_ptr_->setPoseTarget(POSE);
+    arm_ptr_->setPoseTarget(POSE, EEF);
 
     // Perform movement
     auto res = arm_ptr_->move();
@@ -301,8 +318,7 @@ void Panda::pick(const geometry_msgs::Pose &POSE,
                                            OBJECT_NAME);
 
         // Attach object
-        arm_ptr_->attachObject(OBJECT_NAME,
-                                      arm_ptr_->getEndEffectorLink());
+        arm_ptr_->attachObject(OBJECT_NAME, arm_ptr_->getEndEffectorLink());
 
         // Close gripper
         gripperGrasp(GRASP_WIDTH, GRASP_FORCE, GRASP_EPSILON_INNER,

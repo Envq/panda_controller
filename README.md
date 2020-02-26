@@ -113,6 +113,17 @@ cd franka_ros
 
 git checkout 0.6.0
 ~~~
+Add to franka_ros/franka_description/robots/panda_arm.xacro:
+~~~
+<link name="${arm_id}_gripper_center"/>
+<joint name="${arm_id}_gripper_center_joint" type="fixed">
+    <parent link="${arm_id}_link8"/>
+    <child link="${arm_id}_gripper_center"/>
+    <origin xyz="0.0 0.0 0.1035" rpy="0 ${pi} -${pi/4}"/>
+    <axis xyz="0 0 0"/>
+</joint>
+~~~
+Replace to franka_ros/franka_description/mesh/collision/finger.stl with panda_controller/data/finger.stl for better collisions
 
 
 **Configure Workspace**
