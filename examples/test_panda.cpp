@@ -51,13 +51,23 @@ int main(int argc, char **argv) {
         // ros::WallDuration(1.0).sleep();
 
 
+        // std::string LINK;
+        // node.getParam("link", LINK);
+        // auto panda = robot::Panda(false);
+        // ROS_INFO_STREAM(panda.getLinkNames());
+        // ROS_WARN_STREAM(LINK);
+        // panda.setScene(data_manager::get_scene("test"));
+        // panda.moveToPose(data_manager::get_pose("test"));
+
+
         std::string LINK;
         node.getParam("link", LINK);
         auto panda = robot::Panda(false);
+        panda.setEndEffectorLink(LINK);
         ROS_INFO_STREAM(panda.getLinkNames());
         ROS_WARN_STREAM(LINK);
         panda.setScene(data_manager::get_scene("test"));
-        panda.moveToPose(data_manager::get_pose("test"), LINK);
+        panda.cartesianMovement(data_manager::get_pose("test"));
 
 
         // std::string LINK;

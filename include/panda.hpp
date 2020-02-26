@@ -111,10 +111,30 @@ class Panda {
      * @brief Get the current Pose.
      *
      * @return geometry_msgs::Pose The Pose object of current pose.
-     * @param EEF The end effector name of pose
      */
-    geometry_msgs::Pose
-    getCurrentPose(const std::string &EEF = config::EEF_LINK);
+    geometry_msgs::Pose getCurrentPose();
+
+    /**
+     * @brief Get the current Pose.
+     *
+     * @return geometry_msgs::Pose The Pose object of current pose.
+     * @param EEF The name of end effector of pose.
+     */
+    geometry_msgs::Pose getCurrentPose(const std::string &EEF);
+
+    /**
+     * @brief Get the End Effector Link object.
+     *
+     * @return std::string return the link of end effector.
+     */
+    std::string getEndEffectorLink();
+
+    /**
+     * @brief Set the End Effector Link object.
+     *
+     * @param EEF The name of end effector link.
+     */
+    void setEndEffectorLink(const std::string &EEF);
 
     /**
      * @brief Set the arm speed.
@@ -192,10 +212,8 @@ class Panda {
      * @brief Move the arm in the specified pose.
      *
      * @param POSE The pose where to go.
-     * @param EEF The end effector name of pose
      */
-    void moveToPose(const geometry_msgs::Pose &POSE,
-                    const std::string &EEF = config::EEF_LINK);
+    void moveToPose(const geometry_msgs::Pose &POSE);
 
     /**
      * @brief Move the arm in cartesian path with waypoints.

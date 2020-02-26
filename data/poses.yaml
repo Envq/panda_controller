@@ -24,7 +24,7 @@ test:
   position:
     x: 0.3
     y: 0.2
-    z: 0.1
+    z: 0.0
   orientation:
     x: 0.0
     y: 0.0

@@ -100,8 +100,23 @@ Panda::Panda(const bool &GRIPPER_IS_ACTIVE) {
 }
 
 
+geometry_msgs::Pose Panda::getCurrentPose() {
+    return getCurrentPose(arm_ptr_->getEndEffectorLink());
+}
+
+
 geometry_msgs::Pose Panda::getCurrentPose(const std::string &EEF) {
     return arm_ptr_->getCurrentPose(EEF).pose;
+}
+
+
+std::string Panda::getEndEffectorLink() {
+    return arm_ptr_->getEndEffectorLink();
+}
+
+
+void Panda::setEndEffectorLink(const std::string &EEF) {
+    arm_ptr_->setEndEffectorLink(EEF);
 }
 
 
@@ -203,10 +218,9 @@ void Panda::moveToReadyPose() {
 }
 
 
-void Panda::moveToPose(const geometry_msgs::Pose &POSE,
-                       const std::string &EEF) {
+void Panda::moveToPose(const geometry_msgs::Pose &POSE) {
     // Set the target Pose
-    arm_ptr_->setPoseTarget(POSE, EEF);
+    arm_ptr_->setPoseTarget(POSE);
 
     // Perform movement
     auto res = arm_ptr_->move();
