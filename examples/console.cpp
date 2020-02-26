@@ -163,6 +163,7 @@ void run_command(robot::Panda &panda, const std::string &command) {
                 throw std::invalid_argument(command);
 
             ROS_STRONG_INFO(config::FG, config::BG, "SELECTED HELP");
+            const auto color = Colors::FG_YELLOW_BRIGHT;
             ROS_INFO_STREAM(
                 Colors::BOLD_INTENSITY
                 << "\nLeggends:\n"
@@ -170,47 +171,79 @@ void run_command(robot::Panda &panda, const std::string &command) {
                 << " - () indicates a optional parameter with default "
                    "value in launch file.\n"
                 << Colors::BOLD_INTENSITY << "Commands available:\n"
-                << Colors::INTENSITY_OFF << Colors::FG_YELLOW_BRIGHT
-                << " - help: " << Colors::RESET
-                << "to see the list of commands.\n"
-                << Colors::FG_YELLOW_BRIGHT << " - quit: " << Colors::RESET
+                << Colors::INTENSITY_OFF
+
+                << color << " - quit: " << Colors::RESET
                 << "to close the node.\n"
-                << Colors::FG_YELLOW_BRIGHT << " - scene [name:str]: "
-                << Colors::RESET << "to load specified scene.\n"
-                << Colors::FG_YELLOW_BRIGHT
-                << " - scene reset: " << Colors::RESET << "to reset scene.\n"
-                << Colors::FG_YELLOW_BRIGHT << " - speed arm [speed:float]: "
-                << Colors::RESET << "to set the arm speed value.\n"
-                << Colors::FG_YELLOW_BRIGHT
-                << " - speed gripper [speed:float]: " << Colors::RESET
+
+                << color << " - help: " << Colors::RESET
+                << "to see the list of commands.\n"
+
+                << color << " - info: " << Colors::RESET
+                << "to print robot info.\n"
+
+                << color << " - scene [name:str]: " << Colors::RESET
+                << "to load specified scene.\n"
+
+                << color << " - scene reset: " << Colors::RESET
+                << "to reset scene.\n"
+
+                << color << " - speed arm [speed:float]: " << Colors::RESET
+                << "to set the arm speed value.\n"
+
+                << color << " - eef set [name:str]: " << Colors::RESET
+                << "to set end effector link name.\n"
+
+                << color << " - eef get: " << Colors::RESET
+                << "to get end effector link name.\n"
+
+                << color << " - speed gripper [speed:float]: " << Colors::RESET
                 << "to set the gripper speed value.\n"
-                << Colors::FG_YELLOW_BRIGHT
-                << " - save [(name:str)]: " << Colors::RESET
-                << "to save the current pose with the specified name.\n"
-                << Colors::FG_YELLOW_BRIGHT
+
+                << color << " - save [(name:str)]: " << Colors::RESET
+                << "to save the current pose with the specified name\n"
+
+                << color
+                << " - save eef [(eef:str), (name:str)]: " << Colors::RESET
+                << "to save the current pose with the specified name. You must "
+                   "select end effector link name.\n"
+
+                << color
                 << " - move joint [joint:int, val:double]: " << Colors::RESET
-                << "to move the specified joint by an integer of the "
-                   "specified degree.\n"
-                << Colors::FG_YELLOW_BRIGHT
-                << " - move offset [x:double y:double z:double]: "
+                << "to move the specified joint by an integer of the specified "
+                   "degree.\n"
+
+                << color << " - move offset [x:double y:double z:double]: "
                 << Colors::RESET
                 << "to move the arm along the x,y,z specified directions in "
                    "meters.\n"
-                << Colors::FG_YELLOW_BRIGHT
-                << " - move pose [name:str]: " << Colors::RESET
+
+                << color << " - move pose [name:str]: " << Colors::RESET
                 << "to move the arm on the specified pose saved in database.\n"
-                << Colors::FG_YELLOW_BRIGHT
-                << " - move gripper [width:double]: " << Colors::RESET
+
+                << color << " - move gripper [width:double]: " << Colors::RESET
                 << "to move the gripper fingers with the specified speed on "
                    "the specified width from center.\n"
-                << Colors::FG_YELLOW_BRIGHT << " - homing arm: "
-                << Colors::RESET << "to perform the homing of the arm.\n"
-                << Colors::FG_YELLOW_BRIGHT << " - homing gripper: "
-                << Colors::RESET << "to perform the homing of the gripper.\n"
-                << Colors::FG_YELLOW_BRIGHT
+
+                << color << " - homing arm: " << Colors::RESET
+                << "to perform the homing of the arm.\n"
+
+                << color << " - homing gripper: " << Colors::RESET
+                << "to perform the homing of the gripper.\n"
+
+                << color
                 << " - grasp [width:double (force:double epsilon_inner:double "
                    "epsilon_outer:double)]: "
                 << Colors::RESET << "to perform the grasping.");
+
+            // CASE INFO
+        } else if (cmd[0] == "info") {
+            if ((cmd.size() != 1))
+                throw std::invalid_argument(command);
+
+            ROS_STRONG_INFO(config::FG, config::BG, "SELECTED INFO");
+            ROS_INFO_STREAM(panda.getLinkNames());
+            ROS_INFO_STREAM(panda.getJointNames());
 
             // CASE SCENE
         } else if (cmd[0] == "scene") {
@@ -254,21 +287,52 @@ void run_command(robot::Panda &panda, const std::string &command) {
                 throw std::invalid_argument(command);
             }
 
+            // CASE EEF
+        } else if (cmd[0] == "eef") {
+            if (cmd.size() > 3 || cmd.size() < 2 ||
+                (cmd.size() == 2 && cmd[1] != "get") ||
+                (cmd.size() == 3 && cmd[1] != "set"))
+                throw std::invalid_argument(command);
+
+            ROS_STRONG_INFO(config::FG, config::BG, "SELECTED EEF");
+
+            if (cmd.size() == 2) {
+                ROS_INFO_STREAM(
+                    "Get end effector link: " << panda.getEndEffectorLink());
+
+            } else {
+                ROS_INFO_STREAM("Set end effector link to: " << cmd[2]);
+                panda.setEndEffectorLink(cmd[2]);
+            }
+
             // CASE SAVE
         } else if (cmd[0] == "save") {
-            if (cmd.size() > 2)
+            if (cmd.size() > 4 || (cmd.size() > 2 && cmd[1] != "eef") ||
+                (cmd.size() == 2 && cmd[1] == "eef"))
                 throw std::invalid_argument(command);
 
             ROS_STRONG_INFO(config::FG, config::BG,
                             "SELECTED SAVE CURRENT POSE");
-            auto pose = panda.getCurrentPose();
-            ROS_INFO_STREAM("Save pose:\n" << pose);
-            if (cmd.size() == 2) {
-                std::string pose_name = cmd[1];
-                data_manager::save_pose(pose, pose_name);
+
+            if (cmd.size() > 2 && cmd[1] == "eef") {
+                auto pose = panda.getCurrentPose(cmd[2]);
+                ROS_INFO_STREAM("Save pose:\n" << pose);
+                if (cmd.size() == 4) {
+                    data_manager::save_pose(pose, cmd[3]);
+                } else {
+                    data_manager::save_pose(pose);
+                }
+
             } else {
-                data_manager::save_pose(pose);
+                auto pose = panda.getCurrentPose();
+                ROS_INFO_STREAM("Save pose:\n" << pose);
+                if (cmd.size() == 2) {
+                    data_manager::save_pose(pose, cmd[1]);
+                } else {
+                    data_manager::save_pose(pose);
+                }
             }
+
 
             // CASE MOVE
         } else if (cmd[0] == "move") {

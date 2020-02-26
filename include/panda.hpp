@@ -24,6 +24,8 @@
 // MOVEIT
 #include <moveit/move_group_interface/move_group_interface.h>
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
+#include <moveit/robot_model/robot_model.h>
+#include <moveit/robot_model_loader/robot_model_loader.h>
 
 // FRANKA_GRIPPER
 #include <franka_gripper/GraspAction.h>
@@ -89,6 +91,8 @@ typedef actionlib::SimpleActionClient<franka_gripper::GraspAction>
 /// @brief The Panda Franka Emika robot management class.
 class Panda {
   private:
+    robot_model_loader::RobotModelLoaderPtr model_loader_ptr_;
+    robot_model::RobotModelPtr model_pr_;
     moveit::planning_interface::MoveGroupInterfacePtr arm_ptr_;
     moveit::planning_interface::MoveGroupInterfacePtr hand_ptr_;
     moveit::planning_interface::PlanningSceneInterfacePtr planning_scene_ptr_;
@@ -130,7 +134,8 @@ class Panda {
     std::string getEndEffectorLink();
 
     /**
-     * @brief Set the End Effector Link object.
+     * @brief Set the End Effector Link object. Note: 'panda_gripper_center' is
+     * not displayed.
      *
      * @param EEF The name of end effector link.
      */
@@ -169,6 +174,13 @@ class Panda {
      * @return std::string String with link names.
      */
     std::string getLinkNames();
+
+    /**
+     * @brief Get a string with joint names.
+     *
+     * @return std::string String with joint names.
+     */
+    std::string getJointNames();
 
     /**
      * @brief Move the joints in the angles specified (radiants).

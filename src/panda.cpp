@@ -97,6 +97,11 @@ Panda::Panda(const bool &GRIPPER_IS_ACTIVE) {
                 "'hand'");
         }
     }
+
+    // Init robot model
+    model_loader_ptr_.reset(
+        new robot_model_loader::RobotModelLoader("robot_description"));
+    model_pr_ = model_loader_ptr_->getModel();
 }
 
 
@@ -106,6 +111,11 @@ geometry_msgs::Pose Panda::getCurrentPose() {
 
 
 geometry_msgs::Pose Panda::getCurrentPose(const std::string &EEF) {
+    const auto &v = model_pr_->getLinkModelNames();
+    if (std::find(v.begin(), v.end(), EEF) == v.end())
+        throw PCEXC::PandaArmException("Panda::setEndEffectorLink()",
+                                       "End Effector Link name: '" + EEF +
+                                           "' does not exist.");
     return arm_ptr_->getCurrentPose(EEF).pose;
 }
 
@@ -116,6 +126,12 @@ std::string Panda::getEndEffectorLink() {
 
 
 void Panda::setEndEffectorLink(const std::string &EEF) {
+    const auto &v = model_pr_->getLinkModelNames();
+    if (std::find(v.begin(), v.end(), EEF) == v.end())
+        throw PCEXC::PandaArmException("Panda::setEndEffectorLink()",
+                                       "End Effector Link name: '" + EEF +
+                                           "' does not exist.");
+    arm_ptr_->clearPoseTargets();
     arm_ptr_->setEndEffectorLink(EEF);
 }
 
@@ -149,15 +165,17 @@ void Panda::resetScene() {
 
 std::string Panda::getLinkNames() {
     std::string res = "Link names:\n";
-    res += "panda_arm:\n";
-    for (auto link : arm_ptr_->getLinkNames()) {
+    for (auto link : model_pr_->getLinkModelNames()) {
         res = res + " - " + link + "\n";
     }
-    if (gripper_is_active_) {
-        res += "hand:\n";
-        for (auto link : hand_ptr_->getLinkNames()) {
-            res = res + " - " + link + "\n";
-        }
+    return res;
+}
+
+
+std::string Panda::getJointNames() {
+    std::string res = "Joint names:\n";
+    for (auto link : model_pr_->getJointModelNames()) {
+        res = res + " - " + link + "\n";
     }
     return res;
 }

@@ -1,14 +1,7 @@
 <launch>
-    <arg name="link" default="panda_gripper_center"/>
-    <!-- <arg name="link" default="panda_hand"/> -->
-
     <node name="test_panda" pkg="panda_controller" 
     type="test_panda" respawn="false" output="screen">
-        <param name="link" value="$(arg link)"/>
-        <param name="save" value="false"/>
-        <param name="time" value="0.0"/>
-        <param name="r" value="45"/>
-        <param name="p" value="45"/>
-        <param name="y" value="45"/>
+        <param name="link1" value="panda_link7"/>
+        <param name="link2" value="panda_gripper_center"/>
     </node>
 </launch>

@@ -60,14 +60,45 @@ int main(int argc, char **argv) {
         // panda.moveToPose(data_manager::get_pose("test"));
 
 
-        std::string LINK;
-        node.getParam("link", LINK);
+        // std::string LINK1, LINK2;
+        // node.getParam("link1", LINK1);
+        // node.getParam("link2", LINK2);
+        // auto panda = robot::Panda(false);
+        // panda.setEndEffectorLink(LINK1);
+        // ROS_WARN_STREAM(LINK1);
+        // panda.moveToPose(data_manager::get_pose("test"));
+        // panda.setEndEffectorLink(LINK2);
+        // ROS_WARN_STREAM(LINK2);
+        // panda.moveToPose(data_manager::get_pose("test"));
+
+
         auto panda = robot::Panda(false);
-        panda.setEndEffectorLink(LINK);
+        ROS_INFO_STREAM(panda.getJointNames());
         ROS_INFO_STREAM(panda.getLinkNames());
-        ROS_WARN_STREAM(LINK);
-        panda.setScene(data_manager::get_scene("test"));
-        panda.cartesianMovement(data_manager::get_pose("test"));
+
+        // std::string LINK1, LINK2;
+        // node.getParam("link1", LINK1);
+        // node.getParam("link2", LINK2);
+        // moveit::planning_interface::MoveGroupInterface panda("panda_arm");
+        // ROS_WARN_STREAM(panda.setEndEffectorLink(LINK1));
+        // ROS_WARN_STREAM(LINK1);
+        // panda.setPoseTarget(data_manager::get_pose("test"));
+        // panda.move();
+        // panda.clearPoseTargets();
+        // ROS_WARN_STREAM(panda.setEndEffectorLink(LINK2));
+        // ROS_WARN_STREAM(LINK2);
+        // panda.setPoseTarget(data_manager::get_pose("test"));
+        // panda.move();
+        // panda.clearPoseTargets();
+
+
+        // moveit::planning_interface::MoveGroupInterface panda("panda_arm");
+        // for (auto link : panda.getLinkNames()) {
+        //     ROS_INFO_STREAM(link);
+        // }
+        // for (auto joint : panda.getJointNames()) {
+        //     ROS_INFO_STREAM(joint);
+        // }
 
 
         // std::string LINK;

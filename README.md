@@ -200,13 +200,17 @@ This node launches rviz with the panda arm (gripper action not work without real
 
 ### **- console**
 This node is a console for performing these simple tasks:
-- **help:** to see the list of commands.
 - **quit:** to close the node.
+- **help:** to see the list of commands.
+- **info:** to print robot info.
 - **scene [name:str]:** to load specified scene.
 - **scene reset:** to reset scene.
 - **speed arm [speed:float]:** to set the arm speed value.
+- **eef set [name:str]:** to set end effector link name.
+- **eef get:** to get end effector link name.
 - **speed gripper [speed:float]:** to set the gripper speed value.
 - **save [(name:str)]:** to save the current pose with the specified name.
+- **save eef [eef:str (name:str)]:** to save the current pose with the specified name. You must select end effector link name.
 - **move joint [joint:int, val:double]:** to move the specified joint by an integer of the specified degree.
 - **move offset [x:double y:double z:double]:** to move the arm along the x,y,z specified directions in meters.
 - **move pose [name:str]:** to move the arm on the specified pose saved in database.
