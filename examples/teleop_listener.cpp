@@ -11,12 +11,16 @@
 
 
 //#############################################################################
-// DEFAULT VALUES ##############################################################
-const auto FG_COLOR = Colors::FG_BLUE;
-const auto BG_COLOR = Colors::BG_BLACK;
+// CONFIGS ####################################################################
+namespace config {
+const auto FG = Colors::FG_BLUE;
+const auto BG = Colors::BG_BLACK;
 
-float GRIPPER_FORCE_DFLT, GRIPPER_EPSILON_INNER_DFLT,
-    GRIPPER_EPSILON_OUTER_DFLT, CARTESIAN_STEP, CARTESIAN_JUMP;
+
+bool GRIPPER_IS_ACTIVE;
+float ARM_SPEED, GRIPPER_SPEED, GRIPPER_FORCE, GRIPPER_EPSILON_INNER,
+    GRIPPER_EPSILON_OUTER, CARTESIAN_STEP, CARTESIAN_JUMP;
+}  // namespace config
 
 
 
@@ -30,20 +34,20 @@ robot::Panda *panda_ptr;
 //#############################################################################
 // CALLBACK ###################################################################
 namespace callback {
-double current_gripper_width = robot::GRIPPER_MAX_WIDTH;
+double current_gripper_width = robot::config::GRIPPER_MAX_WIDTH;
 
 void teleopCallback(const panda_controller::teleop_panda::ConstPtr &msg) {
-    ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "MOVING:");
-    const double X = msg->x;
-    const double Y = msg->y;
-    const double Z = msg->z;
-    const double ROLL = msg->roll;
-    const double PITCH = msg->pitch;
-    const double YAW = msg->yaw;
-    const double ARM_HOMING = msg->arm_homing;
-    const bool GRIPPER_HOMING = msg->gripper_homing;
-    const double GRIPPER_GRASP = msg->gripper_grasp;
-    const double GRIPPER_WIDTH = msg->gripper_width;
+    ROS_STRONG_INFO(config::FG, config::BG, "MOVING:");
+    const double &X = msg->x;
+    const double &Y = msg->y;
+    const double &Z = msg->z;
+    const double &ROLL = msg->roll;
+    const double &PITCH = msg->pitch;
+    const double &YAW = msg->yaw;
+    const double &ARM_HOMING = msg->arm_homing;
+    const bool &GRIPPER_HOMING = msg->gripper_homing;
+    const double &GRIPPER_GRASP = msg->gripper_grasp;
+    const double &GRIPPER_WIDTH = msg->gripper_width;
     ROS_INFO_STREAM("Offset:\n"
                     << "- X:                " << X << std::endl
                     << "- Y:                " << Y << std::endl
@@ -60,18 +64,18 @@ void teleopCallback(const panda_controller::teleop_panda::ConstPtr &msg) {
         if (GRIPPER_HOMING) {
             ROS_INFO("Gripper homing");
             panda_ptr->gripperHoming();
-            current_gripper_width = robot::GRIPPER_MAX_WIDTH;
+            current_gripper_width = robot::config::GRIPPER_MAX_WIDTH;
 
             // GRIPPER GRASP
         } else if (GRIPPER_GRASP != 0) {
             if (GRIPPER_GRASP < 0.0 ||
-                GRIPPER_GRASP > robot::GRIPPER_MAX_WIDTH) {
+                GRIPPER_GRASP > robot::config::GRIPPER_MAX_WIDTH) {
                 ROS_WARN_STREAM("Gripper grasp invalid: " << GRIPPER_GRASP);
             } else {
                 ROS_INFO_STREAM("Grasp gripper to: " << GRIPPER_GRASP);
-                panda_ptr->gripperGrasp(GRIPPER_GRASP, GRIPPER_FORCE_DFLT,
-                                        GRIPPER_EPSILON_INNER_DFLT,
-                                        GRIPPER_EPSILON_OUTER_DFLT);
+                panda_ptr->gripperGrasp(GRIPPER_GRASP, config::GRIPPER_FORCE,
+                                        config::GRIPPER_EPSILON_INNER,
+                                        config::GRIPPER_EPSILON_OUTER);
                 current_gripper_width = GRIPPER_GRASP;
             }
 
@@ -79,7 +83,7 @@ void teleopCallback(const panda_controller::teleop_panda::ConstPtr &msg) {
         } else if (GRIPPER_WIDTH != 0) {
             current_gripper_width += GRIPPER_WIDTH;
             if (current_gripper_width < 0.0 ||
-                current_gripper_width > robot::GRIPPER_MAX_WIDTH) {
+                current_gripper_width > robot::config::GRIPPER_MAX_WIDTH) {
                 ROS_WARN_STREAM(
                     "Gripper width invalid: " << current_gripper_width);
                 current_gripper_width -= GRIPPER_WIDTH;
@@ -110,11 +114,11 @@ void teleopCallback(const panda_controller::teleop_panda::ConstPtr &msg) {
             target_pose.orientation = tf2::toMsg(orientation);  // Update
 
             ROS_INFO_STREAM("Move to pose:\n" << target_pose);
-            panda_ptr->cartesianMovement(target_pose, CARTESIAN_STEP,
-                                         CARTESIAN_JUMP);
+            panda_ptr->cartesianMovement(target_pose, config::CARTESIAN_STEP,
+                                         config::CARTESIAN_JUMP);
         }
 
-    } catch (const PCEXC::panda_error &e) {
+    } catch (const PCEXC::PandaControllerException &e) {
         ROS_FATAL_STREAM(PCEXC::get_err_msg(NAME, e.what()));
     }
 }
@@ -136,18 +140,20 @@ int main(int argc, char **argv) {
     ros::NodeHandle node("~");
     ros::AsyncSpinner spinner(2);
     spinner.start();
-    ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "START NODE: ", NAME);
+    ROS_STRONG_INFO(config::FG, config::BG, "START NODE: ", NAME);
 
 
     // Extract the parameters
-    float ARM_SPEED, GRIPPER_SPEED;
-    if (!(node.getParam("arm_speed", ARM_SPEED) &&
-          node.getParam("gripper_speed", GRIPPER_SPEED) &&
-          node.getParam("gripper_force", GRIPPER_FORCE_DFLT) &&
-          node.getParam("gripper_epsilon_inner", GRIPPER_EPSILON_INNER_DFLT) &&
-          node.getParam("gripper_epsilon_outer", GRIPPER_EPSILON_OUTER_DFLT) &&
-          node.getParam("cartesian_step", CARTESIAN_STEP) &&
-          node.getParam("cartesian_jump", CARTESIAN_JUMP))) {
+    if (!(node.getParam("gripper_is_active", config::GRIPPER_IS_ACTIVE) &&
+          node.getParam("arm_speed", config::ARM_SPEED) &&
+          node.getParam("gripper_speed", config::GRIPPER_SPEED) &&
+          node.getParam("gripper_force", config::GRIPPER_FORCE) &&
+          node.getParam("gripper_epsilon_inner",
+                        config::GRIPPER_EPSILON_INNER) &&
+          node.getParam("gripper_epsilon_outer",
+                        config::GRIPPER_EPSILON_OUTER) &&
+          node.getParam("cartesian_step", config::CARTESIAN_STEP) &&
+          node.getParam("cartesian_jump", config::CARTESIAN_JUMP))) {
         ROS_FATAL_STREAM(PCEXC::get_err_msg(NAME, "Can't get parameters"));
         ros::shutdown();
         return 0;
@@ -157,29 +163,37 @@ int main(int argc, char **argv) {
     // Task
     try {
         // Create class to manage the Panda arm
-        ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "PANDA CONTROLLER INITIALIZATION");
-        panda_ptr = new robot::Panda();
+        ROS_STRONG_INFO(config::FG, config::BG,
+                        "PANDA CONTROLLER INITIALIZATION");
+        panda_ptr = new robot::Panda(config::GRIPPER_IS_ACTIVE);
+
+        // Set end effector link
+        ROS_STRONG_INFO(config::FG, config::BG, "EEF SETTING:");
+        ROS_INFO_STREAM(
+            "End Effector link setted to: " << robot::config::CENTER_EEF);
+        panda_ptr->setEndEffectorLink(robot::config::CENTER_EEF);
 
         // Set robot
-        ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "SPEEDS ADJUSTAMENT");
-        ROS_INFO_STREAM("Arm speed setted to: " << ARM_SPEED);
-        panda_ptr->setArmSpeed(ARM_SPEED);
-        ROS_INFO_STREAM("Gripper speed setted to: " << GRIPPER_SPEED);
-        panda_ptr->setGripperSpeed(GRIPPER_SPEED);
+        ROS_STRONG_INFO(config::FG, config::BG, "SPEEDS ADJUSTAMENT");
+        ROS_INFO_STREAM("Arm speed setted to: " << config::ARM_SPEED);
+        panda_ptr->setArmSpeed(config::ARM_SPEED);
+        ROS_INFO_STREAM("Gripper speed setted to: " << config::GRIPPER_SPEED);
+        panda_ptr->setGripperSpeed(config::GRIPPER_SPEED);
         ROS_INFO("Gripper homing");
-        // panda_ptr->gripperHoming();
+        panda_ptr->gripperHoming();
 
-        // Print first pose
-        ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "FIRST POSE:");
+        // Print start pose
+        ROS_STRONG_INFO(config::FG, config::BG, "START POSE:");
         ROS_INFO_STREAM(std::endl << panda_ptr->getCurrentPose());
 
-    } catch (const PCEXC::panda_error &e) {
+    } catch (const PCEXC::PandaControllerException &e) {
         ROS_FATAL_STREAM(PCEXC::get_err_msg(NAME, e.what()));
     }
 
 
     // Create subscriber
-    ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "SUBSCRIPTION TO THE TOPIC: teleop");
+    ROS_STRONG_INFO(config::FG, config::BG,
+                    "SUBSCRIPTION TO THE TOPIC: teleop");
     ros::Subscriber sub = node.subscribe("/panda_controller/teleop", 1000,
                                          callback::teleopCallback);
 

@@ -13,9 +13,11 @@
 
 
 //#############################################################################
-// DEFAULT VALUES ##############################################################
-const auto FG_COLOR = Colors::FG_BLUE;
-const auto BG_COLOR = Colors::BG_BLACK;
+// CONFIGS ####################################################################
+namespace config {
+const auto FG = Colors::FG_BLUE;
+const auto BG = Colors::BG_BLACK;
+
 const int QUIT = 27;  // esc
 const int HELP = 'h';
 const int MODE = 'm';
@@ -42,6 +44,7 @@ const int GRIPPER_WIDTH_POS = 'd';
 const int GRIPPER_WIDTH_NEG = 'a';
 const int INCREASE_GRIPPER_WIDTH = 'l';
 const int DECREASE_GRIPPER_WIDTH = 'j';
+}  // namespace config
 
 
 
@@ -63,7 +66,7 @@ int main(int argc, char **argv) {
     // Setup ROS
     ros::init(argc, argv, NAME);
     ros::NodeHandle node("~");
-    ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "START NODE: ", NAME);
+    ROS_STRONG_INFO(config::FG, config::BG, "START NODE: ", NAME);
 
 
     // Extract the parameters
@@ -86,7 +89,7 @@ int main(int argc, char **argv) {
 
 
     // Create publisher
-    ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "PUBLICATION TO THE TOPIC: teleop");
+    ROS_STRONG_INFO(config::FG, config::BG, "PUBLICATION TO THE TOPIC: teleop");
     ros::Publisher pub = node.advertise<panda_controller::teleop_panda>(
         "/panda_controller/teleop", 1000);
 
@@ -124,56 +127,70 @@ int main(int argc, char **argv) {
         msg.gripper_homing = false;
 
         // QUIT case
-        if (command == QUIT) {
-            ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "QUIT");
+        if (command == config::QUIT) {
+            ROS_STRONG_INFO(config::FG, config::BG, "QUIT");
             break;
 
             // HELP case
-        } else if (command == HELP) {
-            std::cout
-                << "#########################"
-                << "\nQUIT:                 ESC"
-                << "\nHELP:                   " << static_cast<char>(HELP)
-                << "\nMODE:                   " << static_cast<char>(MODE)
-                << "\n#########################"
-                << "\nARM HOMING:             " << static_cast<char>(ARM_HOMING)
-                << "\nX POS:                  " << static_cast<char>(X_POS)
-                << "\nX NEG:                  " << static_cast<char>(X_NEG)
-                << "\nY NEG:                  " << static_cast<char>(Y_NEG)
-                << "\nY POS:                  " << static_cast<char>(Y_POS)
-                << "\nZ POS:                  " << static_cast<char>(Z_POS)
-                << "\nZ NEG:                  " << static_cast<char>(Z_NEG)
-                << "\nINCREASE POSITION:      "
-                << static_cast<char>(INCREASE_POSITION)
-                << "\nDECREASE POSITION:      "
-                << static_cast<char>(DECREASE_POSITION)
-                << "\n#########################"
-                << "\nROLL POS:               " << static_cast<char>(ROLL_POS)
-                << "\nROLL NEG:               " << static_cast<char>(ROLL_NEG)
-                << "\nPITCH POS:              " << static_cast<char>(PITCH_POS)
-                << "\nPITCH NEG:              " << static_cast<char>(PITCH_NEG)
-                << "\nYAW POS:                " << static_cast<char>(YAW_POS)
-                << "\nYAW NEG:                " << static_cast<char>(YAW_NEG)
-                << "\nINCREASE ORIENTATION:   "
-                << static_cast<char>(INCREASE_ORIENTATION)
-                << "\nDECREASE ORIENTATION:   "
-                << static_cast<char>(DECREASE_ORIENTATION)
-                << "\n#########################"
-                << "\nGRIPPER HOMING:         "
-                << static_cast<char>(GRIPPER_HOMING)
-                << "\nGRIPPER GRASP           "
-                << static_cast<char>(GRIPPER_GRASP)
-                << "\nGRIPPER WIDTH POS:      "
-                << static_cast<char>(GRIPPER_WIDTH_POS)
-                << "\nGRIPPER WIDTH NEG:      "
-                << static_cast<char>(GRIPPER_WIDTH_NEG)
-                << "\nINCREASE GRIPPER WIDTH: "
-                << static_cast<char>(INCREASE_GRIPPER_WIDTH)
-                << "\nDECREASE GRIPPER WIDTH: "
-                << static_cast<char>(DECREASE_GRIPPER_WIDTH)
-                << "\n#########################" << std::endl;
+        } else if (command == config::HELP) {
+            std::cout << "#########################"
+                      << "\nQUIT:                 ESC"
+                      << "\nHELP:                   "
+                      << static_cast<char>(config::HELP)
+                      << "\nMODE:                   "
+                      << static_cast<char>(config::MODE)
+                      << "\n#########################"
+                      << "\nARM HOMING:             "
+                      << static_cast<char>(config::ARM_HOMING)
+                      << "\nX POS:                  "
+                      << static_cast<char>(config::X_POS)
+                      << "\nX NEG:                  "
+                      << static_cast<char>(config::X_NEG)
+                      << "\nY NEG:                  "
+                      << static_cast<char>(config::Y_NEG)
+                      << "\nY POS:                  "
+                      << static_cast<char>(config::Y_POS)
+                      << "\nZ POS:                  "
+                      << static_cast<char>(config::Z_POS)
+                      << "\nZ NEG:                  "
+                      << static_cast<char>(config::Z_NEG)
+                      << "\nINCREASE POSITION:      "
+                      << static_cast<char>(config::INCREASE_POSITION)
+                      << "\nDECREASE POSITION:      "
+                      << static_cast<char>(config::DECREASE_POSITION)
+                      << "\n#########################"
+                      << "\nROLL POS:               "
+                      << static_cast<char>(config::ROLL_POS)
+                      << "\nROLL NEG:               "
+                      << static_cast<char>(config::ROLL_NEG)
+                      << "\nPITCH POS:              "
+                      << static_cast<char>(config::PITCH_POS)
+                      << "\nPITCH NEG:              "
+                      << static_cast<char>(config::PITCH_NEG)
+                      << "\nYAW POS:                "
+                      << static_cast<char>(config::YAW_POS)
+                      << "\nYAW NEG:                "
+                      << static_cast<char>(config::YAW_NEG)
+                      << "\nINCREASE ORIENTATION:   "
+                      << static_cast<char>(config::INCREASE_ORIENTATION)
+                      << "\nDECREASE ORIENTATION:   "
+                      << static_cast<char>(config::DECREASE_ORIENTATION)
+                      << "\n#########################"
+                      << "\nGRIPPER HOMING:         "
+                      << static_cast<char>(config::GRIPPER_HOMING)
+                      << "\nGRIPPER GRASP           "
+                      << static_cast<char>(config::GRIPPER_GRASP)
+                      << "\nGRIPPER WIDTH POS:      "
+                      << static_cast<char>(config::GRIPPER_WIDTH_POS)
+                      << "\nGRIPPER WIDTH NEG:      "
+                      << static_cast<char>(config::GRIPPER_WIDTH_NEG)
+                      << "\nINCREASE GRIPPER WIDTH: "
+                      << static_cast<char>(config::INCREASE_GRIPPER_WIDTH)
+                      << "\nDECREASE GRIPPER WIDTH: "
+                      << static_cast<char>(config::DECREASE_GRIPPER_WIDTH)
+                      << "\n#########################" << std::endl;
 
-        } else if (command == MODE) {
+        } else if (command == config::MODE) {
             mode = (mode + 1) % 3;
             std::cout << "MODE: "
                       << ((mode == 0) ? "position"
@@ -182,12 +199,12 @@ int main(int argc, char **argv) {
 
         } else if (mode == 0) {
             // DELTA POSITION cases
-            if (command == INCREASE_POSITION) {
+            if (command == config::INCREASE_POSITION) {
                 delta_position += RESOLUTION_POSITION;
                 std::cout << "Delta position: " << delta_position << " meters"
                           << std::endl;
 
-            } else if (command == DECREASE_POSITION) {
+            } else if (command == config::DECREASE_POSITION) {
                 if ((delta_position - RESOLUTION_POSITION) > 0)
                     delta_position -= RESOLUTION_POSITION;
                 std::cout << "Delta position: " << delta_position << " meters"
@@ -195,25 +212,25 @@ int main(int argc, char **argv) {
 
             } else {
                 // POSITION cases
-                if (command == ARM_HOMING) {
+                if (command == config::ARM_HOMING) {
                     msg.arm_homing = true;
 
-                } else if (command == X_POS) {
+                } else if (command == config::X_POS) {
                     msg.x += delta_position;
 
-                } else if (command == X_NEG) {
+                } else if (command == config::X_NEG) {
                     msg.x -= delta_position;
 
-                } else if (command == Y_NEG) {
+                } else if (command == config::Y_NEG) {
                     msg.y -= delta_position;
 
-                } else if (command == Y_POS) {
+                } else if (command == config::Y_POS) {
                     msg.y += delta_position;
 
-                } else if (command == Z_POS) {
+                } else if (command == config::Z_POS) {
                     msg.z += delta_position;
 
-                } else if (command == Z_NEG) {
+                } else if (command == config::Z_NEG) {
                     msg.z -= delta_position;
 
                 } else {
@@ -225,12 +242,12 @@ int main(int argc, char **argv) {
 
         } else if (mode == 1) {
             // DELTA ORIENTATION cases
-            if (command == INCREASE_ORIENTATION) {
+            if (command == config::INCREASE_ORIENTATION) {
                 delta_orientation += RESOLUTION_ORIENTATION;
                 std::cout << "Delta orientation: " << delta_orientation
                           << " degrees" << std::endl;
 
-            } else if (command == DECREASE_ORIENTATION) {
+            } else if (command == config::DECREASE_ORIENTATION) {
                 if ((delta_orientation - RESOLUTION_ORIENTATION) > 0)
                     delta_orientation -= RESOLUTION_ORIENTATION;
                 std::cout << "Delta orientation: " << delta_orientation
@@ -238,25 +255,25 @@ int main(int argc, char **argv) {
 
             } else {
                 // ORIENTATION cases
-                if (command == ARM_HOMING) {
+                if (command == config::ARM_HOMING) {
                     msg.arm_homing = true;
 
-                } else if (command == ROLL_POS) {
+                } else if (command == config::ROLL_POS) {
                     msg.roll += delta_orientation;
 
-                } else if (command == ROLL_NEG) {
+                } else if (command == config::ROLL_NEG) {
                     msg.roll -= delta_orientation;
 
-                } else if (command == PITCH_POS) {
+                } else if (command == config::PITCH_POS) {
                     msg.pitch += delta_orientation;
 
-                } else if (command == PITCH_NEG) {
+                } else if (command == config::PITCH_NEG) {
                     msg.pitch -= delta_orientation;
 
-                } else if (command == YAW_POS) {
+                } else if (command == config::YAW_POS) {
                     msg.yaw += delta_orientation;
 
-                } else if (command == YAW_NEG) {
+                } else if (command == config::YAW_NEG) {
                     msg.yaw -= delta_orientation;
 
                 } else {
@@ -268,12 +285,12 @@ int main(int argc, char **argv) {
 
         } else if (mode == 2) {
             // DELTA GRIPPER WIDTH cases
-            if (command == INCREASE_GRIPPER_WIDTH) {
+            if (command == config::INCREASE_GRIPPER_WIDTH) {
                 delta_gripper_width += RESOLUTION_GRIPPER_WIDTH;
                 std::cout << "Delta gripper width: " << delta_gripper_width
                           << " meters" << std::endl;
 
-            } else if (command == DECREASE_GRIPPER_WIDTH) {
+            } else if (command == config::DECREASE_GRIPPER_WIDTH) {
                 if ((delta_gripper_width - RESOLUTION_GRIPPER_WIDTH) > 0)
                     delta_gripper_width -= RESOLUTION_GRIPPER_WIDTH;
                 std::cout << "Delta gripper width: " << delta_gripper_width
@@ -281,16 +298,16 @@ int main(int argc, char **argv) {
 
             } else {
                 // GRIPPER WIDTH cases
-                if (command == GRIPPER_GRASP) {
+                if (command == config::GRIPPER_GRASP) {
                     msg.gripper_grasp = delta_gripper_width;
 
-                } else if (command == GRIPPER_HOMING) {
+                } else if (command == config::GRIPPER_HOMING) {
                     msg.gripper_homing = true;
 
-                } else if (command == GRIPPER_WIDTH_POS) {
+                } else if (command == config::GRIPPER_WIDTH_POS) {
                     msg.gripper_width += delta_gripper_width;
 
-                } else if (command == GRIPPER_WIDTH_NEG) {
+                } else if (command == config::GRIPPER_WIDTH_NEG) {
                     msg.gripper_width -= delta_gripper_width;
 
                 } else {
@@ -312,8 +329,7 @@ int main(int argc, char **argv) {
 
 
 //#############################################################################
-// FUNCTIONS IMPLEMENTATIONS
-// ##################################################
+// PRIVATE FUNCTIONS IMPLEMENTATIONS ##########################################
 int getch() {
     int ch;
     struct termios oldt;

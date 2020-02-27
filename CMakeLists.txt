@@ -88,22 +88,22 @@ add_executable(${TASK}  examples/${TASK}.cpp
 target_link_libraries(${TASK} ${catkin_LIBRARIES} yaml-cpp)
 
 
-# set(TASK teleop_listener)
-# add_executable(${TASK}  examples/${TASK}.cpp
-#     src/data_manager.cpp
-#     src/colors.cpp
-#     src/panda.cpp)
-# add_dependencies(${TASK} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-# target_link_libraries(${TASK} ${catkin_LIBRARIES} yaml-cpp)
+set(TASK teleop_listener)
+add_executable(${TASK}  examples/${TASK}.cpp
+    src/data_manager.cpp
+    src/colors.cpp
+    src/panda.cpp)
+add_dependencies(${TASK} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(${TASK} ${catkin_LIBRARIES} yaml-cpp)
 
 
-# set(TASK teleop_talker)
-# add_executable(${TASK}  examples/${TASK}.cpp
-#     src/data_manager.cpp
-#     src/colors.cpp
-#     src/panda.cpp)
-# add_dependencies(${TASK} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-# target_link_libraries(${TASK} ${catkin_LIBRARIES} yaml-cpp)
+set(TASK teleop_talker)
+add_executable(${TASK}  examples/${TASK}.cpp
+    src/data_manager.cpp
+    src/colors.cpp
+    src/panda.cpp)
+add_dependencies(${TASK} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(${TASK} ${catkin_LIBRARIES} yaml-cpp)
 
 
 set(TASK test_panda)
