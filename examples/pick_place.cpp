@@ -10,9 +10,11 @@
 
 
 //#############################################################################
-// DEFAULT VALUES ##############################################################
-const auto FG_COLOR = Colors::FG_BLUE;
-const auto BG_COLOR = Colors::BG_BLACK;
+// CONFIGS ####################################################################
+namespace config {
+const auto FG = Colors::FG_BLUE;
+const auto BG = Colors::BG_BLACK;
+}  // namespace config
 
 
 
@@ -30,7 +32,7 @@ int main(int argc, char **argv) {
     ros::NodeHandle node("~");
     ros::AsyncSpinner spinner(1);
     spinner.start();
-    ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "START NODE: ", NAME);
+    ROS_STRONG_INFO(config::FG, config::BG, "START NODE: ", NAME);
 
 
     // Extract the parameters
@@ -58,34 +60,35 @@ int main(int argc, char **argv) {
     // Task
     try {
         // Create class to manage the Panda arm
-        ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "PANDA CONTROLLER INITIALIZATION");
+        ROS_STRONG_INFO(config::FG, config::BG,
+                        "PANDA CONTROLLER INITIALIZATION");
         auto panda = robot::Panda(GRIPPER_IS_ACTIVE);
 
         // Set end effector link
-        ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "EEF SETTING:");
+        ROS_STRONG_INFO(config::FG, config::BG, "EEF SETTING:");
         ROS_INFO_STREAM(
             "End Effector link setted to: " << robot::config::CENTER_EEF);
         panda.setEndEffectorLink(robot::config::CENTER_EEF);
 
         // Init scene
-        ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "SCENE INITIALIZATION");
+        ROS_STRONG_INFO(config::FG, config::BG, "SCENE INITIALIZATION");
         panda.setScene(data_manager::get_scene("base"));
         panda.setScene(data_manager::get_scene(SCENE_NAME));
         ros::WallDuration(1.0).sleep();
 
         // Set robot speeds
-        ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "SPEEDS ADJUSTAMENT");
+        ROS_STRONG_INFO(config::FG, config::BG, "SPEEDS ADJUSTAMENT");
         ROS_INFO_STREAM("Arm speed setted to: " << ARM_SPEED);
         panda.setArmSpeed(ARM_SPEED);
         ROS_INFO_STREAM("Gripper speed setted to: " << GRIPPER_SPEED);
         panda.setGripperSpeed(GRIPPER_SPEED);
 
         // Perform gripper homing
-        ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "GRIPPER HOMING");
+        ROS_STRONG_INFO(config::FG, config::BG, "GRIPPER HOMING");
         panda.gripperHoming();
 
         // Pick
-        ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "OBJECT PICKING");
+        ROS_STRONG_INFO(config::FG, config::BG, "OBJECT PICKING");
         ROS_INFO_STREAM("Object name: " << OBJECT_NAME);
         ROS_INFO_STREAM("Pick-Pose object: " << PICK_POSE_NAME);
         panda.pick(data_manager::get_pose(PICK_POSE_NAME), OBJECT_NAME,
@@ -94,7 +97,7 @@ int main(int argc, char **argv) {
         ros::WallDuration(1.0).sleep();
 
         // Place
-        ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "OBJECT PLACING");
+        ROS_STRONG_INFO(config::FG, config::BG, "OBJECT PLACING");
         ROS_INFO_STREAM("Place-Pose object: " << PLACE_POSE_NAME);
         panda.place(data_manager::get_pose(PLACE_POSE_NAME));
         ros::WallDuration(1.0).sleep();

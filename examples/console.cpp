@@ -33,6 +33,8 @@ namespace config {
 const int HISTORY_MAX_SIZE = 20;
 const auto FG = Colors::FG_BLUE;
 const auto BG = Colors::BG_BLACK;
+
+std::string EEF;
 float GRASP_FORCE, GRASP_EPSILON_INNER, GRASP_EPSILON_OUTER, CARTESIAN_STEP,
     CARTESIAN_JUMP;
 bool GRIPPER_IS_ACTIVE, JOINT_ADJUST_IN_BOUNDS;
@@ -84,6 +86,7 @@ int main(int argc, char **argv) {
 
     // Extract the parameters
     if (!(node.getParam("gripper_is_active", config::GRIPPER_IS_ACTIVE) &&
+          node.getParam("eef", config::EEF) &&
           node.getParam("grasp_force", config::GRASP_FORCE) &&
           node.getParam("grasp_epsilon_inner", config::GRASP_EPSILON_INNER) &&
           node.getParam("grasp_epsilon_outer", config::GRASP_EPSILON_OUTER) &&
@@ -103,6 +106,11 @@ int main(int argc, char **argv) {
         ROS_STRONG_INFO(config::FG, config::BG,
                         "PANDA CONTROLLER INITIALIZATION");
         auto panda = robot::Panda(config::GRIPPER_IS_ACTIVE);
+
+        // Set end effector link
+        ROS_STRONG_INFO(config::FG, config::BG, "EEF SETTING:");
+        ROS_INFO_STREAM("End Effector link setted to: " << config::EEF);
+        panda.setEndEffectorLink(config::EEF);
 
         // Read command and performe task
         std::string command;
