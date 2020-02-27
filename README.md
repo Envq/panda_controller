@@ -210,7 +210,6 @@ This node is a console for performing these simple tasks:
 - **eef get:** to get end effector link name.
 - **speed gripper [speed:float]:** to set the gripper speed value.
 - **save [(name:str)]:** to save the current pose with the specified name.
-- **save eef [eef:str (name:str)]:** to save the current pose with the specified name. You must select end effector link name.
 - **move joint [joint:int, val:double]:** to move the specified joint by an integer of the specified degree.
 - **move offset [x:double y:double z:double]:** to move the arm along the x,y,z specified directions in meters.
 - **move pose [name:str]:** to move the arm on the specified pose saved in database.

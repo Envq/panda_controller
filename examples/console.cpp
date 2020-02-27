@@ -204,11 +204,6 @@ void run_command(robot::Panda &panda, const std::string &command) {
                 << "to save the current pose with the specified name\n"
 
                 << color
-                << " - save eef [(eef:str), (name:str)]: " << Colors::RESET
-                << "to save the current pose with the specified name. You must "
-                   "select end effector link name.\n"
-
-                << color
                 << " - move joint [joint:int, val:double]: " << Colors::RESET
                 << "to move the specified joint by an integer of the specified "
                    "degree.\n"
@@ -307,31 +302,20 @@ void run_command(robot::Panda &panda, const std::string &command) {
 
             // CASE SAVE
         } else if (cmd[0] == "save") {
-            if (cmd.size() > 4 || (cmd.size() > 2 && cmd[1] != "eef") ||
-                (cmd.size() == 2 && cmd[1] == "eef"))
+            if (cmd.size() > 2)
                 throw std::invalid_argument(command);
 
             ROS_STRONG_INFO(config::FG, config::BG,
                             "SELECTED SAVE CURRENT POSE");
-
-            if (cmd.size() > 2 && cmd[1] == "eef") {
-                auto pose = panda.getCurrentPose(cmd[2]);
-                ROS_INFO_STREAM("Save pose:\n" << pose);
-                if (cmd.size() == 4) {
-                    data_manager::save_pose(pose, cmd[3]);
-                } else {
-                    data_manager::save_pose(pose);
-                }
-
+            const auto &eef = panda.getEndEffectorLink();
+            const auto &pose = panda.getCurrentPose();
+            ROS_INFO_STREAM("Save pose:\n" << pose);
+            if (cmd.size() == 2) {
+                data_manager::save_pose(pose, eef, cmd[1]);
             } else {
-                auto pose = panda.getCurrentPose();
-                ROS_INFO_STREAM("Save pose:\n" << pose);
-                if (cmd.size() == 2) {
-                    data_manager::save_pose(pose, cmd[1]);
-                } else {
-                    data_manager::save_pose(pose);
-                }
+                data_manager::save_pose(pose, eef);
             }
+
 
 
             // CASE MOVE

@@ -164,7 +164,8 @@ scene_object create_scene_object(const YAML::Node &OBJECT) {
 // ############################################
 namespace data_manager {
 
-void save_pose(const geometry_msgs::Pose &POSE, const std::string &NAME) {
+void save_pose(const geometry_msgs::Pose &POSE, const std::string &EEF,
+               const std::string &NAME) {
     // Get file path
     const std::string FILE_PATH = get_path(config::POSES_RELATIVE);
 
@@ -173,6 +174,7 @@ void save_pose(const geometry_msgs::Pose &POSE, const std::string &NAME) {
         auto root = YAML::LoadFile(FILE_PATH);
 
         // Update file
+        root[NAME]["eef"] = EEF;
         root[NAME]["position"]["x"] = POSE.position.x;
         root[NAME]["position"]["y"] = POSE.position.y;
         root[NAME]["position"]["z"] = POSE.position.z;

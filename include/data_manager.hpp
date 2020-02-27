@@ -60,9 +60,10 @@ const std::string SCENES_RELATIVE = DATA_FOLDER_NAME + "scenes.yaml";
  * data/poses.yaml).
  *
  * @param POSE The pose to be saved.
+ * @param EEF The end effector link name reference.
  * @param NAME The name of the pose.
  */
-void save_pose(const geometry_msgs::Pose &POSE,
+void save_pose(const geometry_msgs::Pose &POSE, const std::string &EEF,
                const std::string &NAME = "current");
 
 /**
