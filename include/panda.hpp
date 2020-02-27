@@ -52,7 +52,8 @@ namespace robot {
 /// @brief This namespace contains the configurations of this file.
 namespace config {
 const std::string FRAME_REF = "panda_link0";
-const std::string EEF_LINK = "panda_link8";
+const std::string CENTER_EEF = "panda_gripper_center";
+const std::string LAST_EEF = "panda_link8";
 const double GRIPPER_MAX_WIDTH = 0.08;
 const auto READY_JOINTS = std::vector<double>{
     0.00, -0.25 * M_PI, 0.00, -0.75 * M_PI, 0.00, 0.50 * M_PI, 0.25 * M_PI};

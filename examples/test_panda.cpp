@@ -72,9 +72,28 @@ int main(int argc, char **argv) {
         // panda.moveToPose(data_manager::get_pose("test"));
 
 
-        auto panda = robot::Panda(false);
-        ROS_INFO_STREAM(panda.getJointNames());
-        ROS_INFO_STREAM(panda.getLinkNames());
+        std::string LINK;
+        int mode;
+        node.getParam("link", LINK);
+        node.getParam("mode", mode);
+        moveit::planning_interface::MoveGroupInterface panda("panda_arm");
+        panda.setEndEffectorLink(LINK);
+
+        ROS_WARN_STREAM(panda.getEndEffector().c_str());
+        ROS_WARN_STREAM(panda.getEndEffectorLink().c_str());
+
+        moveit::planning_interface::PlanningSceneInterface scene;
+        scene.applyPlanningScene(data_manager::get_scene("pick_place1"));
+        panda.attachObject("object_female", "panda_link8");
+        ros::WallDuration(1.5).sleep();
+
+
+        if (mode == 1) {
+            panda.detachObject("panda_link8");
+            ros::WallDuration(1.5).sleep();
+        }
+
+
 
         // std::string LINK1, LINK2;
         // node.getParam("link1", LINK1);

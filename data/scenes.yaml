@@ -9,29 +9,6 @@
 #    scale: xyz (double) #for mesh
 #    dimensions: xyz/rh (double) #for others
 
-test:
-  - name: obj
-    color:
-      r: 0.0
-      g: 1.0
-      b: 1.0
-      a: 1.0
-    position:
-      x: 0.3
-      y: 0.2
-      z: 0.0
-    orientation:
-      x: 0.0
-      y: 0.0
-      z: 0.383
-      w: 0.924
-    type: box
-    dimensions:
-      x: 0.04
-      y: 0.02
-      z: 0.02
-
-
 pick_place2:
   - name: box
     color:
@@ -250,3 +227,24 @@ base:
       x: 1.2
       y: 0.02
       z: 1.0
+
+test:
+  - name: obj
+    color:
+      r: 0.0
+      g: 1.0
+      b: 1.0
+      a: 1.0
+    position:
+      x: 0.3
+      y: 0.0
+      z: 0.0
+    orientation:
+      x: 0.383
+      y: 0.0
+      z: 0.0
+      w: 0.924
+    type: cone
+    dimensions:
+      r: 0.02
+      h: 0.06

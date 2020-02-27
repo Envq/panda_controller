@@ -61,6 +61,12 @@ int main(int argc, char **argv) {
         ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "PANDA CONTROLLER INITIALIZATION");
         auto panda = robot::Panda(GRIPPER_IS_ACTIVE);
 
+        // Set end effector link
+        ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "EEF SETTING:");
+        ROS_INFO_STREAM(
+            "End Effector link setted to: " << robot::config::CENTER_EEF);
+        panda.setEndEffectorLink(robot::config::CENTER_EEF);
+
         // Init scene
         ROS_STRONG_INFO(FG_COLOR, BG_COLOR, "SCENE INITIALIZATION");
         panda.setScene(data_manager::get_scene("base"));

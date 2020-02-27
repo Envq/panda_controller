@@ -350,7 +350,8 @@ void Panda::pick(const geometry_msgs::Pose &POSE,
                                            OBJECT_NAME);
 
         // Attach object
-        arm_ptr_->attachObject(OBJECT_NAME, arm_ptr_->getEndEffectorLink());
+        // For prevent error: Attached body 'panda_gripper_center' not found
+        arm_ptr_->attachObject(OBJECT_NAME, config::LAST_EEF);
 
         // Close gripper
         gripperGrasp(GRASP_WIDTH, GRASP_FORCE, GRASP_EPSILON_INNER,
@@ -411,7 +412,7 @@ void Panda::place(const geometry_msgs::Pose &POSE) {
         moveToPose(POSE);
 
         // Detach objects
-        arm_ptr_->detachObject(arm_ptr_->getEndEffectorLink());
+        arm_ptr_->detachObject(config::LAST_EEF);
 
         // Open gripper
         gripperMove(config::GRIPPER_MAX_WIDTH);

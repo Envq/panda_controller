@@ -1,24 +1,26 @@
+# reference: panda_gripper_center
 pick1:
-  position:
-    x: 0.56
-    y: 0.25
-    z: 0.113
-  orientation:
-    x: -0.9238491886113851
-    y: 0.3827566725612421
-    z: 7.938233219284144e-05
-    w: 3.221322256262419e-06
-
+    position:
+      x: 0.56
+      y: 0.25
+      z: 0.01
+    orientation:
+      x: 0.0
+      y: 0.0
+      z: 0.0
+      w: 1.0
+      
+# reference: panda_gripper_center
 place1:
-  position:
-    x: 0.4369004916345361
-    y: -0.2499965093149367
-    z: 0.08019212276474763
-  orientation:
-    x: -0.6533864393889328
-    y: 0.2706165408146807
-    z: -0.6532066266556182
-    w: 0.2705068419713932
+    position:
+      x: 0.54
+      y: -0.25
+      z: 0.08
+    orientation:
+      x: 0.0
+      y: -0.707
+      z: 0.0
+      w: 0.707
 
 test:
   position:
@@ -26,7 +28,7 @@ test:
     y: 0.2
     z: 0.0
   orientation:
-    x: 0.0
+    x: 0.383
     y: 0.0
-    z: 0.383
+    z: 0.0
     w: 0.924
