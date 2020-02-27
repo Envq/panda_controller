@@ -9,7 +9,7 @@
 #    scale: xyz (double) #for mesh
 #    dimensions: xyz/rh (double) #for others
 
-pick_place2:
+pick_place:
   - name: box
     color:
       r: 1.0
@@ -44,8 +44,8 @@ pick_place2:
     orientation:
       x: 0.0
       y: 0.0
-      z: 0.5
-      w: 0.5
+      z: 0.707
+      w: 0.707
     type: mesh
     file: object_male.stl
     scale:
@@ -66,8 +66,8 @@ pick_place2:
     orientation:
       x: 0.0
       y: 0.0
-      z: 0.5
-      w: 0.5
+      z: 0.707
+      w: 0.707
     type: mesh
     file: object_female.stl
     scale:
@@ -76,7 +76,7 @@ pick_place2:
       z: 0.001
 
 
-pick_place1:
+pick_place_test:
   - name: object_male
     color:
       r: 1.0

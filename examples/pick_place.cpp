@@ -35,16 +35,26 @@ int main(int argc, char **argv) {
     ROS_STRONG_INFO(config::FG, config::BG, "START NODE: ", NAME);
 
 
+    std::string SCENE_NAME;
+    struct pick_place {
+        std::string object;
+        std::string pick;
+        std::string place;
+    };
+
     // Extract the parameters
+    pick_place TASK[2];
     bool GRIPPER_IS_ACTIVE;
     float ARM_SPEED, GRIPPER_SPEED;
     double GRASP_WIDTH, GRASP_FORCE, GRASP_EPSILON_INNER, GRASP_EPSILON_OUTER;
-    std::string OBJECT_NAME, SCENE_NAME, PICK_POSE_NAME, PLACE_POSE_NAME;
     if (!(node.getParam("gripper_is_active", GRIPPER_IS_ACTIVE) &&
           node.getParam("scene", SCENE_NAME) &&
-          node.getParam("object", OBJECT_NAME) &&
-          node.getParam("pick_pose", PICK_POSE_NAME) &&
-          node.getParam("place_pose", PLACE_POSE_NAME) &&
+          node.getParam("object1", TASK[0].object) &&
+          node.getParam("pick_pose1", TASK[0].pick) &&
+          node.getParam("place_pose1", TASK[0].place) &&
+          node.getParam("object2", TASK[1].object) &&
+          node.getParam("pick_pose2", TASK[1].pick) &&
+          node.getParam("place_pose2", TASK[1].place) &&
           node.getParam("arm_speed", ARM_SPEED) &&
           node.getParam("gripper_speed", GRIPPER_SPEED) &&
           node.getParam("grasp_width", GRASP_WIDTH) &&
@@ -87,20 +97,23 @@ int main(int argc, char **argv) {
         ROS_STRONG_INFO(config::FG, config::BG, "GRIPPER HOMING");
         panda.gripperHoming();
 
-        // Pick
-        ROS_STRONG_INFO(config::FG, config::BG, "OBJECT PICKING");
-        ROS_INFO_STREAM("Object name: " << OBJECT_NAME);
-        ROS_INFO_STREAM("Pick-Pose object: " << PICK_POSE_NAME);
-        panda.pick(data_manager::get_pose(PICK_POSE_NAME), OBJECT_NAME,
-                   GRASP_WIDTH, GRASP_FORCE, GRASP_EPSILON_INNER,
-                   GRASP_EPSILON_OUTER);
-        ros::WallDuration(1.0).sleep();
+        // Perform jobs:
+        for (const auto JOB : TASK) {
+            // Pick
+            ROS_STRONG_INFO(config::FG, config::BG, "OBJECT PICKING");
+            ROS_INFO_STREAM("Object name: " << JOB.object);
+            ROS_INFO_STREAM("Pick-Pose object: " << JOB.pick);
+            panda.pick(data_manager::get_pose(JOB.pick), JOB.object,
+                       GRASP_WIDTH, GRASP_FORCE, GRASP_EPSILON_INNER,
+                       GRASP_EPSILON_OUTER);
+            ros::WallDuration(1.0).sleep();
 
-        // Place
-        ROS_STRONG_INFO(config::FG, config::BG, "OBJECT PLACING");
-        ROS_INFO_STREAM("Place-Pose object: " << PLACE_POSE_NAME);
-        panda.place(data_manager::get_pose(PLACE_POSE_NAME));
-        ros::WallDuration(1.0).sleep();
+            // Place
+            ROS_STRONG_INFO(config::FG, config::BG, "OBJECT PLACING");
+            ROS_INFO_STREAM("Place-Pose object: " << JOB.place);
+            panda.place(data_manager::get_pose(JOB.place));
+            ros::WallDuration(1.0).sleep();
+        }
 
     } catch (const PCEXC::PandaControllerException &e) {
         ROS_FATAL_STREAM(PCEXC::get_err_msg(NAME, e.what()));
