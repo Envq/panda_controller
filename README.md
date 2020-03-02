@@ -1,5 +1,5 @@
 # **Panda Controller**
-This is a set of utilities to control Panda Franka Emika using ROS and c++.
+This is a set of utilities and examples for control Panda Franka Emika using ROS and c++.
 
 
 
@@ -11,7 +11,7 @@ This is a set of utilities to control Panda Franka Emika using ROS and c++.
 * [Files](#files)
     * [data_manager](#data_manager)
     * [panda](#panda)
-    * [excepions](#excepions)
+    * [exceptions](#exceptions)
     * [colors](#colors)
 * [Data](#data)
 * [Examples](#examples)
@@ -26,19 +26,30 @@ This is a set of utilities to control Panda Franka Emika using ROS and c++.
 
 ---
 ## **Getting Started**
-This package was tested in:
-- ROS melodic running under Linux Mint Tricia (compatible with Ubuntu Bionic).
-- ROS kinetic running under Ubuntu Xenial.
-- With real Panda robot.
+This package was tested:
+- Without real robot and:
+    - ROS melodic
+    - Linux Mint Tricia (compatible with Ubuntu Bionic)
+    - franka_ros f7f00b6d9678e59e6f34ccc8d7aad6491b42ac80
+    - panda_moveit_config 5c97a61e9e8a02ca7f1fe08df48ac4ff1b03871a
+
+- With real robot and:
+    - ROS kinetic
+    - Ubuntu Xenial
+    - franka_ros 0.6.0
+    - (panda_moveit_config included in franka_ros)
 
 ### **- FAQ**
 - The 'simulation' vscode task not control real panda, it is only used for test project.
+- The 'controller' vscode task control real panda, but it call another file unavailable. So edit it with your launch file.
 - Gripper use franka_gripper action server that is available only with real panda arm.
-- For simulation with the 'simulation' vscode task use the kinetic-devel branches of franka_ros and panda_moveit_config repositories, else follow the bottom instructions.
+- If you not have real panda use the kinetic-devel branches of franka_ros and panda_moveit_config repositories, else follow the bottom instructions.
 
 
 
 ### **- Dependencies**
+**NOTE:** If you want to use the real robot replace the word "melodic" with "kinetic".
+
 - Install ROS:
 http://wiki.ros.org/melodic/Installation/Ubuntu
 
@@ -61,13 +72,15 @@ sudo apt-get dist-upgrade
 
 - Install c++ tools:
 ~~~
-sudo apt install clang-format cmake
+sudo apt install clang-format cloc doxygen
+sudo apt install python-pip
+pip3 install --user lizard
 ~~~
 
 
-- Install catkin the ROS build system:
+- Install catkin the ROS build system and cmake:
 ~~~
-sudo apt install ros-melodic-catkin python-catkin-tools
+sudo apt install cmake ros-melodic-catkin python-catkin-tools
 ~~~
 
 
@@ -99,20 +112,37 @@ cmake --build .
 
 
 ### **- Building from source**
-**Create Workspace**
+**Create Workspace:**
 ~~~
-mkdir -p ~/workspace/panda_ws/src
+mkdir -p ~/panda_ws/src
 
-cd ~/workspace/panda_ws/src
+cd ~/panda_ws/src
 
 git clone https://github.com/Envq/panda_controller.git
 
 git clone https://github.com/frankaemika/franka_ros.git
+~~~
 
-cd franka_ros
+- If you work WITH real robot:
+~~~
+cd ~/panda_ws/src/franka_ros
 
 git checkout 0.6.0
 ~~~
+
+- If you work WITHOUT real robot:
+~~~
+git clone https://github.com/ros-planning/panda_moveit_config.git
+
+cd ~/panda_ws/src/franka_ros
+
+git checkout f7f00b6d9678e59e6f34ccc8d7aad6491b42ac80
+
+cd ~/panda_ws/src/panda_moveit_config
+
+git checkout 5c97a61e9e8a02ca7f1fe08df48ac4ff1b03871a
+~~~
+
 Add to franka_ros/franka_description/robots/panda_arm.xacro:
 ~~~
 <link name="${arm_id}_gripper_center"/>
@@ -123,6 +153,7 @@ Add to franka_ros/franka_description/robots/panda_arm.xacro:
     <axis xyz="0 0 0"/>
 </joint>
 ~~~
+
 Replace to franka_ros/franka_description/mesh/collision/finger.stl with panda_controller/data/finger.stl for better collisions
 
 
@@ -134,11 +165,11 @@ echo 'export ROS_OS_OVERRIDE=ubuntu:18.04:bionic' >> ~/.bashrc
 # To fix a bug with move-it
 echo 'export LC_NUMERIC="en_US.UTF-8"' >> ~/.bashrc
 
-echo 'source ~/workspace/panda_ws/devel/setup.bash' >> ~/.bashrc
+echo 'source ~/panda_ws/devel/setup.bash' >> ~/.bashrc
 
 source ~/.bashrc
 
-cd ~/workspace/panda_ws/
+cd ~/panda_ws/
 
 rosdep install -y --from-paths src --ignore-src --rosdistro melodic --skip-keys libfranka
 
@@ -155,7 +186,7 @@ catkin build
 
 
 ---
-## **Files**
+## **Files:**
 
 ### **data_manager**
 - This file contains all the functions to communicate with the stored data.
@@ -175,30 +206,29 @@ catkin build
 ## **Data**
 This folder contains:
 - poses.json: 
-    - **Description**: A Collection of position and orientation of the link6 (before Panda's hand).
-    - **Formant**: "name_pose" : {orientation, position}.
+    - **Description**: A Collection of position and orientation of a reference link.
+    - **Formant**: "name_pose" : {eef, orientation, position}.
     - **Doc**: Look [here](http://docs.ros.org/melodic/api/geometry_msgs/html/msg/Pose.html) for more informations on **Pose**.
 - scenes.json:
     - **Description**: A collection of Scene.
-    - **Formant**: "name_scene" : {name, type, color, dimensions, position, orientation}.
+    - **Formant1**: "name_scene" : {name, color, position, orientation, type, dimensions}.
+    - **Formant2**: "name_scene" : {name, color, position, orientation, type=mesh, file, scale}. 
+        - Specify the format (.stl) in the "file" field.
+        - Check the position of the origin on cad programs.
+        - Use the scale field if the file is exported to a unit other than meters.
     - **Doc**:
         - Click [here](http://docs.ros.org/melodic/api/shape_msgs/html/msg/SolidPrimitive.html) for more informations on **SolidPrimite**.
         - Click [here](http://docs.ros.org/kinetic/api/std_msgs/html/msg/ColorRGBA.html) for more informations on **ColorRGBA**.
 
-
-
 ---
 ## **Examples**
-A brief description of the launch files available:
+A brief description of the example files available:
 
-
-### **- simulation**
-This node launches rviz with the panda arm (gripper action not work without real panda).
-
+Note: all launch files contain the "gripper_is_active" parameter which, if set to false, disables the gripper_action_client allowing to work without the real robot
 ![simulation](screenshot/simulation.png?raw=true "simulation")
 
 
-### **- console**
+### **console**
 This node is a console for performing these simple tasks:
 - **quit:** to close the node.
 - **help:** to see the list of commands.
@@ -226,14 +256,17 @@ This node is a console for performing these simple tasks:
 
 
 
- ### **- pick_place**
+ ### **pick_place**
 
-This node execute the "pick and place" task with 3 methods.
-- **[ method:=int ]:** to specify the method of pick-and-place (values: 1, 2, 3)
-- **[ scene:=string ]:** to specify the name of scene to load.
-- **[ object:=string ]:** to specify the name of object to pick.
-- **[ pick_pose:=string ]:** to specify the name of the pick pose.
-- **[ place_pose:=string ]:** to specify the name of the place pose.
+This node execute the "pick and place" task. Two objects are moved in this task.
+In the launch file you can modify the following parameters:
+- **[ scene:=string ]:** to specify the name of scene to load. (Is always loaded also "base" scene)
+- **[ object1:=string ]:** to specify the name of object1 to pick.
+- **[ pick_pose1:=string ]:** to specify the name of the pick pose 1.
+- **[ place_pose1:=string ]:** to specify the name of the place pose 1.
+- **[ object2:=string ]:** to specify the name of object2 to pick.
+- **[ pick_pose2:=string ]:** to specify the name of the pick pose 2.
+- **[ place_pose2:=string ]:** to specify the name of the place pose 2.
 - **[ arm_speed:=float ]:** to specify the factor scale of the arm speed.
 - **[ gripper_speed:=float ]:** to specify the gripper speed.
 Values for grasp:
@@ -241,24 +274,15 @@ Values for grasp:
 - **[ grasp_force:=float ]:** to specify the force of the grasp.
 - **[ grasp_epsilon_inner:=float ]:** to specify the epsilon inner of the grasp.
 - **[ grasp_epsilon_outer:=float ]:** to specify the epsilon outer of the grasp.
-Values for approch of method 2:
-- **[ pre_grasp_approch_x:=float ]:** to specify the pre-grasp x.
-- **[ pre_grasp_approch_y:=float ]:** to specify the pre-grasp y.
-- **[ pre_grasp_approch_z:=float ]:** to specify the pre-grasp z.
-- **[ post_grasp_retreat_x:=float ]:** to specify the post-grasp x.
-- **[ post_grasp_retreat_y:=float ]:** to specify the post-grasp y.
-- **[ post_grasp_retreat_z:=float ]:** to specify the post-grasp z.
-- **[ post_place_retreat_x:=float ]:** to specify the post place x.
-- **[ post_place_retreat_y:=float ]:** to specify the post place y.
-- **[ post_place_retreat_z:=float ]:** to specify the post place z.
 
 ![pick_place](screenshot/pick_place.png?raw=true "pick_place")
 
 
-### **- teleop**
+### **teleop**
 
 The "teleop_listener" node read from the topic "teleop" a vector message for moving the arm in cartesian mode.
-The "teleop_talker" node read stdin for sending a vector message on the topic "teleop"
+The "teleop_talker" node read stdin for sending a vector message on the topic "teleop".
+
 For control "teleop_talker":
 - **GENERIC COMMANDS:**
     - **QUIT:** ESC
@@ -284,11 +308,20 @@ For control "teleop_talker":
     -  **DECREASE_ORIENTATION:** 'j'
 - **GRIPPER COMMANDS:**
     -  **GRIPPER_HOMING:** 'o'
-    -  **GRIPPER_WIDTH_POS:** 'i'
-    -  **GRIPPER_WIDTH_NEG:** 'k'
+    -  **GRIPPER_GRASP:** 's'
+    -  **GRIPPER_WIDTH_POS:** 'd'
+    -  **GRIPPER_WIDTH_NEG:** 'a'
     -  **INCREASE_GRIPPER_WIDTH:** 'l'
     -  **DECREASE_GRIPPER_WIDTH:** 'j'
+- **HOMING:**
+    -  **const int GRIPPER_HOMING:** 'o';
+    -  **const int ARM_HOMING:** 'o';
 
+Behavior:
+- Use Mode to switch mode.
+- Use INCREASE and DESCREASE KEYS to change the value of DELTA (= displacement to be applied upon reception of the command).
+- Use launch file for set the START_DELTA and the RESOLUTION (= the variation of the DELTA value).
+- When your DELTA is the desired value, press the key to active the move.
 
 ![teleop](screenshot/teleop.png?raw=true "teleop")
 
@@ -299,6 +332,7 @@ I used these extensions:
 - **c/c++ snippets** by harsh
 - **c++ intellisense** by austin
 - **cmake** by twxs
+- **doxygen** by christoph schlosser
 - **clang-format** by xaver
 - **doxgen documentation** by christoph schlosser
 - **python** by microsoft
@@ -308,17 +342,24 @@ I used these extensions:
 - **gruvbox mirror** by adamsome
 - **vscode-icons** by icons for visual studio code
 - **xml format** by Mike Burgh
+- **git graph** by mhutchie
 
 
 The following commands are available:
-- **build** : builds this package
-- **buildAndRun**: builds this package and run the actual developing node
-- **simulation**: starts the node running RVIZ
-- **console**: starts the node that allows the Panda robot to perform simple tasks
-- **pick_place**: starts the node that perform pick-and-place task
-- **format**: formats the sources with clang-format
-- **build_all**: builds all packages
-- **clean_all**: cleans all packages
+- **build** : builds this package.
+- **buildAndRun**: builds this package and run the actual developing node.
+- **simulation**: starts the node running RVIZ.
+- **controller**: starts the node running robot controller. NOTE: update with your controller launch.
+- **console**: starts the node that allows the Panda robot to perform simple tasks.
+- **pick_place**: starts the node that perform pick-and-place task.
+- **format**: formats the sources with clang-format.
+- **doxygen**: builds the documentation.
+- **cloc**: returns line of code.
+- **lizard-cyclo**: returns Cyclomatic Complexity.
+- **teleop_listener**: starts the node that reads teleop panda_controller/topic to perform robot moviment.
+- **teleop_talker**: starts the node that converts keyboard input in teleop_panda msg.
+- **build-all**: builds all packages.
+- **clean-all**: cleans all packages.
 
 
 ---

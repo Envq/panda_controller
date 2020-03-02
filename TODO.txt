@@ -1,6 +1,5 @@
 - gif in README
 - in panda.cpp get_size_object():
 - in console: history with arrows
-- POSE of EEF in gripper center
 - try franka_gripper::GraspAction(width, epsilon_inner, epsilon_outer, speed, force)
-- return
+- improve return
