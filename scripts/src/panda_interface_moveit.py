@@ -11,9 +11,9 @@ from panda_gripper_moveit import PandaGripperMoveit
 
 class PandaInterfaceMoveit(PandaArmMoveit, PandaGripperMoveit):
     def __init__(self, \
-            delay = 0, arm_velocity_factor = 0.1, wait_execution=True, \
+            delay = 0, arm_velocity_factor = 0.1, \
             startup_homing=False, real_robot = False):
-        PandaArmMoveit.__init__(self, delay=delay/2.0, velocity_factor=arm_velocity_factor, wait_execution=wait_execution)
+        PandaArmMoveit.__init__(self, delay=delay/2.0, velocity_factor=arm_velocity_factor)
         PandaGripperMoveit.__init__(self, delay=delay/2.0, startup_homing=startup_homing, real_robot=real_robot)
 
 
@@ -22,14 +22,14 @@ class PandaInterfaceMoveit(PandaArmMoveit, PandaGripperMoveit):
         return self.getArmPoseTCP() + [self.getGripperWidth()]
 
 
-    def movePose(self, goal_pose, gripper_option=None):
+    def movePose(self, goal_pose, gripper_option=None, wait_execution=True):
         """ [px, py, pz, ox, oy, oz, ow, fd, gr]
             fd is the distance between the two fingers
             gr is 1 if the grasp is active, otherwise 0
             gripper_option are the option for gripper (speed,force,epsilon_inner,epsilon_outer"""
         if len(goal_pose) != 9:
             return False
-        if self.moveArmPoseTCP(goal_pose[:7]):
+        if self.moveArmPoseTCP(goal_pose[:7], wait_execution=wait_execution):
             if goal_pose[8] == 1:
                 if gripper_option == None:
                     self.graspGripper(width=goal_pose[7])

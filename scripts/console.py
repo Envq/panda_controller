@@ -80,7 +80,6 @@ def main():
         panda = PandaInterfaceMoveit(\
                                 delay=1,\
                                 arm_velocity_factor=arm_velocity_factor,\
-                                wait_execution=True,\
                                 startup_homing=False,\
                                 real_robot=real_robot)
         

@@ -15,7 +15,7 @@ import time
 
 
 class PandaArmMoveit():
-    def __init__(self, delay = 0, velocity_factor = 0.1, wait_execution=True):
+    def __init__(self, delay = 0, velocity_factor = 0.1):
         # arm settings
         self.arm = moveit_commander.MoveGroupCommander("panda_arm")
 
@@ -25,7 +25,6 @@ class PandaArmMoveit():
 
         # set velocity scaling factor
         self.setMaxVelocityScalingFactor(velocity_factor)
-        self.wait_execution = wait_execution
         
         # wait for correct loading
         time.sleep(delay)
@@ -44,21 +43,21 @@ class PandaArmMoveit():
         return self.arm.get_current_joint_values()
 
 
-    def moveArmJoints(self, goal_joints):
+    def moveArmJoints(self, goal_joints, wait_execution=True):
         """[j0, j1, j2, j3, j4, j5, j6]"""
         if len(goal_joints) != 7:
             return False
         try:
             self.arm.set_joint_value_target(goal_joints)
             self.arm.plan()
-            self.arm.go(wait=self.wait_execution)
+            self.arm.go(wait=wait_execution)
         except MoveItCommanderException:
             return False
         return True
     
 
-    def moveArmReady(self):
-        return self.moveArmJoints((0.00, -0.25 * pi, 0.00, -0.75 * pi, 0.00, 0.50 * pi, 0.25 * pi))
+    def moveArmReady(self, wait_execution=True):
+        return self.moveArmJoints((0.00, -0.25 * pi, 0.00, -0.75 * pi, 0.00, 0.50 * pi, 0.25 * pi), wait_execution)
 
 
     # FLANGE POSE--------------------------------------------------------
@@ -76,7 +75,7 @@ class PandaArmMoveit():
         return flange
 
 
-    def moveArmPoseFlange(self, goal_pose):
+    def moveArmPoseFlange(self, goal_pose, wait_execution=True):
         """[px, py, pz, ox, oy, oz, ow]"""
         if len(goal_pose) != 7:
             return False
@@ -92,7 +91,7 @@ class PandaArmMoveit():
         try:
             self.arm.set_pose_target(target)
             self.arm.plan()
-            self.arm.go(wait=self.wait_execution)
+            self.arm.go(wait=wait_execution)
         except MoveItCommanderException:
             return False
         return True
@@ -112,15 +111,15 @@ class PandaArmMoveit():
         return transform(world_to_flange, self.flange_to_tcp).tolist()
 
   
-    def moveArmPoseTCP(self, goal_pose):
+    def moveArmPoseTCP(self, goal_pose, wait_execution=True):
         """[px, py, pz, ox, oy, oz, ow]"""
         if len(goal_pose) != 7:
             return False
         flange_goal_pose = self.getFlangeFromTCP(goal_pose)
-        return self.moveArmPoseFlange(flange_goal_pose)
+        return self.moveArmPoseFlange(flange_goal_pose, wait_execution)
 
 
-    def execute_tcp_cartesian_path(self, waypoints, eef_step = 0.01, jump_threashould = 0.0):
+    def execute_tcp_cartesian_path(self, waypoints, eef_step = 0.01, jump_threashould = 0.0, wait_execution=True):
         """Compute and execute a sequence of waypoints that make the end-effector move in straight line segments that follow the poses specified as waypoints. Configurations are computed for every eef_step meters; The jump_threshold specifies the maximum distance in configuration space between consecutive points in the resultingpath;"""
         # Convert waypoint list in waypoint Pose()
         waypoints_pose = list()
@@ -143,7 +142,7 @@ class PandaArmMoveit():
         if fraction != 1.0:
             return False, fraction
         # Execute planning
-        self.arm.execute(plan, wait=self.wait_execution)
+        self.arm.execute(plan, wait=wait_execution)
         return True, fraction
 
 
@@ -291,6 +290,31 @@ def test_waypoints(arm):
         print("> Execution: {}%".format(fraction * 100))
 
 
+def test_wait(arm):
+    if isinstance(arm, PandaArmMoveit):
+        print("Move to Ready")
+        print("> Success: ", arm.moveArmReady(wait_execution=False))
+        time.sleep(5)
+
+        goal = [0.4, 0.0, 0.4,  0, 0, 0, 1]
+        print("Move TCP to: ", goal)
+        print("> Success: ", arm.moveArmPoseTCP(goal, wait_execution=False))
+        time.sleep(1)
+        print(arm.getArmPoseTCP())
+
+        goal = [0.4, 0.0, 0.3,  0, 0, 0, 1]
+        print("Move TCP to: ", goal)
+        print("> Success: ", arm.moveArmPoseTCP(goal, wait_execution=False))
+        time.sleep(1)
+        print(arm.getArmPoseTCP())
+
+        goal = [0.3, 0.0, 0.3,  0, 0, 0, 1]
+        print("Move TCP to: ", goal)
+        print("> Success: ", arm.moveArmPoseTCP(goal, wait_execution=False))
+        time.sleep(1)
+        print(arm.getArmPoseTCP())
+
+
 
 if __name__ == '__main__':
     """TEST"""
@@ -307,8 +331,9 @@ if __name__ == '__main__':
         # test_tf(arm)
         # test_joints(arm)
         # test_flange(arm)
-        test_tcp(arm)
+        # test_tcp(arm)
         # test_waypoints(arm)
+        test_wait(arm)
 
     except rospy.ROSInterruptException:
         print("ROS interrupted")
