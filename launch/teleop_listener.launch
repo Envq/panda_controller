@@ -1,0 +1,23 @@
+<launch>
+    <arg name="gripper_is_active" default="false"/>
+    <arg name="arm_speed" default="1.0"/>
+    <arg name="gripper_speed" default="0.1"/>
+    <arg name="gripper_force" default="10.0"/>
+    <arg name="gripper_epsilon_inner" default="0.002"/>
+    <arg name="gripper_epsilon_outer" default="0.002"/>
+    <arg name="cartesian_step" default="0.01"/>
+    <arg name="cartesian_jump" default="0.0"/>
+
+
+    <node name="teleop_listener" pkg="panda_controller" 
+    type="teleop_listener" respawn="false" output="screen">
+        <param name="gripper_is_active" value="$(arg gripper_is_active)"/>
+        <param name="arm_speed" value="$(arg arm_speed)"/>
+        <param name="gripper_speed" value="$(arg gripper_speed)"/>
+        <param name="gripper_force" value="$(arg gripper_force)"/>
+        <param name="gripper_epsilon_inner" value="$(arg gripper_epsilon_inner)"/>
+        <param name="gripper_epsilon_outer" value="$(arg gripper_epsilon_outer)"/>
+        <param name="cartesian_step" value="$(arg cartesian_step)"/>
+        <param name="cartesian_jump" value="$(arg cartesian_jump)"/>
+    </node>
+</launch>

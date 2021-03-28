@@ -6,14 +6,14 @@
                 "limitSymbolsToIncludedHeaders": true
             },
             "includePath": [
-                "/opt/ros/melodic/include/**",
-                "/opt/ros/kinetic/include/**",
+                "${workspaceFolder}/../panda_controller/include/*",
+                "/opt/ros/melodic/include/*",
+                "/opt/ros/kinetic/include/*",
                 "/usr/include/**",     
-                "${workspaceFolder}/../../devel/include/**",
-                "${workspaceFolder}/../franka_ros/franka_control/include/**",
-                "${workspaceFolder}/../franka_ros/franka_gripper/include/franka_gripper/**",
-                "${workspaceFolder}/../franka_ros/franka_hw/include/**",
-                "${workspaceFolder}/../panda_controller/include/**"
+                "${workspaceFolder}/../../devel/include/*",
+                "${workspaceFolder}/../franka_ros/franka_control/include/*",
+                "${workspaceFolder}/../franka_ros/franka_gripper/include/franka_gripper/*",
+                "${workspaceFolder}/../franka_ros/franka_hw/include/*"
             ],
             "name": "ROS",
             "intelliSenseMode": "gcc-x64",

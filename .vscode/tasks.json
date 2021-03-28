@@ -21,6 +21,20 @@
             ]
         },
         {
+            "label": "test_panda",
+            "type": "shell",
+            "command": "roslaunch",
+            "args": [
+                "${workspaceFolderBasename}",
+                "test.launch"
+            ],
+            "problemMatcher": [],
+            "group": "none",
+            "presentation": {
+                "focus": true
+            }
+        },
+        {
             "label": "pick_place",
             "type": "shell",
             "command": "roslaunch",
@@ -35,12 +49,54 @@
             }
         },
         {
-            "label": "current_pose",
+            "label": "teleop_listener",
             "type": "shell",
             "command": "roslaunch",
             "args": [
                 "${workspaceFolderBasename}",
-                "current_pose.launch"
+                "teleop_listener.launch"
+            ],
+            "problemMatcher": [],
+            "group": "none",
+            "presentation": {
+                "focus": true
+            }
+        },
+        {
+            "label": "teleop_talker",
+            "type": "shell",
+            "command": "roslaunch",
+            "args": [
+                "${workspaceFolderBasename}",
+                "teleop_talker.launch"
+            ],
+            "problemMatcher": [],
+            "group": "none",
+            "presentation": {
+                "focus": true
+            }
+        },
+        {
+            "label": "console",
+            "type": "shell",
+            "command": "roslaunch",
+            "args": [
+                "${workspaceFolderBasename}",
+                "console.launch"
+            ],
+            "problemMatcher": [],
+            "group": "none",
+            "presentation": {
+                "focus": true
+            }
+        },
+        {
+            "label": "simulation",
+            "type": "shell",
+            "command": "roslaunch",
+            "args": [
+                "${workspaceFolderBasename}",
+                "simulation.launch"
             ],
             "problemMatcher": [],
             "group": "none",
@@ -77,23 +133,7 @@
             }
         },
         {
-            "label": "format",
-            "type": "shell",
-            "command": "clang-format",
-            "args": [
-                "-i",
-                "${workspaceFolder}/src/*.cpp",
-                "${workspaceFolder}/src/my_libs/*.cpp",
-                "${workspaceFolder}/include/*.hpp"
-            ],
-            "problemMatcher": [],
-            "group": "none",
-            "presentation": {
-                "reveal": "never"
-            }
-        },
-        {
-            "label": "build_all",
+            "label": "build-all",
             "type": "shell",
             "command": "catkin",
             "args": [
@@ -106,11 +146,70 @@
             }
         },
         {
-            "label": "clean_all",
+            "label": "clean-all",
             "type": "shell",
             "command": "catkin",
             "args": [
                 "clean"
+            ],
+            "problemMatcher": [],
+            "group": "none",
+            "presentation": {
+                "focus": true
+            }
+        },
+        {
+            "label": "format",
+            "type": "shell",
+            "command": "clang-format",
+            "args": [
+                "-i",
+                "${workspaceFolder}/examples/*.cpp",
+                "${workspaceFolder}/src/*.cpp",
+                "${workspaceFolder}/include/*.hpp"
+            ],
+            "problemMatcher": [],
+            "group": "none",
+            "presentation": {
+                "reveal": "never"
+            }
+        },
+        {
+            "label": "cloc",
+            "type": "shell",
+            "command": "cloc",
+            "args": [
+                "${workspaceFolder}/examples/*.cpp",
+                "${workspaceFolder}/src/*.cpp",
+                "${workspaceFolder}/include/*.hpp"
+            ],
+            "problemMatcher": [],
+            "group": "none",
+            "presentation": {
+                "focus": true
+            }
+        },
+        {
+            "label": "doxygen",
+            "type": "shell",
+            "command": "doxygen",
+            "args": [
+                "${workspaceFolder}/doxygen.cfg"
+            ],
+            "problemMatcher": [],
+            "group": "none",
+            "presentation": {
+                "focus": true
+            }
+        },
+        {
+            "label": "lizard-cyclo",
+            "type": "shell",
+            "command": "lizard",
+            "args": [
+                "${workspaceFolder}/examples/",
+                "${workspaceFolder}/src/",
+                "${workspaceFolder}/include/"
             ],
             "problemMatcher": [],
             "group": "none",

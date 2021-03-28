@@ -1,0 +1,20 @@
+<launch>
+    <arg name="frequency" default="50"/>
+    <arg name="start_delta_position" default="0.05"/>
+    <arg name="start_delta_orientation" default="10"/>
+    <arg name="start_delta_gripper_width" default="0.01"/>
+    <arg name="resolution_position" default="0.01"/>
+    <arg name="resolution_orientation" default="10"/>
+    <arg name="resolution_gripper_width" default="0.005"/>
+
+    <node name="teleop_talker" pkg="panda_controller" 
+    type="teleop_talker" respawn="false" output="screen">
+        <param name="frequency" value="$(arg frequency)"/>
+        <param name="start_delta_position" value="$(arg start_delta_position)"/>
+        <param name="start_delta_orientation" value="$(arg start_delta_orientation)"/>
+        <param name="start_delta_gripper_width" value="$(arg start_delta_gripper_width)"/>
+        <param name="resolution_position" value="$(arg resolution_position)"/>
+        <param name="resolution_orientation" value="$(arg resolution_orientation)"/>
+        <param name="resolution_gripper_width" value="$(arg resolution_gripper_width)"/>
+    </node>
+</launch>

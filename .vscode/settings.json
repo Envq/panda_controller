@@ -1,8 +1,14 @@
 {
     "python.autoComplete.extraPaths": [
         "${workspaceFolder}/../../devel/lib/python2.7/dist-packages",
-        "/opt/ros/melodic/lib/python2.7/dist-packages"
+        "/opt/ros/melodic/lib/python2.7/dist-packages",
+        "/opt/ros/kinetic/lib/python2.7/dist-packages"
     ],
+    "files.watcherExclude": {
+        "**/.git/objects/**": true,
+        "**/.git/subtree-cache/**": true,
+        "**/node_modules/**": true
+    },
     "files.associations": {
         "array": "cpp",
         "string": "cpp",
@@ -67,6 +73,8 @@
         "memory_resource": "cpp",
         "optional": "cpp",
         "random": "cpp",
-        "set": "cpp"
+        "set": "cpp",
+        "future": "cpp",
+        "queue": "cpp"
     }
 }

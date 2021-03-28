@@ -1,3 +1,5 @@
-- convert PLAN_ONLY in PREVIEW -> you see plan and then use topic for move it or not
 - gif in README
-- create correct rviz-robot launcher
+- in panda.cpp get_size_object():
+- in console: history with arrows
+- try franka_gripper::GraspAction(width, epsilon_inner, epsilon_outer, speed, force)
+- improve return

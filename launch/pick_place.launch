@@ -1,16 +1,38 @@
 <launch>
+    <arg name="gripper_is_active" default="false"/>
+
     <arg name="scene" default="pick_place"/>
-    <arg name="object" default="object"/>
-    <arg name="pick_pose" default="pick"/>
-    <arg name="place_pose" default="place"/>
-    <arg name="speed" default="1.0"/>
+
+    <arg name="object1" default="object_male"/>
+    <arg name="pick_pose1" default="pick1"/>
+    <arg name="place_pose1" default="place1"/>
+
+    <arg name="object2" default="object_female"/>
+    <arg name="pick_pose2" default="pick2"/>
+    <arg name="place_pose2" default="place2"/>
+    
+    <arg name="arm_speed" default="0.5"/>
+    <arg name="gripper_speed" default="0.1"/>
+    <arg name="grasp_width" default="0.0225"/>
+    <arg name="grasp_force" default="10"/>
+    <arg name="grasp_epsilon_inner" default="0.02"/>
+    <arg name="grasp_epsilon_outer" default="0.02"/>
 
     <node name="pick_place" pkg="panda_controller" 
     type="pick_place" respawn="false" output="screen">
+        <param name="gripper_is_active" value="$(arg gripper_is_active)"/>
         <param name="scene" value="$(arg scene)"/>
-        <param name="object" value="$(arg object)"/>
-        <param name="pick_pose" value="$(arg pick_pose)"/>
-        <param name="place_pose" value="$(arg place_pose)"/>
-        <param name="speed" value="$(arg speed)"/>
+        <param name="object1" value="$(arg object1)"/>
+        <param name="pick_pose1" value="$(arg pick_pose1)"/>
+        <param name="place_pose1" value="$(arg place_pose1)"/>
+        <param name="object2" value="$(arg object2)"/>
+        <param name="pick_pose2" value="$(arg pick_pose2)"/>
+        <param name="place_pose2" value="$(arg place_pose2)"/>
+        <param name="arm_speed" value="$(arg arm_speed)"/>
+        <param name="gripper_speed" value="$(arg gripper_speed)"/>
+        <param name="grasp_width" value="$(arg grasp_width)"/>
+        <param name="grasp_force" value="$(arg grasp_force)"/>
+        <param name="grasp_epsilon_inner" value="$(arg grasp_epsilon_inner)"/>
+        <param name="grasp_epsilon_outer" value="$(arg grasp_epsilon_outer)"/>
     </node>
 </launch>
