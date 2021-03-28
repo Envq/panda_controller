@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """ This script add color to print"""
 
 Colors = {

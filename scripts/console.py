@@ -4,10 +4,10 @@
 import rospy
 import moveit_commander
 
-# other
+# Other
 import sys
 import os
-sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/src")
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "src")))
 
 # Custom
 from src.panda_interface_moveit import PandaInterfaceMoveit
@@ -74,6 +74,7 @@ def main():
         custom_pose.append(rospy.get_param('~oy', 0.0))
         custom_pose.append(rospy.get_param('~oz', 0.0))
         custom_pose.append(rospy.get_param('~ow', 1.0))
+
 
         # Create panda moveit interface
         panda = PandaInterfaceMoveit(\

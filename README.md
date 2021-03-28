@@ -24,12 +24,12 @@ This is a set of utilities and examples for control Panda Franka Emika using Mov
 
 ---
 ## **Getting Started**
-This package was tested with real robot and:
-    - Ubuntu 20.04 LTS Focal Fossa
-    - ROS noetic
-    - libfranka 0.8.0
-    - franka_ros 0.7.1
-    - panda_moveit_config 0.7.5
+This package was tested with real robot with:
+- Ubuntu 20.04 LTS Focal Fossa
+- ROS noetic
+- [libfranka](https://github.com/frankaemika/libfranka) 0.8.0
+- [franka_ros](https://github.com/frankaemika/franka_ros) 0.7.1
+- [panda_moveit_config](https://github.com/ros-planning/panda_moveit_config) 0.7.5
 
 
 
@@ -62,7 +62,7 @@ mkdir lib src
 
 **Get libfranka:**
 ~~~
-cd panda_ws/lib/
+cd ~/panda_ws/lib/
 
 sudo apt install build-essential cmake git libpoco-dev libeigen3-dev
 
@@ -86,7 +86,7 @@ cmake --build .
 
 **Get franka_ros:**
 ~~~
-cd panda_ws/src/
+cd ~/panda_ws/src/
 
 git clone --recursive https://github.com/frankaemika/franka_ros
 
@@ -100,7 +100,7 @@ rosdep install --from-paths src --ignore-src --rosdistro noetic -y --skip-keys l
 
 **Get panda_moveit_config:**
 ~~~
-cd panda_ws/src/
+cd ~/panda_ws/src/
 
 sudo apt install ros-noetic-moveit
 
@@ -110,12 +110,11 @@ git clone https://github.com/ros-planning/panda_moveit_config.git -b melodic-dev
 
 **Get panda_controller:**
 ~~~
-cd panda_ws/src/
+cd ~/panda_ws/src/
 
 sudo apt-get install libjsoncpp-dev
 
 git clone https://github.com/Envq/panda_controller.git
-
 ~~~
 
 

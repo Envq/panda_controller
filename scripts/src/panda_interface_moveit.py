@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 # Moveit
-from moveit_commander.exception import MoveItCommanderException
 import moveit_commander
 
 # Custom

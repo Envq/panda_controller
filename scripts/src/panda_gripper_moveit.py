@@ -8,7 +8,6 @@ import moveit_commander
 from panda_gripper_action import PandaGripperAction, normalize
 
 # Other
-from math import pi
 import time
 
 
