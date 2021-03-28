@@ -1,0 +1,24 @@
+<launch>
+
+      <node name="console_node" 
+            pkg="panda_controller" 
+            type="console.py" 
+            respawn="false" 
+            output="screen">
+            
+            <!-- parameters-->
+            <param name="real_robot" type="bool" value="False"/>
+            <param name="arm_velocity_factor" type="double" value="0.2"/>
+
+            <!-- custom -->
+            <param name="px" type="string" value="0.2"/>
+            <param name="py" type="double" value="0.0"/>
+            <param name="pz" type="double" value="0.2"/>
+
+            <param name="ox" type="double" value="0.0"/>
+            <param name="oy" type="double" value="0.0"/>
+            <param name="oz" type="double" value="0.0"/>
+            <param name="ow" type="double" value="1.0"/>
+      </node>
+
+</launch>

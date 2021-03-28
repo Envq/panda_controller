@@ -1,8 +1,7 @@
 {
     "python.autoComplete.extraPaths": [
-        "${workspaceFolder}/../../devel/lib/python2.7/dist-packages",
-        "/opt/ros/melodic/lib/python2.7/dist-packages",
-        "/opt/ros/kinetic/lib/python2.7/dist-packages"
+        "${workspaceFolder}/../../devel/lib/python3/dist-packages",
+        "/opt/ros/noetic/lib/python3/dist-packages/"
     ],
     "files.watcherExclude": {
         "**/.git/objects/**": true,
@@ -76,5 +75,11 @@
         "set": "cpp",
         "future": "cpp",
         "queue": "cpp"
-    }
+    },
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}/scripts/",
+        "${workspaceFolder}/scripts/src",
+        "${workspaceFolder}/../../devel/lib/python3/dist-packages",
+        "/opt/ros/noetic/lib/python3/dist-packages/"
+    ]
 }
