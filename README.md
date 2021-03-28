@@ -1,13 +1,11 @@
 # **Panda Controller**
-This is a set of utilities and examples for control Panda Franka Emika using ROS and c++.
+This is a set of utilities and examples for control Panda Franka Emika using Moveit.
 
 
 
 ## **Table of Contents**
 * [Getting started](#getting-started)
-    * [FAQ](#faq)
-    * [Dependencies](#dependencies)
-    * [Building from source](#building-from-source)
+    * [Dependencies and building](#Dependencies-and-building*)
 * [Files](#files)
     * [data_manager](#data_manager)
     * [panda](#panda)
@@ -26,83 +24,59 @@ This is a set of utilities and examples for control Panda Franka Emika using ROS
 
 ---
 ## **Getting Started**
-This package was tested:
-- Without real robot and:
-    - ROS melodic
-    - Linux Mint Tricia (compatible with Ubuntu Bionic)
-    - franka_ros f7f00b6d9678e59e6f34ccc8d7aad6491b42ac80
-    - panda_moveit_config 5c97a61e9e8a02ca7f1fe08df48ac4ff1b03871a
-
-- With real robot and:
-    - ROS kinetic
-    - Ubuntu Xenial
-    - franka_ros 0.6.0
-    - (panda_moveit_config included in franka_ros)
-
-### **- FAQ**
-- The 'simulation' vscode task not control real panda, it is only used for test project.
-- The 'controller' vscode task control real panda, but it call another file unavailable. So edit it with your launch file.
-- Gripper use franka_gripper action server that is available only with real panda arm.
-- If you not have real panda use the kinetic-devel branches of franka_ros and panda_moveit_config repositories, else follow the bottom instructions.
+This package was tested with real robot and:
+    - Ubuntu 20.04 LTS Focal Fossa
+    - ROS noetic
+    - libfranka 0.8.0
+    - franka_ros 0.7.1
+    - panda_moveit_config 0.7.5
 
 
 
-### **- Dependencies**
-**NOTE:** If you want to use the real robot replace the word "melodic" with "kinetic".
+### **Dependencies and building**
+Install [ROS](http://wiki.ros.org/melodic/Installation/Ubuntu)
 
-- Install ROS:
-http://wiki.ros.org/melodic/Installation/Ubuntu
+Install [Catkin](http://wiki.ros.org/catkin)
 
-
-- Remove possible conflicts: 
+Remove possible conflicts: 
 ~~~
-sudo apt remove ros-melodic-franka* ros-melodic-panda* *libfranka*
+sudo apt remove ros-noetic-*franka*
 ~~~
 
-
-- Update system:
-~~~
-rosdep update
-
-sudo apt-get update
-
-sudo apt-get dist-upgrade
-~~~
-
-
-- Install c++ tools:
+Install c++ tools:
 ~~~
 sudo apt install clang-format cloc doxygen
-sudo apt install python-pip
-pip3 install --user lizard
+~~~
+
+**Prepare Workspace:**
+~~~
+cd
+
+mkdir panda_ws
+
+cd panda_ws/
+
+mkdir lib src
 ~~~
 
 
-- Install catkin the ROS build system and cmake:
+**Get libfranka:**
 ~~~
-sudo apt install cmake ros-melodic-catkin python-catkin-tools
-~~~
+cd panda_ws/lib/
 
-
-- Install moveit:
-~~~
-sudo apt install ros-melodic-moveit
-~~~
-
-
-- Install libfranka:
-~~~
 sudo apt install build-essential cmake git libpoco-dev libeigen3-dev
 
-mkdir -p ~/github
+git clone --recursive https://github.com/frankaemika/libfranka
 
-cd ~/github
+cd libfranka/
 
-git clone https://github.com/frankaemika/libfranka -b master
+git checkout 0.8.0
 
-mkdir -p ~/github/libfranka/build
+git submodule update
 
-cd ~/github/libfranka/build
+mkdir build
+
+cd build
 
 cmake -DCMAKE_BUILD_TYPE=Release ..
 
@@ -110,79 +84,54 @@ cmake --build .
 ~~~
 
 
-
-### **- Building from source**
-**Create Workspace:**
+**Get franka_ros:**
 ~~~
-mkdir -p ~/panda_ws/src
+cd panda_ws/src/
 
-cd ~/panda_ws/src
+git clone --recursive https://github.com/frankaemika/franka_ros
+
+git checkout 0.7.1
+
+cd ..
+
+rosdep install --from-paths src --ignore-src --rosdistro noetic -y --skip-keys libfranka
+~~~
+
+
+**Get panda_moveit_config:**
+~~~
+cd panda_ws/src/
+
+sudo apt install ros-noetic-moveit
+
+git clone https://github.com/ros-planning/panda_moveit_config.git -b melodic-devel
+~~~
+
+
+**Get panda_controller:**
+~~~
+cd panda_ws/src/
+
+sudo apt-get install libjsoncpp-dev
 
 git clone https://github.com/Envq/panda_controller.git
 
-git clone https://github.com/frankaemika/franka_ros.git
 ~~~
 
-- If you work WITH real robot:
+
+**Building:**
 ~~~
-cd ~/panda_ws/src/franka_ros
+cd ~/panda_ws/
 
-git checkout 0.6.0
-~~~
+catkin config -j$(nproc) --extend /opt/ros/${ROS_DISTRO} --cmake-args -DCMAKE_BUILD_TYPE=Release -DFranka_DIR:PATH=$HOME/panda_ws/lib/libfranka/build
 
-- If you work WITHOUT real robot:
-~~~
-git clone https://github.com/ros-planning/panda_moveit_config.git
-
-cd ~/panda_ws/src/franka_ros
-
-git checkout f7f00b6d9678e59e6f34ccc8d7aad6491b42ac80
-
-cd ~/panda_ws/src/panda_moveit_config
-
-git checkout 5c97a61e9e8a02ca7f1fe08df48ac4ff1b03871a
-~~~
-
-Add to franka_ros/franka_description/robots/panda_arm.xacro:
-~~~
-<link name="${arm_id}_gripper_center"/>
-<joint name="${arm_id}_gripper_center_joint" type="fixed">
-    <parent link="${arm_id}_link8"/>
-    <child link="${arm_id}_gripper_center"/>
-    <origin xyz="0.0 0.0 0.1035" rpy="0 ${pi} -${pi/4}"/>
-    <axis xyz="0 0 0"/>
-</joint>
-~~~
-
-Replace to franka_ros/franka_description/mesh/collision/finger.stl with panda_controller/data/finger.stl for better collisions
-
-
-**Configure Workspace**
-~~~
-# If you use a different linux distribution based on bionic like Linux Mint
-echo 'export ROS_OS_OVERRIDE=ubuntu:18.04:bionic' >> ~/.bashrc
-
-# To fix a bug with move-it
-echo 'export LC_NUMERIC="en_US.UTF-8"' >> ~/.bashrc
+catkin build
 
 echo 'source ~/panda_ws/devel/setup.bash' >> ~/.bashrc
 
 source ~/.bashrc
-
-cd ~/panda_ws/
-
-rosdep install -y --from-paths src --ignore-src --rosdistro melodic --skip-keys libfranka
-
-catkin config -j$(nproc) --extend /opt/ros/${ROS_DISTRO} --cmake-args -DCMAKE_BUILD_TYPE=Release -DFranka_DIR:PATH=$HOME/github/libfranka/build
-
-catkin init
 ~~~
 
-
-### **- Build Workspace**
-~~~
-catkin build
-~~~
 
 
 ---
@@ -257,7 +206,6 @@ This node is a console for performing these simple tasks:
 
 
  ### **pick_place**
-
 This node execute the "pick and place" task. Two objects are moved in this task.
 In the launch file you can modify the following parameters:
 - **[ scene:=string ]:** to specify the name of scene to load. (Is always loaded also "base" scene)
@@ -279,7 +227,6 @@ Values for grasp:
 
 
 ### **teleop**
-
 The "teleop_listener" node read from the topic "teleop" a vector message for moving the arm in cartesian mode.
 The "teleop_talker" node read stdin for sending a vector message on the topic "teleop".
 
@@ -329,45 +276,22 @@ Behavior:
 ## **VSCode**
 I used these extensions:
 - **c/c++** by microsoft
-- **c/c++ snippets** by harsh
 - **c++ intellisense** by austin
 - **cmake** by twxs
 - **doxygen** by christoph schlosser
 - **clang-format** by xaver
 - **doxgen documentation** by christoph schlosser
 - **python** by microsoft
-- **ros** by microsoft
-- **urdf** by smilerobotics
 - **git graph** by mhutchie
 - **gruvbox mirror** by adamsome
 - **vscode-icons** by icons for visual studio code
-- **xml format** by Mike Burgh
 - **git graph** by mhutchie
-
-
-The following commands are available:
-- **build** : builds this package.
-- **buildAndRun**: builds this package and run the actual developing node.
-- **simulation**: starts the node running RVIZ.
-- **controller**: starts the node running robot controller. NOTE: update with your controller launch.
-- **console**: starts the node that allows the Panda robot to perform simple tasks.
-- **pick_place**: starts the node that perform pick-and-place task.
-- **format**: formats the sources with clang-format.
-- **doxygen**: builds the documentation.
-- **cloc**: returns line of code.
-- **lizard-cyclo**: returns Cyclomatic Complexity.
-- **teleop_listener**: starts the node that reads teleop panda_controller/topic to perform robot moviment.
-- **teleop_talker**: starts the node that converts keyboard input in teleop_panda msg.
-- **build-all**: builds all packages.
-- **clean-all**: cleans all packages.
 
 
 ---
 ## **Author**
-
 **Enrico Sgarbanti** [@**Envq**](https://github.com/Envq).
 
 
 ## **License**
-
 This project is licensed under the GPL v3 License - see the [LICENSE.md](LICENSE.md) file for details.
