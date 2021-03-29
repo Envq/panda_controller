@@ -50,11 +50,11 @@ class PandaGripperAction():
 
 
     def safe_force(self, val):
-        return self.normalize(val, self.MIN_FORCE, self.MAX_FORCE)
+        return normalize(val, self.MIN_FORCE, self.MAX_FORCE)
 
 
     def safe_width(self, val):
-        return self.normalize(val, self.MIN_WIDTH, self.MAX_WIDTH)
+        return normalize(val, self.MIN_WIDTH, self.MAX_WIDTH)
 
 
     def setTimeout(self):

@@ -58,7 +58,7 @@ class PandaGripperMoveit():
 
     def moveGripper(self, width, speed=0.5):
         if self.real_robot:
-            self.gripper.move(self, width, speed)
+            self.gripper.move(width, speed)
         else:
             self._moveHand(width)
         self.current_width = width
@@ -66,7 +66,7 @@ class PandaGripperMoveit():
 
     def graspGripper(self, width, speed=0.5, force=10, epsilon_inner=0.02, epsilon_outer=0.02):
         if self.real_robot:
-            self.gripper.grasp(self, width, epsilon_inner, epsilon_outer, speed, force)
+            self.gripper.grasp(width, epsilon_inner, epsilon_outer, speed, force)
         else:
             self._moveHand(width)
             print("GRASPING...")
