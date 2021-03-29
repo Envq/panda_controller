@@ -1,12 +1,7 @@
 <launch>
 
-  <include file="$(find franka_control)/launch/franka_control.launch">
+  <include file="$(find panda_moveit_config)/launch/panda_control_moveit_rviz.launch">
     <arg name="robot_ip" value="192.168.1.2"/>
-    <arg name="load_gripper" value="true"/>
-  </include>
-
-
-  <include file="$(find panda_moveit_config)/launch/panda_moveit.launch">
     <arg name="load_gripper" value="true"/>
   </include>
 

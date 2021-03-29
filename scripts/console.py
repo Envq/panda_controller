@@ -16,9 +16,11 @@ from src.utils import quaternion_from_euler, euler_from_quaternion
 
 
 # COLORS
+COLOR_CMD = 'FG_GREEN'
 COLOR_HELP = 'FG_CYAN'
 COLOR_ERROR = 'FG_RED'
 COLOR_WARN = 'FG_YELLOW'
+COLOR_SUCCESS = 'FG_BLACK_BRIGHT'
 
 
 
@@ -89,7 +91,7 @@ def main():
         # Perform commands
         while True:
             # Read command
-            command = input(colorize("> ", 'FG_GREEN'))
+            command = input(colorize("> ", COLOR_CMD))
 
             if (command == "quit"):
                 break
@@ -113,11 +115,11 @@ def main():
                 print("  {}".format(panda.getGripperWidth()))
                         
             elif (command == "ready"):
-                 print("  Success? {}".format(panda.moveArmReady()))
+                 print_col("  Success? {}".format(panda.moveArmReady()), COLOR_SUCCESS)
 
             elif (command == "custom"):
                 print("Custom Pose: ", custom_pose)
-                print("  Success? {}".format(panda.moveArmPoseTCP(custom_pose)))
+                print_col("  Success? {}".format(panda.moveArmPoseTCP(custom_pose)), COLOR_SUCCESS)
             
             else:
                 cmd = command.split(" ")
@@ -133,7 +135,7 @@ def main():
                     for i in range(len(cmd) - 1):
                         goal.append(float(cmd[i + 1].replace(',','')))
                     if len(goal) == 7:
-                        print("  Success? {}".format(panda.moveArmJoints(goal)))
+                        print_col("  Success? {}".format(panda.moveArmJoints(goal)), COLOR_SUCCESS)
                     else:
                         print_col("  Command not valid", COLOR_WARN)
 
@@ -142,7 +144,7 @@ def main():
                     for i in range(len(cmd) - 1):
                         goal.append(float(cmd[i + 1].replace(',','')))
                     if len(goal) == 7:
-                        print("  Success? {}".format(panda.moveArmPoseFlange(goal)))
+                        print_col("  Success? {}".format(panda.moveArmPoseFlange(goal)), COLOR_SUCCESS)
                     else:
                         print_col("  Command not valid", COLOR_WARN)
 
@@ -151,7 +153,7 @@ def main():
                     for i in range(len(cmd) - 1):
                         goal.append(float(cmd[i + 1].replace(',','')))
                     if len(goal) == 7:
-                        print("  Success? {}".format(panda.moveArmPoseTCP(goal)))
+                        print_col("  Success? {}".format(panda.moveArmPoseTCP(goal)), COLOR_SUCCESS)
                     else:
                         print_col("  Command not valid", COLOR_WARN)
 
@@ -160,7 +162,7 @@ def main():
                     for i in range(len(cmd) - 1):
                         goal.append(float(cmd[i + 1].replace(',','')))
                     if len(goal) == 9:
-                        print("  Success? {}".format(panda.movePose(goal)))
+                        print_col("  Success? {}".format(panda.movePose(goal)), COLOR_SUCCESS)
                     else:
                         print_col("  Command not valid", COLOR_WARN)
                 
