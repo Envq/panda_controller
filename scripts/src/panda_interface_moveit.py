@@ -3,6 +3,10 @@
 # Moveit
 import moveit_commander
 
+# Other
+import sys, os
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+
 # Custom
 from panda_arm_moveit import PandaArmMoveit
 from panda_gripper_moveit import PandaGripperMoveit

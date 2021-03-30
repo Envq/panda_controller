@@ -112,8 +112,6 @@ git clone https://github.com/ros-planning/panda_moveit_config.git -b melodic-dev
 ~~~
 cd ~/panda_ws/src/
 
-sudo apt-get install libjsoncpp-dev
-
 git clone https://github.com/Envq/panda_controller.git
 ~~~
 

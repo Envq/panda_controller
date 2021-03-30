@@ -4,11 +4,13 @@
 from moveit_commander.exception import MoveItCommanderException
 import moveit_commander
 
-# Custom
-from panda_gripper_action import PandaGripperAction, normalize
-
 # Other
 import time
+import sys, os
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+
+# Custom
+from panda_gripper_action import PandaGripperAction, normalize
 
 
 

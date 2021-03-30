@@ -5,12 +5,14 @@ from moveit_commander.exception import MoveItCommanderException
 import moveit_commander
 from geometry_msgs.msg import PoseStamped, Pose
 
-# Custom
-from utils import transform, transform_inverse
-
 # Other
 from math import pi
 import time
+import sys, os
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+
+# Custom
+from utils import quaternion_from_euler, transform, transform_inverse
 
 
 
@@ -118,6 +120,28 @@ class PandaArmMoveit():
         flange_goal_pose = self.getFlangeFromTCP(goal_pose)
         return self.moveArmPoseFlange(flange_goal_pose, wait_execution)
 
+
+    def moveRelative(self, x, y, z, roll, pitch, yaw):
+        """euler in radian"""
+        offset = list()
+        offset.append(x)
+        offset.append(y)
+        offset.append(z)
+        offset += quaternion_from_euler(roll, pitch, yaw).tolist()
+        target = transform(self.getArmPoseTCP(), offset)
+        return self.moveArmPoseTCP(target.tolist())
+
+    def moveRelativePosition(self, x, y, z):
+        return self.moveRelative(x, y, z, 0, 0, 0)
+
+
+    def moveRelativeEulerRad(self, roll, pitch, yaw):
+        return self.moveRelative(0, 0, 0, roll, pitch, yaw)
+
+
+    def moveRelativeEulerDeg(self, roll, pitch, yaw):
+        return self.moveRelativeEulerRad(roll*pi/180.0, pitch*pi/180.0, yaw*pi/180.0)
+   
 
     def execute_tcp_cartesian_path(self, waypoints, eef_step = 0.01, jump_threashould = 0.0, wait_execution=True):
         """Compute and execute a sequence of waypoints that make the end-effector move in straight line segments that follow the poses specified as waypoints. Configurations are computed for every eef_step meters; The jump_threshold specifies the maximum distance in configuration space between consecutive points in the resultingpath;"""

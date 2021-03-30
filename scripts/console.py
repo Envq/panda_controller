@@ -6,8 +6,6 @@ import moveit_commander
 
 # Other
 import sys
-import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "src")))
 
 # Custom
 from src.panda_interface_moveit import PandaInterfaceMoveit
@@ -26,35 +24,47 @@ COLOR_SUCCESS = 'FG_BLACK_BRIGHT'
 
 def help():
     print_col("-----------------------------------------------", COLOR_HELP)
-    print_col("  Commands available:", COLOR_HELP)
-    print_col("Note: ',' are automatically ignored\n", COLOR_HELP)
+    print_col("Commands available:", COLOR_HELP)
+    print_col("',' are automatically ignored\n", COLOR_HELP)
 
-    print_col("j 'j0' 'j1' 'j2' 'j3' 'j4' 'j5' 'j6'", COLOR_HELP)
-    print_col("f 'px' 'py' 'pz'  'ox' 'oy' 'oz, 'ow'", COLOR_HELP)
-    print_col("t 'px' 'py' 'pz'  'ox' 'oy' 'oz' 'ow'", COLOR_HELP)
-    print_col("p 'px' 'py' 'pz'  'ox' 'oy' 'oz' 'ow'  'fd' 'grasp'", COLOR_HELP)
+    print_col("[Move commands:]", COLOR_HELP)
+    print_col("(j=joint; f=flange; t=tcp)", COLOR_HELP)
+    print_col("   j 'j0' 'j1' 'j2' 'j3' 'j4' 'j5' 'j6'", COLOR_HELP)
+    print_col("   f 'px' 'py' 'pz'  'ox' 'oy' 'oz, 'ow'", COLOR_HELP)
+    print_col("   t 'px' 'py' 'pz'  'ox' 'oy' 'oz' 'ow'", COLOR_HELP)
+    print_col("(r=relative(radian); rp=relative_position; ro=relative_euler(degree))", COLOR_HELP)
+    print_col("   r  'px' 'py' 'pz'  'roll' 'pitch' 'yaw'", COLOR_HELP)
+    print_col("   rp 'px' 'py' 'pz'", COLOR_HELP)
+    print_col("   ro 'roll' 'pitch' 'yaw'", COLOR_HELP)
+    print_col("(ready -> ready_pose; custom -> launch file)", COLOR_HELP)
+    print_col("   ready", COLOR_HELP)
+    print_col("   custom", COLOR_HELP)
 
-    print_col("get joints", COLOR_HELP)
-    print_col("get flange", COLOR_HELP)
-    print_col("get tcp", COLOR_HELP)
-    print_col("get pose", COLOR_HELP)
-    print_col("get gripper", COLOR_HELP)
+    print_col("[Get pose of:]", COLOR_HELP)
+    print_col("   joints", COLOR_HELP)
+    print_col("   flange", COLOR_HELP)
+    print_col("   tcp", COLOR_HELP)
+    print_col("   gripper", COLOR_HELP)
 
-    print_col("set velocity 'vel'", COLOR_HELP)
+    print_col("[Gripper commands:]", COLOR_HELP)
+    print_col("   gripper homing", COLOR_HELP)
+    print_col("   gripper 'width' 'speed'", COLOR_HELP)
+    print_col("   grasp   'width' 'speed' 'force' 'epsilon_inner' 'epsilon_outer'", COLOR_HELP)
 
-    print_col("gripper homing", COLOR_HELP)
-    print_col("gripper 'width' 'speed'", COLOR_HELP)
-    print_col("grasp 'width' 'speed' 'force' 'epsilon_inner' 'epsilon_outer'", COLOR_HELP)
+    print_col("[convert: quaternion <-> euler in radian]", COLOR_HELP)
+    print_col("   convert 'x' 'y' 'z' 'w'", COLOR_HELP)
+    print_col("   convert 'roll' 'pitch' 'yaw'", COLOR_HELP)
 
-    print_col("convert 'x' 'y' 'z' 'w'", COLOR_HELP)
-    print_col("convert 'roll' 'pitch' 'yaw' [Note: use radiant]", COLOR_HELP)
+    print_col("[other:]", COLOR_HELP)
+    print_col("   scene 'scene_name'", COLOR_HELP)
+    print_col("   scene reset", COLOR_HELP)
 
-    print_col("ready", COLOR_HELP)
-    print_col("custom", COLOR_HELP)
-    print_col("quit", COLOR_HELP)
-    print_col("help", COLOR_HELP)
+    print_col("[other:]", COLOR_HELP)
+    print_col("   velocity 'vel'", COLOR_HELP)
+    print_col("   save 'tcp_pose_name'", COLOR_HELP)
+    print_col("   quit", COLOR_HELP)
+    print_col("   help", COLOR_HELP)
     print_col("-----------------------------------------------", COLOR_HELP)
-
 
 
 def main():
@@ -79,11 +89,10 @@ def main():
 
 
         # Create panda moveit interface
-        panda = PandaInterfaceMoveit(\
-                                delay=1,\
-                                arm_velocity_factor=arm_velocity_factor,\
-                                startup_homing=False,\
-                                real_robot=real_robot)
+        panda = PandaInterfaceMoveit(   delay=1,\
+                                        arm_velocity_factor=arm_velocity_factor,\
+                                        startup_homing=False,\
+                                        real_robot=real_robot)
         
         # Print help
         help()
@@ -99,83 +108,98 @@ def main():
             elif (command == "help"):
                 help()
             
-            elif (command == "get joints"):
-                print("  {}".format(panda.getArmJoints()))
+            elif (command == "joints"):
+                print("   {}".format(panda.getArmJoints()))
 
-            elif (command == "get flange"):
-                print("  {}".format(panda.getArmPoseFlange()))
+            elif (command == "flange"):
+                print("   {}".format(panda.getArmPoseFlange()))
             
-            elif (command == "get tcp"):
-                print("  {}".format(panda.getArmPoseTCP()))
+            elif (command == "tcp"):
+                print("   {}".format(panda.getArmPoseTCP()))
 
-            elif (command == "get pose"):
-                print("  {}".format(panda.getPose()))
-
-            elif (command == "get gripper"):
-                print("  {}".format(panda.getGripperWidth()))
+            elif (command == "gripper"):
+                print("   {}".format(panda.getGripperWidth()))
                         
             elif (command == "ready"):
-                 print_col("  Success? {}".format(panda.moveArmReady()), COLOR_SUCCESS)
+                 print_col("   Success? {}".format(panda.moveArmReady()), COLOR_SUCCESS)
 
             elif (command == "custom"):
                 print("Custom Pose: ", custom_pose)
-                print_col("  Success? {}".format(panda.moveArmPoseTCP(custom_pose)), COLOR_SUCCESS)
+                print_col("   Success? {}".format(panda.moveArmPoseTCP(custom_pose)), COLOR_SUCCESS)
             
             else:
                 cmd = command.split(" ")
                 cmd = list(filter(lambda e: e != '', cmd))
-                if cmd[0] == 'set' and cmd[1] == 'velocity':
-                    if len(cmd) == 3:
-                        panda.setMaxVelocityScalingFactor(float(cmd[2]))
+                if cmd[0] == 'velocity':
+                    if len(cmd) == 2:
+                        panda.setMaxVelocityScalingFactor(float(cmd[1]))
                     else:
-                        print_col("  Command not valid", COLOR_WARN)
+                        print_col("   Command not valid", COLOR_WARN)
 
                 elif cmd[0] == 'j':
                     goal = list()
                     for i in range(len(cmd) - 1):
                         goal.append(float(cmd[i + 1].replace(',','')))
                     if len(goal) == 7:
-                        print_col("  Success? {}".format(panda.moveArmJoints(goal)), COLOR_SUCCESS)
+                        print_col("   Success? {}".format(panda.moveArmJoints(goal)), COLOR_SUCCESS)
                     else:
-                        print_col("  Command not valid", COLOR_WARN)
+                        print_col("   Command not valid", COLOR_WARN)
 
                 elif cmd[0] == 'f':
                     goal = list()
                     for i in range(len(cmd) - 1):
                         goal.append(float(cmd[i + 1].replace(',','')))
                     if len(goal) == 7:
-                        print_col("  Success? {}".format(panda.moveArmPoseFlange(goal)), COLOR_SUCCESS)
+                        print_col("   Success? {}".format(panda.moveArmPoseFlange(goal)), COLOR_SUCCESS)
                     else:
-                        print_col("  Command not valid", COLOR_WARN)
+                        print_col("   Command not valid", COLOR_WARN)
 
                 elif cmd[0] == 't':
                     goal = list()
                     for i in range(len(cmd) - 1):
                         goal.append(float(cmd[i + 1].replace(',','')))
                     if len(goal) == 7:
-                        print_col("  Success? {}".format(panda.moveArmPoseTCP(goal)), COLOR_SUCCESS)
+                        print_col("   Success? {}".format(panda.moveArmPoseTCP(goal)), COLOR_SUCCESS)
                     else:
-                        print_col("  Command not valid", COLOR_WARN)
+                        print_col("   Command not valid", COLOR_WARN)
 
-                elif cmd[0] == 'p':
-                    goal = list()
+                elif cmd[0] == 'r':
+                    offset = list()
                     for i in range(len(cmd) - 1):
-                        goal.append(float(cmd[i + 1].replace(',','')))
-                    if len(goal) == 9:
-                        print_col("  Success? {}".format(panda.movePose(goal)), COLOR_SUCCESS)
+                        offset.append(float(cmd[i + 1].replace(',','')))
+                    if len(offset) == 6:
+                        print_col("   Success? {}".format(panda.moveRelative(*offset)), COLOR_SUCCESS)
                     else:
-                        print_col("  Command not valid", COLOR_WARN)
+                        print_col("   Command not valid", COLOR_WARN)
+
+                elif cmd[0] == 'rp':
+                    offset = list()
+                    for i in range(len(cmd) - 1):
+                        offset.append(float(cmd[i + 1].replace(',','')))
+                    if len(offset) == 3:
+                        print_col("   Success? {}".format(panda.moveRelativePosition(*offset)), COLOR_SUCCESS)
+                    else:
+                        print_col("   Command not valid", COLOR_WARN)
+
+                elif cmd[0] == 'ro':
+                    offset = list()
+                    for i in range(len(cmd) - 1):
+                        offset.append(float(cmd[i + 1].replace(',','')))
+                    if len(offset) == 3:
+                        print_col("   Success? {}".format(panda.moveRelativeEulerDeg(*offset)), COLOR_SUCCESS)
+                    else:
+                        print_col("   Command not valid", COLOR_WARN)
                 
                 elif cmd[0] == 'convert':
                     val = list()
                     for i in range(len(cmd) - 1):
                         val.append(float(cmd[i + 1].replace(',','')))
                     if len(val) == 4:
-                        print("  Euler -> {}".format(euler_from_quaternion(val[0], val[1], val[2], val[3])))
+                        print("   Euler -> {}".format(euler_from_quaternion(val[0], val[1], val[2], val[3])))
                     elif len(val) == 3:
-                        print("  Quaternion -> {}".format(quaternion_from_euler(val[0], val[1], val[2])))
+                        print("   Quaternion -> {}".format(quaternion_from_euler(val[0], val[1], val[2])))
                     else:
-                        print_col("  Command not valid", COLOR_WARN)
+                        print_col("   Command not valid", COLOR_WARN)
                 
                 elif cmd[0] == 'gripper':
                     val = list()
@@ -189,7 +213,7 @@ def main():
                     elif len(val) == 2:
                         panda.moveGripper(float(val[0]), float(val[1]))
                     else:
-                        print_col("  Command not valid", COLOR_WARN)
+                        print_col("   Command not valid", COLOR_WARN)
                 
                 elif cmd[0] == 'grasp':
                     val = list()
@@ -204,10 +228,10 @@ def main():
                     elif len(val) == 5:
                         panda.graspGripper(val[0], val[1], val[2], val[3], val[4])
                     else:
-                        print_col("  Command not valid", COLOR_WARN)
+                        print_col("   Command not valid", COLOR_WARN)
 
                 else:
-                    print_col("  Command not found", COLOR_WARN)
+                    print_col("   Command not found", COLOR_WARN)
 
     except rospy.ROSInterruptException:
         print_col("ROS interrupted", COLOR_ERROR)
