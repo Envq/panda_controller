@@ -1,20 +1,9 @@
-/**
- * @file colors.cpp
- * @author Enrico Sgarbanti
- * @brief colors implementations
- * @version 0.1
- * @date 20-02-2020
- *
- * @copyright Copyright (c) 2020 by Enrico Sgarbanti. License GPLv3.
- *
- */
-// PANDA CONTROLLER
-#include "colors.hpp"
+// panda_controller
+#include "panda_controller/colors.hpp"
 
 
 
-//#############################################################################
-// METHODS IMPLEMENTATIONS ####################################################
+// CLASSES ====================================================================
 std::string Colors::getColorFG(const int &R, const int &G, const int &B) {
     std::string res = "\033[38;2;";
     res += std::to_string(R) + ";";
@@ -56,4 +45,17 @@ void Colors::printColorsTest() {
 std::ostream &operator<<(std::ostream &stream, const Colors::Code &color) {
     stream << "\033[" << static_cast<int>(color) << "m";
     return stream;
+}
+
+
+
+// FUNCTIONS ==================================================================
+std::string colorize(const std::string &MSG, const Colors::Code &COLOR) {
+    return "\033[1;" + std::to_string(static_cast<int>(COLOR)) + 'm' + MSG +
+           "\033[0m";
+}
+
+
+void print_col(const std::string MSG, const Colors::Code &COLOR) {
+    std::cout << colorize(MSG, COLOR) << std::endl;
 }

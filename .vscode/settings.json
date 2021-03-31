@@ -74,7 +74,9 @@
         "random": "cpp",
         "set": "cpp",
         "future": "cpp",
-        "queue": "cpp"
+        "queue": "cpp",
+        "bit": "cpp",
+        "variant": "cpp"
     },
     "python.analysis.extraPaths": [
         "${workspaceFolder}/scripts/",

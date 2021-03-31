@@ -1,5 +1,4 @@
-###############################################################################
-# CMAKE CONFIG ################################################################
+# CMAKE CONFIG ================================================================
 cmake_minimum_required(VERSION 3.8)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED)
@@ -14,29 +13,28 @@ add_compile_options("-Wall")
 # add_compile_options("-Werror")
 
 
-###############################################################################
-# PACKAGES ####################################################################
-# catkin
+# PACKAGES ====================================================================
 find_package(catkin REQUIRED COMPONENTS
     roscpp
+    message_generation
     std_msgs
     geometry_msgs
     shape_msgs
-    actionlib_msgs
     actionlib
+    actionlib_msgs
     moveit_core
     moveit_ros_planning_interface
     franka_gripper
-    message_generation
 )
+
+# yaml
+find_package(yaml-cpp REQUIRED)
 
 # boost
 # find_package(Boost REQUIRED COMPONENTS filesystem)
 
 
-
-###############################################################################
-# MSGS ########################################################################
+# MSGS ========================================================================
 add_message_files(
     FILES
     teleop_panda.msg
@@ -48,68 +46,63 @@ generate_messages(
 )
 
 
-
-###############################################################################
-# CATKIN CONFIG ###############################################################
+# CATKIN ======================================================================
 catkin_package(
     # INCLUDE_DIRS include
     LIBRARIES panda_controller
     CATKIN_DEPENDS 
+        std_msgs
+        message_runtime
         moveit_core
         moveit_ros_planning_interface
         actionlib_msgs
-        std_msgs
-        message_runtime
 )
 
 
-###############################################################################
-# BUILD CONFIG ################################################################
-# Add include directories 
+# BUILD =======================================================================
 include_directories(
     include
     ${catkin_INCLUDE_DIRS}
+    ${YAML_INCLUDE_DIRS}
 )
 
-# Executables config
-set(TASK console)
-add_executable(${TASK}  examples/${TASK}.cpp
-    src/data_manager.cpp
-    src/colors.cpp
-    src/panda.cpp)
-target_link_libraries(${TASK} ${catkin_LIBRARIES} yaml-cpp)
+# set(TASK console)
+# add_executable(${TASK} src/${TASK}.cpp
+#     src/panda_controller/panda_interface.cpp)
+#     src/panda_controller/data_manager.cpp
+#     src/panda_controller/colors.cpp)
+# target_link_libraries(${TASK} ${catkin_LIBRARIES} yaml-cpp)
 
 
-set(TASK pick_place)
-add_executable(${TASK}  examples/${TASK}.cpp
-    src/data_manager.cpp
-    src/colors.cpp
-    src/panda.cpp)
-target_link_libraries(${TASK} ${catkin_LIBRARIES} yaml-cpp)
+# set(TASK pick_place)
+# add_executable(${TASK} src/${TASK}.cpp
+#     src/panda_controller/panda_interface.cpp)
+#     src/panda_controller/data_manager.cpp
+#     src/panda_controller/colors.cpp)
+# target_link_libraries(${TASK} ${catkin_LIBRARIES} yaml-cpp)
 
 
-set(TASK teleop_listener)
-add_executable(${TASK}  examples/${TASK}.cpp
-    src/data_manager.cpp
-    src/colors.cpp
-    src/panda.cpp)
-add_dependencies(${TASK} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(${TASK} ${catkin_LIBRARIES} yaml-cpp)
+# set(TASK teleop_listener)
+# add_executable(${TASK} src/${TASK}.cpp
+#     src/panda_controller/panda_interface.cpp)
+#     src/panda_controller/data_manager.cpp
+#     src/panda_controller/colors.cpp)
+# add_dependencies(${TASK} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# target_link_libraries(${TASK} ${catkin_LIBRARIES} yaml-cpp)
 
 
-set(TASK teleop_talker)
-add_executable(${TASK}  examples/${TASK}.cpp
-    src/data_manager.cpp
-    src/colors.cpp
-    src/panda.cpp)
-add_dependencies(${TASK} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(${TASK} ${catkin_LIBRARIES} yaml-cpp)
+# set(TASK teleop_talker)
+# add_executable(${TASK} src/${TASK}.cpp
+#     src/panda_controller/panda_interface.cpp)
+#     src/panda_controller/data_manager.cpp
+#     src/panda_controller/colors.cpp)
+# add_dependencies(${TASK} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# target_link_libraries(${TASK} ${catkin_LIBRARIES} yaml-cpp)
 
 
-set(TASK test_panda)
-add_executable(${TASK}  examples/${TASK}.cpp
-    src/data_manager.cpp
-    src/colors.cpp
-    src/panda.cpp)
-add_dependencies(${TASK} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+set(TASK panda_test)
+add_executable(${TASK} src/${TASK}.cpp
+    # src/panda_controller/panda_interface.cpp)
+    # src/panda_controller/data_manager.cpp
+    src/panda_controller/colors.cpp)
 target_link_libraries(${TASK} ${catkin_LIBRARIES} yaml-cpp)

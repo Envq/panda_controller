@@ -1,14 +1,3 @@
-/**
- * @file colors.hpp
- * @author Enrico Sgarbanti
- * @brief This file contains the classes and function that allows you to manage
- * the font colors on the terminal.
- * @version 0.1
- * @date 20-02-2020
- *
- * @copyright Copyright (c) 2020 by Enrico Sgarbanti. License GPLv3.
- *
- */
 #pragma once
 
 // C++
@@ -20,19 +9,10 @@
 
 
 
-//#############################################################################
-// CONFIGS ####################################################################
-/// @brief This namespace contains the configurations of this file.
-namespace config {
-const std::string START_STRING = "## ";
-}  // namespace config
-
-
-
-//#############################################################################
-// ENUMERATIONS ###############################################################
-/// @brief This class contains the string to be used to modify the terminal.
-/// output.
+// CLASSES ====================================================================
+/**
+ * @brief This class allows you to change the color of the terminal output.
+ */
 class Colors {
   public:
     enum Code {
@@ -70,28 +50,14 @@ class Colors {
         BG_CYAN_BRIGHT = 106,
         FG_WHITE_BRIGHT = 97,
         BG_WHITE_BRIGHT = 107,
-        RESET = 0,
-        BOLD_INTENSITY = 1,
-        FAINT_INTENSITY = 2,
-        INTENSITY_OFF = 22,
-        FAINT_OFF = 1,
-        ITALICS = 3,  // not widely supported
-        ITALICS_OFF = 23,
+        BOLD = 1,
+        FAINT = 2,
         UNDERLINE = 4,
-        DOUBLE_UNDERLINE = 21,
-        UNDERLINE_OFF = 24,
-        BLINK_SLOW = 5,
-        BLINK_RAPID = 6,  // not widely supported
-        BLINK_OFF = 25,
-        INVERSE = 7,
-        INVERSE_OFF = 27,
-        CROSSEDOUT = 9,
-        CROSSEDOUT_OFF = 29
+        RESET = 0,
     };
 
     /**
      * @brief Construct a new Colors object.
-     *
      */
     Colors() = default;
 
@@ -133,12 +99,32 @@ class Colors {
      * @return std::ostream&
      */
     friend std::ostream &operator<<(std::ostream &stream,
-                                    const Colors::Code &color);
+                                    const Colors::Code &COLOR);
 };
 
 
-//#############################################################################
-// FUNCTIONS ##################################################################
+
+// FUNCTIONS ==================================================================
+/**
+ * @brief Decorate this message with the specified color
+ *
+ * @param MSG message to be colored.
+ * @param COLOR code of color.
+ * @return std::string colorful message.
+ */
+std::string colorize(const std::string &MSG, const Colors::Code &COLOR);
+
+
+/**
+ * @brief Decorate this message with the specified color
+ *
+ * @param MSG message to be colored.
+ * @param COLOR code of color.
+ * @return std::string colorful message.
+ */
+void print_col(const std::string &MSG, const Colors::Code &COLOR);
+
+
 /**
  * @brief Function to extend ROS_INFO_STREAM with a START_STRING (e.g.: ##)
  * and with foreground and background color.
@@ -149,13 +135,61 @@ class Colors {
  * @param args strings to be printed.
  */
 template<typename... Args>
-void ROS_STRONG_INFO(const Colors::Code &COLOR_FG, const Colors::Code &COLOR_BG,
-                     Args &&... args) {
+void ROS_FCOL_INFO(const Colors::Code &COLOR_FG, const Colors::Code &COLOR_BG,
+                   Args &&... args) {
     std::stringstream ss;
-    ss << Colors::BOLD_INTENSITY;
+    ss << Colors::BOLD;
     ss << COLOR_FG;
     ss << COLOR_BG;
-    ss << config::START_STRING;
+
+    using expander = int[];
+    (void)expander{0, (void(ss << std::forward<Args>(args)), 0)...};
+
+    ss << Colors::RESET;
+    ROS_INFO_STREAM(ss.str());
+}
+
+
+/**
+ * @brief Function to extend ROS_INFO_STREAM with foreground color.
+ *
+ * @tparam Args
+ * @param COLOR code of color.
+ * @param args strings to be printed.
+ */
+template<typename... Args>
+void ROS_COL_INFO(const Colors::Code &COLOR, Args &&... args) {
+    std::stringstream ss;
+    ss << Colors::BOLD;
+    ss << COLOR;
+
+    using expander = int[];
+    (void)expander{0, (void(ss << std::forward<Args>(args)), 0)...};
+
+    ss << Colors::RESET;
+    ROS_INFO_STREAM(ss.str());
+}
+
+
+/**
+ * @brief Function to extend ROS_INFO_STREAM with foreground color, where only
+ * COL_STRING will be colored
+ *
+ * @tparam Args
+ * @param COLOR code of color.
+ * @param args strings to be printed.
+ */
+template<typename... Args>
+void ROS_PRINT(const Colors::Code &COLOR, const std::string &COL_STRING,
+               Args &&... args) {
+    std::stringstream ss;
+    ss << Colors::BOLD;
+    ss << COLOR;
+    ss << "[";
+    ss << COL_STRING;
+    ss << "]: ";
+    ss << Colors::RESET;
+    ss << Colors::BOLD;
 
     using expander = int[];
     (void)expander{0, (void(ss << std::forward<Args>(args)), 0)...};
