@@ -55,13 +55,14 @@ def help():
     print_col("   convert 'x' 'y' 'z' 'w'", COLOR_HELP)
     print_col("   convert 'roll' 'pitch' 'yaw'", COLOR_HELP)
 
-    print_col("[other:]", COLOR_HELP)
+    print_col("[data:]", COLOR_HELP)
     print_col("   scene 'scene_name'", COLOR_HELP)
     print_col("   scene reset", COLOR_HELP)
+    print_col("   save 'tcp_pose_name'", COLOR_HELP)
+    print_col("   goto 'tcp_pose_name'", COLOR_HELP)
 
     print_col("[other:]", COLOR_HELP)
     print_col("   velocity 'vel'", COLOR_HELP)
-    print_col("   save 'tcp_pose_name'", COLOR_HELP)
     print_col("   quit", COLOR_HELP)
     print_col("   help", COLOR_HELP)
     print_col("-----------------------------------------------", COLOR_HELP)
@@ -133,6 +134,27 @@ def main():
                 if cmd[0] == 'velocity':
                     if len(cmd) == 2:
                         panda.setMaxVelocityScalingFactor(float(cmd[1]))
+                    else:
+                        print_col("   Command not valid", COLOR_WARN)
+
+                elif cmd[0] == 'save':
+                    if len(cmd) == 2:
+                        panda.savePose(panda.getArmPoseTCP(), cmd[1])
+                    else:
+                        print_col("   Command not valid", COLOR_WARN)
+
+                elif cmd[0] == 'goto':
+                    if len(cmd) == 2:
+                        print_col("   Success? {}".format(panda.gotoPose(cmd[1])), COLOR_SUCCESS)
+                    else:
+                        print_col("   Command not valid", COLOR_WARN)
+
+                elif cmd[0] == 'scene':
+                    if len(cmd) == 2:
+                        if cmd[1] == 'reset':
+                            panda.resetScene()
+                        else:
+                            print_col("   Success? {}".format(panda.loadScene(cmd[1])), COLOR_SUCCESS)
                     else:
                         print_col("   Command not valid", COLOR_WARN)
 

@@ -112,6 +112,8 @@ git clone https://github.com/ros-planning/panda_moveit_config.git -b melodic-dev
 ~~~
 cd ~/panda_ws/src/
 
+pip3 install --user pyyaml
+
 git clone https://github.com/Envq/panda_controller.git
 ~~~
 

@@ -8,6 +8,27 @@
 #    file: (string) #for mesh
 #    scale: xyz (double) #for mesh
 #    dimensions: xyz/rh (double) #for others
+pp:
+  - name: box
+    color:
+      r: 1.0
+      g: 1.0
+      b: 1.0
+      a: 1.0
+    position:
+      x: 0.60
+      y: 0.30
+      z: 0.055
+    orientation:
+      x: 0.0
+      y: 0.0
+      z: 0.0
+      w: 1.0
+    type: box
+    dimensions:
+      x: 0.335
+      y: 0.240
+      z: 0.110
 
 pick_place:
   - name: box
