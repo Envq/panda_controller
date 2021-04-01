@@ -42,8 +42,19 @@ int main(int argc, char **argv) {
         auto gripper = PandaGripper(false);
         auto scene = PandaScene();
 
+        std::cout << "open: " << PandaGripper::OPEN << std::endl;
+        std::cout << "width: " << gripper.getWidth() << std::endl;
+
         gripper.move(0.03);
-        ROS_INFO_STREAM(arm.getArmPose());
+        ros::Duration(1.0).sleep();
+        std::cout << "width: " << gripper.getWidth() << std::endl;
+
+        gripper.move(1);
+        ros::Duration(1.0).sleep();
+        std::cout << "width: " << gripper.getWidth() << std::endl;
+
+        gripper.move(-1);
+        std::cout << "width: " << gripper.getWidth() << std::endl;
 
 
     } catch (const PandaControllerErr &err) {

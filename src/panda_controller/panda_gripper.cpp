@@ -9,10 +9,11 @@ using namespace panda_controller;
 
 
 // CLASSES ====================================================================
-PandaGripper::PandaGripper(const bool &REAL_ROBOT) {
+PandaGripper::PandaGripper(const bool REAL_ROBOT) {
     // Initialize
-    _curren_width = -1;
     _real_robot = REAL_ROBOT;
+    _current_width = -1;  // use homing for override it
+    _timeout = 0;         // inf
 
     if (REAL_ROBOT) {
         try {
@@ -33,6 +34,7 @@ PandaGripper::PandaGripper(const bool &REAL_ROBOT) {
                 "PandaGripper()",
                 "Impossible create action clients for franka_gripper");
         }
+
     } else {
         // Init MoveGroupInterface with hand
         std::string move_group_name = "hand";
@@ -50,11 +52,21 @@ PandaGripper::PandaGripper(const bool &REAL_ROBOT) {
 }
 
 
-void PandaGripper::_moveHand(const double &WIDTH) {
+double PandaGripper::_normalize(const double VAL, const double MIN,
+                                const double MAX) {
+    if (VAL < MIN)
+        return MIN;
+    if (VAL > MAX)
+        return MAX;
+    return VAL;
+}
+
+
+void PandaGripper::_moveHand(const double WIDTH_NORMALIZED) {
     // Prepare fingers
     std::vector<double> fingers;
-    fingers.push_back(WIDTH / 2.0);
-    fingers.push_back(WIDTH / 2.0);
+    fingers.push_back(WIDTH_NORMALIZED / 2.0);
+    fingers.push_back(WIDTH_NORMALIZED / 2.0);
     _hand_ptr->setJointValueTarget(fingers);
 
     // Perform movement
@@ -66,6 +78,16 @@ void PandaGripper::_moveHand(const double &WIDTH) {
 }
 
 
+void PandaGripper::setTiming(const double TIMEOUT) {
+    _timeout = TIMEOUT;
+}
+
+
+double PandaGripper::getWidth() {
+    return _current_width;
+}
+
+
 void PandaGripper::homing() {
     if (_real_robot) {
         // Create homing goal
@@ -73,49 +95,63 @@ void PandaGripper::homing() {
         _homing_client_ptr->sendGoal(goal);
 
         // Wait for result
-        if (!_homing_client_ptr->waitForResult()) {
+        if (!_homing_client_ptr->waitForResult(ros::Duration(_timeout)))
             throw PandaGripperErr("homing()", "waitForResult()", "Timeout");
-        }
     }
+
+    // Update current width
+    _current_width = OPEN;
 }
 
 
-void PandaGripper::move(const double &WIDTH, const double &SPEED) {
+void PandaGripper::move(const double WIDTH, const double SPEED) {
+    double width_normalized =
+        _normalize(WIDTH, panda_gripper::MIN_WIDTH, panda_gripper::MAX_WIDTH);
+
     if (_real_robot) {
         // Create move goal
         auto goal = franka_gripper::MoveGoal();
-        goal.width = WIDTH;
+        goal.width = width_normalized;
         goal.speed = SPEED;
         _move_client_ptr->sendGoal(goal);
 
         // Wait for result
-        if (!_move_client_ptr->waitForResult()) {
+        if (!_move_client_ptr->waitForResult(ros::Duration(_timeout)))
             throw PandaGripperErr("move()", "waitForResult()", "Timeout");
-        }
-    } else {
-        _moveHand(WIDTH);
-    }
+
+    } else
+        _moveHand(width_normalized);
+
+    // Update current width
+    _current_width = width_normalized;
 }
 
 
-void PandaGripper::grasp(const double &WIDTH, const double &SPEED,
-                         const double &FORCE, const double &EPSILON_INNER,
-                         const double &EPSILON_OUTER) {
+void PandaGripper::grasp(const double WIDTH, const double SPEED,
+                         const double FORCE, const double EPSILON_INNER,
+                         const double EPSILON_OUTER) {
+    double width_normalized =
+        _normalize(WIDTH, panda_gripper::MIN_WIDTH, panda_gripper::MAX_WIDTH);
+    double force_normalized =
+        _normalize(WIDTH, panda_gripper::MIN_FORCE, panda_gripper::MAX_FORCE);
+
     if (_real_robot) {
         // Create move goal
         auto goal = franka_gripper::GraspGoal();
-        goal.width = WIDTH;
+        goal.width = width_normalized;
         goal.speed = SPEED;
-        goal.force = FORCE;
+        goal.force = force_normalized;
         goal.epsilon.inner = EPSILON_INNER;
         goal.epsilon.outer = EPSILON_OUTER;
         _grasp_client_ptr->sendGoal(goal);
 
         // Wait for result
-        if (!_grasp_client_ptr->waitForResult()) {
+        if (!_grasp_client_ptr->waitForResult(ros::Duration(_timeout)))
             throw PandaGripperErr("grasp()", "waitForResult()", "Timeout");
-        }
-    } else {
-        _moveHand(WIDTH);
-    }
+
+    } else
+        _moveHand(width_normalized);
+
+    // Update current width
+    _current_width = width_normalized;
 }
