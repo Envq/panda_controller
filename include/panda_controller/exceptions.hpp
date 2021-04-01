@@ -9,16 +9,17 @@
 
 
 
-// CONFIGS ====================================================================
-namespace exceptions {
-const std::string DIVISOR = "\n --> ";
-}  // namespace exceptions
-
-
-
 // NAMESPACE ==================================================================
 /// @brief Namespace of panda_errors.
 namespace panda_controller {
+
+
+
+// CONFIGS ====================================================================
+/// @brief This namespace contains the configurations of this file.
+namespace exceptions {
+const std::string DIVISOR = "\n --> ";
+}  // namespace exceptions
 
 
 

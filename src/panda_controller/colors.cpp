@@ -1,4 +1,4 @@
-// panda_controller
+// Custom
 #include "panda_controller/colors.hpp"
 
 
@@ -49,7 +49,7 @@ std::ostream &operator<<(std::ostream &stream, const Colors::Code &color) {
 
 
 
-// FUNCTIONS ==================================================================
+// PUBLIC FUNCTIONS ===========================================================
 std::string colorize(const std::string &MSG, const Colors::Code &COLOR) {
     return "\033[1;" + std::to_string(static_cast<int>(COLOR)) + 'm' + MSG +
            "\033[0m";
