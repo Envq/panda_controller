@@ -105,5 +105,6 @@ add_executable(${TASK} src/${TASK}.cpp
     src/panda_controller/colors.cpp
     # src/panda_controller/data_manager.cpp
     src/panda_controller/panda_arm.cpp
-    src/panda_controller/panda_gripper.cpp)
+    src/panda_controller/panda_gripper.cpp
+    src/panda_controller/panda_scene.cpp)
 target_link_libraries(${TASK} ${catkin_LIBRARIES} yaml-cpp)

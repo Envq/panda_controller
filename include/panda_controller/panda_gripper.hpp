@@ -4,6 +4,8 @@
 #include <actionlib/client/simple_action_client.h>  //franka_gripper
 #include <moveit/move_group_interface/move_group_interface.h>
 
+// BOOST
+#include <boost/shared_ptr.hpp>
 
 // franka_gripper
 #include <franka_gripper/GraspAction.h>
@@ -46,17 +48,15 @@ typedef actionlib::SimpleActionClient<franka_gripper::GraspAction>
 
 
 // CLASSES ====================================================================
-/// @brief The Panda robot gripper management class with Moveit and
-/// franka_gripper.
+/// @brief The Panda robot gripper management class.
 class PandaGripper {
   private:
     moveit::planning_interface::MoveGroupInterfacePtr _hand_ptr;
-    GripperHomingClient *_gripper_homing_client;
-    GripperMoveClient *_gripper_move_client;
-    GripperGraspClient *_gripper_grasp_client;
+    boost::shared_ptr<GripperHomingClient> _homing_client_ptr;
+    boost::shared_ptr<GripperMoveClient> _move_client_ptr;
+    boost::shared_ptr<GripperGraspClient> _grasp_client_ptr;
     double _curren_width;
     bool _real_robot;
-
 
     /**
      * @brief Moves to a target WIDTH using moveit.
@@ -65,9 +65,10 @@ class PandaGripper {
      */
     void _moveHand(const double &WIDTH);
 
+
   public:
     /**
-     * @brief Construct a new Panda object.
+     * @brief Construct a new PandaGripper object.
      *
      * @param REAL_ROBOT If true, it uses franka_gripper.
      */

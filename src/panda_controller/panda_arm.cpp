@@ -9,7 +9,7 @@ using namespace panda_controller;
 
 
 // CLASSES ====================================================================
-PandaArm::PandaArm(const double VELOCITY_FACTOR) {
+PandaArm::PandaArm() {
     // Init MoveGroupInterface with arm
     std::string move_group_name = "panda_arm";
     try {
@@ -21,9 +21,6 @@ PandaArm::PandaArm(const double VELOCITY_FACTOR) {
                           "Impossible initialize MoveGroupInterface with '" +
                               move_group_name + "'");
     }
-
-    // Set attributes
-    setMaxVelocityScalingFactor(VELOCITY_FACTOR);
 }
 
 

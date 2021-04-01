@@ -17,16 +17,16 @@ PandaGripper::PandaGripper(const bool &REAL_ROBOT) {
     if (REAL_ROBOT) {
         try {
             // Create action client for homing
-            _gripper_homing_client =
-                new GripperHomingClient("franka_gripper/homing", true);
+            _homing_client_ptr.reset(
+                new GripperHomingClient("franka_gripper/homing", true));
 
             // Create action client for move
-            _gripper_move_client =
-                new GripperMoveClient("franka_gripper/move", true);
+            _move_client_ptr.reset(
+                new GripperMoveClient("franka_gripper/move", true));
 
             // Create action client for grasp
-            _gripper_grasp_client =
-                new GripperGraspClient("franka_gripper/grasp", true);
+            _grasp_client_ptr.reset(
+                new GripperGraspClient("franka_gripper/grasp", true));
 
         } catch (const std::runtime_error &err) {
             throw PandaGripperErr(
@@ -70,10 +70,10 @@ void PandaGripper::homing() {
     if (_real_robot) {
         // Create homing goal
         auto goal = franka_gripper::HomingGoal();
-        _gripper_homing_client->sendGoal(goal);
+        _homing_client_ptr->sendGoal(goal);
 
         // Wait for result
-        if (!_gripper_homing_client->waitForResult()) {
+        if (!_homing_client_ptr->waitForResult()) {
             throw PandaGripperErr("homing()", "waitForResult()", "Timeout");
         }
     }
@@ -86,10 +86,10 @@ void PandaGripper::move(const double &WIDTH, const double &SPEED) {
         auto goal = franka_gripper::MoveGoal();
         goal.width = WIDTH;
         goal.speed = SPEED;
-        _gripper_move_client->sendGoal(goal);
+        _move_client_ptr->sendGoal(goal);
 
         // Wait for result
-        if (!_gripper_move_client->waitForResult()) {
+        if (!_move_client_ptr->waitForResult()) {
             throw PandaGripperErr("move()", "waitForResult()", "Timeout");
         }
     } else {
@@ -109,10 +109,10 @@ void PandaGripper::grasp(const double &WIDTH, const double &SPEED,
         goal.force = FORCE;
         goal.epsilon.inner = EPSILON_INNER;
         goal.epsilon.outer = EPSILON_OUTER;
-        _gripper_grasp_client->sendGoal(goal);
+        _grasp_client_ptr->sendGoal(goal);
 
         // Wait for result
-        if (!_gripper_grasp_client->waitForResult()) {
+        if (!_grasp_client_ptr->waitForResult()) {
             throw PandaGripperErr("grasp()", "waitForResult()", "Timeout");
         }
     } else {

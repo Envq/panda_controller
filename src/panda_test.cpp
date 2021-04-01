@@ -6,6 +6,7 @@
 #include "panda_controller/exceptions.hpp"
 #include "panda_controller/panda_arm.hpp"
 #include "panda_controller/panda_gripper.hpp"
+#include "panda_controller/panda_scene.hpp"
 
 
 // CONFIGS ====================================================================
@@ -37,17 +38,12 @@ int main(int argc, char **argv) {
 
     // Start Task
     try {
-        auto arm = PandaArm(0.5);
+        auto arm = PandaArm();
         auto gripper = PandaGripper(false);
+        auto scene = PandaScene();
 
-        gripper.homing();
-
-        gripper.move(0.05);
-
-        ros::Duration(0.5).sleep();
-
-        gripper.grasp(0.03);
-
+        gripper.move(0.03);
+        ROS_INFO_STREAM(arm.getArmPose());
 
 
     } catch (const PandaControllerErr &err) {

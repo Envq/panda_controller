@@ -31,13 +31,12 @@ class PandaArm {
   private:
     moveit::planning_interface::MoveGroupInterfacePtr _arm_ptr;
 
+
   public:
     /**
      * @brief Construct a new PandaArm object.
-     *
-     * @param VELOCITY_FACTOR maximum velocity scaling factor.
      */
-    explicit PandaArm(const double VELOCITY_FACTOR = 0.1);
+    explicit PandaArm();
 
 
     /**
@@ -119,4 +118,5 @@ class PandaArm {
                            const double &STEP = 0.01,
                            const double &JUMP_THRESHOLD = 0.0);
 };
+
 }  // namespace panda_controller
