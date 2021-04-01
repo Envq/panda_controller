@@ -1,129 +1,133 @@
-/**
- * @file exceptions.hpp
- * @author Enrico Sgarbanti
- * @brief This file contains the exceptions used in this package.
- * @version 0.1
- * @date 20-02-2020
- *
- * @copyright Copyright (c) 2020 by Enrico Sgarbanti. License GPLv3.
- *
- */
 #pragma once
 
 // C++
 #include <sstream>
 #include <stdexcept>
 
-
-
-//#############################################################################
-// NAMESPACE ##################################################################
-/// @brief Namespace of exceptions.
-namespace PCEXC {
+// Custom
+#include "panda_controller/colors.hpp"
 
 
 
-//#############################################################################
-// CONFIGS ####################################################################
-/// @brief This namespace contains the configurations of this file.
-namespace config {
+// CONFIGS ====================================================================
+namespace exceptions {
 const std::string DIVISOR = "\n --> ";
-}  // namespace config
+}  // namespace exceptions
 
 
 
-//#############################################################################
-// CLASSES ####################################################################
+// NAMESPACE ==================================================================
+/// @brief Namespace of panda_errors.
+namespace panda_controller {
+
+
+
+// CLASSES ====================================================================
 /// @brief Exceptions for panda_controller
-class PandaControllerException : public std::exception {
+class PandaControllerErr : public std::exception {
   protected:
-    /// @brief The exception message.
-    std::string msg_;
+    /**
+     * @brief Construct a new PandaControllerErr.
+     *
+     * @param _msg message of error.
+     * @param _color color code.
+     */
+    std::string _msg = "PandaControllerErr()";
+    Colors::Code _color;
 
   public:
-    PandaControllerException() : std::exception() {
+    PandaControllerErr(const std::string &MSG = "",
+                       const Colors::Code &COLOR = Colors::FG_DEFAULT)
+        : std::exception(), _msg(MSG), _color(COLOR) {
     }
 
     const char *what() const noexcept {
-        return msg_.c_str();
+        return _msg.c_str();
+    }
+
+    std::string getInfo() const noexcept {
+        return colorize(_msg, _color);
     }
 };
 
 /// @brief Exceptions for data_manager.
-class DataManagerException : public PandaControllerException {
+class DataManagerErr : public PandaControllerErr {
   public:
     /**
-     * @brief Construct a new DataManagerException object with variadic
+     * @brief Construct a new DataManagerErr object with variadic
      * template.
      *
      * @tparam Args
      * @param args Each argument is divided by the DIVIDER (e.g.: \n-->).
      */
-    template<typename... Args> DataManagerException(Args &&... args) {
+    template<typename... Args> DataManagerErr(Args &&... args) {
         std::stringstream ss;
-        ss << "DataManagerException()";
+        ss << "DataManagerErr()";
         using expander = int[];
         (void)expander{
-            0, (void(ss << config::DIVISOR << std::forward<Args>(args)), 0)...};
-        msg_ = ss.str();
+            0, (void(ss << exceptions::DIVISOR << std::forward<Args>(args)),
+                0)...};
+        _msg = ss.str();
     }
 };
 
 /// @brief Exceptions for Panda arm.
-class PandaArmException : public PandaControllerException {
+class PandaArmErr : public PandaControllerErr {
   public:
     /**
-     * @brief Construct a new PandaArmException object with variadic
+     * @brief Construct a new PandaArmErr object with variadic
      * template.
      *
      * @tparam Args
      * @param args Each argument is divided by the DIVIDER (e.g.: \n-->).
      */
-    template<typename... Args> PandaArmException(Args &&... args) {
+    template<typename... Args> PandaArmErr(Args &&... args) {
         std::stringstream ss;
-        ss << "PandaArmException()";
+        ss << "PandaArmErr()";
         using expander = int[];
         (void)expander{
-            0, (void(ss << config::DIVISOR << std::forward<Args>(args)), 0)...};
-        msg_ = ss.str();
+            0, (void(ss << exceptions::DIVISOR << std::forward<Args>(args)),
+                0)...};
+        _msg = ss.str();
     }
 };
 
 /// @brief Execeptions for Panda gripper.
-class PandaGripperException : public PandaControllerException {
+class PandaGripperErr : public PandaControllerErr {
   public:
     /**
-     * @brief Construct a new PandaGripperException object with variadic
+     * @brief Construct a new PandaGripperErr object with variadic
      * template.
      *
      * @tparam Args
      * @param args Each argument is divided by the DIVIDER (e.g.: \n-->).
      */
-    template<typename... Args> PandaGripperException(Args &&... args) {
+    template<typename... Args> PandaGripperErr(Args &&... args) {
         std::stringstream ss;
-        ss << "PandaGripperException()";
+        ss << "PandaGripperErr()";
         using expander = int[];
         (void)expander{
-            0, (void(ss << config::DIVISOR << std::forward<Args>(args)), 0)...};
-        msg_ = ss.str();
+            0, (void(ss << exceptions::DIVISOR << std::forward<Args>(args)),
+                0)...};
+        _msg = ss.str();
     }
 };
 
 
 
-//#############################################################################
-// INLINE FUNCTIONS ###########################################################
+// FUNCTIONS ==================================================================
 /**
  * @brief Create an error message for programs that use these exceptions. It
  * adds the file name to the exception error message.
  *
- * @param NAME The name of the file that throw exception with extension (.cpp).
+ * @param FILE_NAME The name of the file that throw exception with extension
+ * (.cpp).
  * @param MSG The error message of exceptions (exception.what()).
  * @return std::string The complete message of error
  */
-inline std::string get_err_msg(const std::string &NAME,
+inline std::string get_err_msg(const std::string &FILE_NAME,
                                const std::string &MSG) {
-    return "In '" + NAME + "'" + config::DIVISOR + MSG;
+    return "In '" + FILE_NAME + "':" + exceptions::DIVISOR + MSG;
 }
 
-}  // namespace PCEXC
+}  // namespace panda_controller

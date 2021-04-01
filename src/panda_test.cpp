@@ -3,12 +3,14 @@
 #include <string>
 
 #include "panda_controller/colors.hpp"
+#include "panda_controller/exceptions.hpp"
 
 
+// CONFIGS ====================================================================
+#define FG_COLOR Colors::FG_BLUE
+#define BG_COLOR Colors::BG_DEFAULT
 
-// DEFAULT VALUES ==============================================================
-const auto FG_COLOR = Colors::FG_BLUE;
-const auto BG_COLOR = Colors::BG_BLACK;
+using namespace panda_controller;
 
 
 
@@ -23,9 +25,20 @@ int main(int argc, char **argv) {
     // Setup ROS
     ros::init(argc, argv, NAME);
     ros::NodeHandle node("~");
-    ROS_FCOL_INFO(Colors::FG_WHITE, Colors::BG_RED, "START NODE: ", NAME);
-    ROS_COL_INFO(Colors::FG_RED, "START NODE: ", NAME, 12, 130, "ciao");
-    ROS_PRINT(Colors::FG_GREEN, "DEBUG", "START NODE: ", NAME, 12, 130, "ciao");
+    ROS_FCOL_INFO(FG_COLOR, BG_COLOR, "START NODE: ", NAME);
+
+    try {
+        throw PandaControllerErr("blu()", Colors::FG_BLUE_BRIGHT);
+    } catch (const PandaControllerErr &err) {
+        std::cout << err.getInfo() << std::endl;
+    }
+
+    try {
+        throw DataManagerErr("foo()", "err");
+    } catch (const DataManagerErr &err) {
+        std::cout << err.what() << std::endl;
+        ROS_FATAL_STREAM(get_err_msg(NAME, err.what()));
+    }
 
 
 
