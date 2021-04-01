@@ -8,7 +8,7 @@ import moveit_commander
 import sys
 
 # Custom
-from src.panda_interface_moveit import PandaInterfaceMoveit
+from src.panda_interface import PandaInterface
 from src.colors import colorize, print_col
 from src.utils import quaternion_from_euler, euler_from_quaternion
 
@@ -90,10 +90,9 @@ def main():
 
 
         # Create panda moveit interface
-        panda = PandaInterfaceMoveit(   delay=1,\
-                                        arm_velocity_factor=arm_velocity_factor,\
-                                        startup_homing=False,\
-                                        real_robot=real_robot)
+        panda = PandaInterface( delay=1,\
+                                arm_velocity_factor=arm_velocity_factor,
+                                real_robot=real_robot)
         
         # Print help
         help()

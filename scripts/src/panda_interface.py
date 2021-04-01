@@ -11,20 +11,18 @@ sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
 # Custom
 from colors import print_col
-from panda_arm_moveit import PandaArmMoveit
-from panda_gripper_moveit import PandaGripperMoveit
+from panda_arm import PandaArm
+from panda_gripper import PandaGripper
 import data_manager as dm
 
 
 
-class PandaInterfaceMoveit(PandaArmMoveit, PandaGripperMoveit):
-    def __init__(self, \
-            delay = 1.0, arm_velocity_factor = 0.1, \
-            startup_homing=False, real_robot = False):
+class PandaInterface(PandaArm, PandaGripper):
+    def __init__(self, delay = 1.0, arm_velocity_factor = 0.1, real_robot = False):
         """Note: if delay is too small, Moveit may not load properly"""
         # init arm and gripper
-        PandaArmMoveit.__init__(self, delay=0, velocity_factor=arm_velocity_factor)
-        PandaGripperMoveit.__init__(self, delay=0, startup_homing=startup_homing, real_robot=real_robot)
+        PandaArm.__init__(self, delay=0, velocity_factor=arm_velocity_factor)
+        PandaGripper.__init__(self, delay=0, real_robot=real_robot)
 
         # create scene handler
         self.scene = moveit_commander.PlanningSceneInterface()
@@ -121,7 +119,7 @@ class PandaInterfaceMoveit(PandaArmMoveit, PandaGripperMoveit):
 
 
 def test_interface(panda):
-    if isinstance(panda, PandaInterfaceMoveit):
+    if isinstance(panda, PandaInterface):
         print("Move to Ready")
         print("> Success: ", panda.moveArmReady())
         goal = [0.4, 0.0, 0.4,  0, 0, 0, 1,  0.03, 0]
@@ -145,7 +143,7 @@ if __name__ == '__main__':
 
     try:
         # Inizialize movegroupinterface
-        panda = PandaInterfaceMoveit(delay=1, real_robot=False)
+        panda = PandaInterface(delay=1, real_robot=False)
 
         test_interface(panda)
 

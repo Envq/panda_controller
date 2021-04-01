@@ -16,7 +16,7 @@ from utils import quaternion_from_euler, transform, transform_inverse
 
 
 
-class PandaArmMoveit():
+class PandaArm():
     def __init__(self, delay = 0, velocity_factor = 0.1):
         # arm settings
         self.arm = moveit_commander.MoveGroupCommander("panda_arm")
@@ -172,7 +172,7 @@ class PandaArmMoveit():
 
 
 def test_tf(arm):
-    if isinstance(arm, PandaArmMoveit):
+    if isinstance(arm, PandaArm):
         import tf2_ros
         from geometry_msgs.msg import TransformStamped
         from utils import quaternion_equals 
@@ -241,7 +241,7 @@ def test_tf(arm):
         print("Check UTILS: fake vs inverse(inverse(fake)): {}\n".format( \
             quaternion_equals(flange_to_tcp_utils_fake[3:], flange_to_tcp_utils[3:])))
 
-        # checks consistence with PandaArmMoveit
+        # checks consistence with PandaArm
         print("Check ARM. with UTILS: ({}, {})".format( \
             quaternion_equals(arm.flange_to_tcp[3:], flange_to_tcp_utils[3:]), \
             quaternion_equals(arm.tcp_to_flange[3:], tcp_to_flange_utils[3:])))
@@ -269,7 +269,7 @@ def test_tf(arm):
 
 
 def test_joints(arm):
-    if isinstance(arm, PandaArmMoveit):
+    if isinstance(arm, PandaArm):
         print("Move to Ready")
         print("> Success: ", arm.moveArmReady())
         goal = [0.00, -0.25 * pi, 0.00, -0.75 * pi, 0.00, 0.50 * pi, -0.25 * pi]
@@ -279,7 +279,7 @@ def test_joints(arm):
 
 
 def test_flange(arm):
-    if isinstance(arm, PandaArmMoveit):
+    if isinstance(arm, PandaArm):
         print("Move to Ready")
         print("> Success: ", arm.moveArmReady())
         goal = [0.4, 0.0, 0.4,  0, 0, 0, 1]
@@ -289,7 +289,7 @@ def test_flange(arm):
 
 
 def test_tcp(arm):
-    if isinstance(arm, PandaArmMoveit):
+    if isinstance(arm, PandaArm):
         print("Move to Ready")
         print("> Success: ", arm.moveArmReady())
         goal = [0.4, 0.0, 0.4,  0, 0, 0, 1]
@@ -299,7 +299,7 @@ def test_tcp(arm):
 
 
 def test_waypoints(arm):
-    if isinstance(arm, PandaArmMoveit):
+    if isinstance(arm, PandaArm):
         print("Move to Ready")
         print("> Success: ", arm.moveArmReady())
         waypoints = list()
@@ -315,7 +315,7 @@ def test_waypoints(arm):
 
 
 def test_wait(arm):
-    if isinstance(arm, PandaArmMoveit):
+    if isinstance(arm, PandaArm):
         print("Move to Ready")
         print("> Success: ", arm.moveArmReady(wait_execution=False))
         time.sleep(5)
@@ -350,7 +350,7 @@ if __name__ == '__main__':
 
     try:
         # Inizialize movegroupinterface
-        arm = PandaArmMoveit(delay=1, velocity_factor=1.0)
+        arm = PandaArm(delay=1, velocity_factor=1.0)
 
         # test_tf(arm)
         # test_joints(arm)
