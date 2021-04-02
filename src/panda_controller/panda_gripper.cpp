@@ -3,8 +3,9 @@
 
 
 
-// USING NAMESPACE ============================================================
-using namespace panda_controller;
+// NAMESPACE ==================================================================
+/// @brief Namespace of panda_errors.
+namespace panda_controller {
 
 
 
@@ -155,3 +156,5 @@ void PandaGripper::grasp(const double WIDTH, const double SPEED,
     // Update current width
     _current_width = width_normalized;
 }
+
+}  // namespace panda_controller

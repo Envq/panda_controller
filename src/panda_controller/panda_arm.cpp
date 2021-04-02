@@ -3,8 +3,9 @@
 
 
 
-// USING NAMESPACE ============================================================
-using namespace panda_controller;
+// NAMESPACE ==================================================================
+/// @brief Namespace of panda_errors.
+namespace panda_controller {
 
 
 
@@ -24,7 +25,7 @@ PandaArm::PandaArm() {
 }
 
 
-void PandaArm::setMaxVelocityScalingFactor(const float &VELOCITY_FACTOR) {
+void PandaArm::setMaxVelocityScalingFactor(const float VELOCITY_FACTOR) {
     _arm_ptr->setMaxVelocityScalingFactor(VELOCITY_FACTOR);
 }
 
@@ -35,7 +36,7 @@ std::vector<double> PandaArm::getArmJoints() {
 
 
 void PandaArm::moveArmJoints(const std::vector<double> &JOINTS,
-                             const bool &ADJUST_IN_BOUNDS) {
+                             const bool ADJUST_IN_BOUNDS) {
     // Set new joints values
     bool in_bounds = _arm_ptr->setJointValueTarget(JOINTS);
 
@@ -81,8 +82,8 @@ void PandaArm::moveArmPose(const geometry_msgs::Pose &POSE) {
 
 
 void PandaArm::cartesianMovement(
-    const std::vector<geometry_msgs::Pose> &WAYPOINTS, const double &STEP,
-    const double &JUMP_THRESHOLD) {
+    const std::vector<geometry_msgs::Pose> &WAYPOINTS, const double STEP,
+    const double JUMP_THRESHOLD) {
     moveit_msgs::RobotTrajectory trajectory;
     double progress_percentage = _arm_ptr->computeCartesianPath(
         WAYPOINTS, STEP, JUMP_THRESHOLD, trajectory);
@@ -111,9 +112,23 @@ void PandaArm::cartesianMovement(
 
 
 void PandaArm::cartesianMovement(const geometry_msgs::Pose &POSE,
-                                 const double &STEP,
-                                 const double &JUMP_THRESHOLD) {
+                                 const double STEP,
+                                 const double JUMP_THRESHOLD) {
     std::vector<geometry_msgs::Pose> waypoint;
     waypoint.push_back(POSE);
     cartesianMovement(waypoint, STEP, JUMP_THRESHOLD);
 }
+
+
+void PandaArm::savePose(const std::string &POSE_NAME) {
+    auto current_pose = getArmPose();
+    save_pose(current_pose, POSE_NAME);
+}
+
+
+void PandaArm::gotoPose(const std::string &POSE_NAME) {
+    auto target_pose = load_pose(POSE_NAME);
+    moveArmPose(target_pose);
+}
+
+}  // namespace panda_controller

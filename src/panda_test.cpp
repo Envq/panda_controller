@@ -2,11 +2,11 @@
 #include <ros/ros.h>
 #include <string>
 
-#include "panda_controller/colors.hpp"
 #include "panda_controller/exceptions.hpp"
 #include "panda_controller/panda_arm.hpp"
 #include "panda_controller/panda_gripper.hpp"
 #include "panda_controller/panda_scene.hpp"
+#include "utils/colors.hpp"
 
 
 // CONFIGS ====================================================================
@@ -42,20 +42,13 @@ int main(int argc, char **argv) {
         auto gripper = PandaGripper(false);
         auto scene = PandaScene();
 
-        std::cout << "open: " << PandaGripper::OPEN << std::endl;
-        std::cout << "width: " << gripper.getWidth() << std::endl;
+        ROS_INFO("load pp scene");
+        scene.setScene("pp");
+        ros::Duration(2.0).sleep();
 
-        gripper.move(0.03);
-        ros::Duration(1.0).sleep();
-        std::cout << "width: " << gripper.getWidth() << std::endl;
-
-        gripper.move(1);
-        ros::Duration(1.0).sleep();
-        std::cout << "width: " << gripper.getWidth() << std::endl;
-
-        gripper.move(-1);
-        std::cout << "width: " << gripper.getWidth() << std::endl;
-
+        ROS_INFO("reset scene");
+        scene.resetScene();
+        ros::Duration(0.5).sleep();
 
     } catch (const PandaControllerErr &err) {
         ROS_FATAL_STREAM(get_err_msg(NAME, err.what()));

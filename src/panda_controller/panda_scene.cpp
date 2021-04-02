@@ -2,9 +2,9 @@
 #include "panda_controller/panda_scene.hpp"
 
 
-
-// USING NAMESPACE ============================================================
-using namespace panda_controller;
+// NAMESPACE ==================================================================
+/// @brief Namespace of panda_errors.
+namespace panda_controller {
 
 
 
@@ -22,8 +22,8 @@ PandaScene::PandaScene() {
 }
 
 
-void PandaScene::setScene(const moveit_msgs::PlanningScene &SCENE) {
-    _scene_ptr->applyPlanningScene(SCENE);
+void PandaScene::setScene(const std::string &SCENE_NAME) {
+    _scene_ptr->applyPlanningScene(load_scene(SCENE_NAME));
 }
 
 
@@ -36,3 +36,5 @@ void PandaScene::resetScene() {
     empty_scene.name = "empty";
     _scene_ptr->applyPlanningScene(empty_scene);
 }
+
+}  // namespace panda_controller

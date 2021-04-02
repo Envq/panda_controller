@@ -4,6 +4,7 @@
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
 
 // Custom
+#include "panda_controller/data_manager.hpp"
 #include "panda_controller/exceptions.hpp"
 
 
@@ -32,9 +33,9 @@ class PandaScene {
     /**
      * @brief Load the scene.
      *
-     * @param SCENE The scene to use.
+     * @param SCENE_NAME The scene to use.
      */
-    void setScene(const moveit_msgs::PlanningScene &SCENE);
+    void setScene(const std::string &SCENE_NAME);
 
 
     /**

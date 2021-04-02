@@ -1,18 +1,14 @@
-# task: pick_place
 pick1:
-  eef: "panda_gripper_center"
   position:
-    x: 0.5425
-    y: 0.19
-    z: 0.12
+    x: 0.4070195700516106
+    y: -2.367681494438302e-16
+    z: 0.4902695582766445
   orientation:
-    x: 0.0
-    y: 0.0
-    z: 0.707
-    w: 0.707
-
+    x: 0.9239556994702721
+    y: -0.3824994972760099
+    z: 8.144228554734631e-17
+    w: 1.362837152789433e-16
 place1:
-  eef: "panda_gripper_center"
   position:
     x: 0.5
     y: 0.0
@@ -22,65 +18,3 @@ place1:
     y: 0.0
     z: 0.0
     w: 1.0
-
-pick2:
-  eef: "panda_gripper_center"
-  position:
-    x: 0.6425
-    y: 0.19
-    z: 0.12
-  orientation:
-    x: 0.5
-    y: -0.5
-    z: 0.5
-    w: 0.5
-
-place2:
-  eef: "panda_gripper_center"
-  position:
-    x: 0.54
-    y: 0.0
-    z: 0.080067
-  orientation:
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 1.0
-
-
-# test
-pick_test:
-  eef: "panda_gripper_center"
-  position:
-    x: 0.56
-    y: 0.25
-    z: 0.01
-  orientation:
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 1.0
-
-place_test:
-  eef: "panda_gripper_center"
-  position:
-    x: 0.54
-    y: -0.25
-    z: 0.08
-  orientation:
-    x: 0.0
-    y: -0.707
-    z: 0.0
-    w: 0.707
-
-test:
-  eef: "panda_gripper_center"
-  position:
-    x: 0.3
-    y: 0.2
-    z: 0.0
-  orientation:
-    x: 0.383
-    y: 0.0
-    z: 0.0
-    w: 0.924

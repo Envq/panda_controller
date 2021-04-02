@@ -6,6 +6,7 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 // Custom
+#include "panda_controller/data_manager.hpp"
 #include "panda_controller/exceptions.hpp"
 
 
@@ -44,7 +45,7 @@ class PandaArm {
      *
      * @param VELOCITY_FACTOR maximum velocity scaling factor.
      */
-    void setMaxVelocityScalingFactor(const float &VELOCITY_FACTOR);
+    void setMaxVelocityScalingFactor(const float VELOCITY_FACTOR);
 
 
     /**
@@ -63,7 +64,7 @@ class PandaArm {
      * the maximum bounds are assumed instead.
      */
     void moveArmJoints(const std::vector<double> &JOINTS,
-                       const bool &ADJUST_IN_BOUNDS = false);
+                       const bool ADJUST_IN_BOUNDS = false);
 
 
     /**
@@ -100,8 +101,8 @@ class PandaArm {
      * 'jumps' in IK solutions).
      */
     void cartesianMovement(const std::vector<geometry_msgs::Pose> &WAYPOINTS,
-                           const double &STEP = 0.01,
-                           const double &JUMP_THRESHOLD = 0.0);
+                           const double STEP = 0.01,
+                           const double JUMP_THRESHOLD = 0.0);
 
 
     /**
@@ -115,8 +116,24 @@ class PandaArm {
      * 'jumps' in IK solutions).
      */
     void cartesianMovement(const geometry_msgs::Pose &POSE,
-                           const double &STEP = 0.01,
-                           const double &JUMP_THRESHOLD = 0.0);
+                           const double STEP = 0.01,
+                           const double JUMP_THRESHOLD = 0.0);
+
+
+    /**
+     * @brief Save in data folder the current pose.
+     *
+     * @param POSE_NAME pose name.
+     */
+    void savePose(const std::string &POSE_NAME = "current");
+
+
+    /**
+     * @brief Get from data folder the Pose selected and go to it.
+     *
+     * @param POSE_NAME pose name.
+     */
+    void gotoPose(const std::string &POSE_NAME);
 };
 
 }  // namespace panda_controller

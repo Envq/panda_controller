@@ -66,6 +66,15 @@ include_directories(
     ${YAML_INCLUDE_DIRS}
 )
 
+
+SET(SOURCES
+    ${PROJECT_SOURCE_DIR}/src/utils/colors.cpp
+    ${PROJECT_SOURCE_DIR}/src/panda_controller/data_manager.cpp
+    ${PROJECT_SOURCE_DIR}/src/panda_controller/panda_arm.cpp
+    ${PROJECT_SOURCE_DIR}/src/panda_controller/panda_gripper.cpp
+    ${PROJECT_SOURCE_DIR}/src/panda_controller/panda_scene.cpp
+)
+
 # set(TASK console)
 # add_executable(${TASK} src/${TASK}.cpp
 #     src/panda_controller/panda_interface.cpp)
@@ -101,10 +110,5 @@ include_directories(
 
 
 set(TASK panda_test)
-add_executable(${TASK} src/${TASK}.cpp
-    src/panda_controller/colors.cpp
-    # src/panda_controller/data_manager.cpp
-    src/panda_controller/panda_arm.cpp
-    src/panda_controller/panda_gripper.cpp
-    src/panda_controller/panda_scene.cpp)
+add_executable(${TASK} src/${TASK}.cpp ${SOURCES})
 target_link_libraries(${TASK} ${catkin_LIBRARIES} yaml-cpp)
