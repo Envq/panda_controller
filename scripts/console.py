@@ -56,8 +56,8 @@ def help():
     print_col("   convert 'roll' 'pitch' 'yaw'", COLOR_HELP)
 
     print_col("[data:]", COLOR_HELP)
+    print_col("   reset scene", COLOR_HELP)
     print_col("   scene 'scene_name'", COLOR_HELP)
-    print_col("   scene reset", COLOR_HELP)
     print_col("   save 'tcp_pose_name'", COLOR_HELP)
     print_col("   goto 'tcp_pose_name'", COLOR_HELP)
 
@@ -127,6 +127,9 @@ def main():
                 print("Custom Pose: ", custom_pose)
                 print_col("   Success? {}".format(panda.moveArmPoseTCP(custom_pose)), COLOR_SUCCESS)
             
+            elif (command == "reset scene"):
+                panda.resetScene()
+
             else:
                 cmd = command.split(" ")
                 cmd = list(filter(lambda e: e != '', cmd))
@@ -148,12 +151,10 @@ def main():
                     else:
                         print_col("   Command not valid", COLOR_WARN)
 
+
                 elif cmd[0] == 'scene':
                     if len(cmd) == 2:
-                        if cmd[1] == 'reset':
-                            panda.resetScene()
-                        else:
-                            print_col("   Success? {}".format(panda.loadScene(cmd[1])), COLOR_SUCCESS)
+                        print_col("   Success? {}".format(panda.loadScene(cmd[1])), COLOR_SUCCESS)
                     else:
                         print_col("   Command not valid", COLOR_WARN)
 
