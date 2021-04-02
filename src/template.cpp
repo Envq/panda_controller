@@ -1,7 +1,10 @@
-#include <iostream>
+// ROS and Moveit
 #include <ros/ros.h>
-#include <string>
 
+// C++
+#include <iostream>
+
+// Custom
 #include "panda_controller/exceptions.hpp"
 #include "panda_controller/panda_arm.hpp"
 #include "panda_controller/panda_gripper.hpp"
@@ -9,14 +12,17 @@
 #include "utils/colors.hpp"
 
 
-// CONFIGS ====================================================================
-#define FG_COLOR Colors::FG_BLUE
-#define BG_COLOR Colors::BG_DEFAULT
-
-
 
 // USING NAMESPACE ============================================================
 using namespace panda_controller;
+
+
+
+// CONFIGS== ==================================================================
+namespace {
+auto FG_COLOR = Colors::FG_BLUE;
+auto BG_COLOR = Colors::BG_DEFAULT;
+}  // namespace
 
 
 
@@ -42,13 +48,8 @@ int main(int argc, char **argv) {
         auto gripper = PandaGripper(false);
         auto scene = PandaScene();
 
-        ROS_INFO("load pp scene");
-        scene.setScene("pp");
-        ros::Duration(2.0).sleep();
 
-        ROS_INFO("reset scene");
-        scene.resetScene();
-        ros::Duration(0.5).sleep();
+        // Write your code here
 
     } catch (const PandaControllerErr &err) {
         ROS_FATAL_STREAM(get_err_msg(NAME, err.what()));
