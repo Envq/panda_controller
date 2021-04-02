@@ -3,7 +3,8 @@
 // ROS and Moveit
 #include <geometry_msgs/Pose.h>
 #include <moveit/move_group_interface/move_group_interface.h>
-#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <tf2/LinearMath/Quaternion.h>            //tf2::Quaternion
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>  //tf2::conversion
 
 // Custom
 #include "panda_controller/data_manager.hpp"
@@ -53,7 +54,7 @@ class PandaArm {
      *
      * @return std::vector<double> vector of joints value
      */
-    std::vector<double> getArmJoints();
+    std::vector<double> getJoints();
 
 
     /**
@@ -63,65 +64,87 @@ class PandaArm {
      * @param ADJUST_IN_BOUNDS If the specified values exceed the joint limits,
      * the maximum bounds are assumed instead.
      */
-    void moveArmJoints(const std::vector<double> &JOINTS,
-                       const bool ADJUST_IN_BOUNDS = false);
+    void moveToJoints(const std::vector<double> &JOINTS,
+                      const bool ADJUST_IN_BOUNDS = false);
 
 
     /**
      * @brief Move the arm in 'Ready' Pose.
      *
      */
-    void moveArmReady();
+    void moveToReady();
 
 
     /**
-     * @brief Get the current Pose.
+     * @brief Get the current Pose of the TCP (tool center point).
      *
      * @return geometry_msgs::Pose The Pose object of current pose.
      */
-    geometry_msgs::Pose getArmPose();
+    geometry_msgs::Pose getPose();
 
 
     /**
-     * @brief Move the arm in the specified pose.
+     * @brief Move the TCP (tool center point) in this pose.
      *
      * @param POSE The pose where to go.
      */
-    void moveArmPose(const geometry_msgs::Pose &POSE);
+    void moveToPose(const geometry_msgs::Pose &POSE);
 
 
     /**
-     * @brief Move the arm in cartesian path with waypoints.
+     * @brief move the TCP (tool center point) relative current pose.
+     *
+     * @param X offset on X axis.
+     * @param Y offset on Y axis.
+     * @param Z offset on Z axis.
+     */
+    void relativeMovePos(const double X, const double Y, const double Z);
+
+
+    /**
+     * @brief move the TCP (tool center point) relative current pose (in
+     * degree).
+     *
+     * @param ROLL offset around X axis.
+     * @param PITCH offset around Y axis.
+     * @param YAW offset around Z axis.
+     */
+    void relativeMoveRPY(const double ROLL, const double PITCH,
+                         const double YAW);
+
+
+    /**
+     * @brief Move the TCP (tool center point) through the waypoints.
      *
      * @param WAYPOINTS Poses that the Cartesian path must follow.
-     * @param STEP The step size of at most eef_step meters between end
+     * @param EEF_STEP The step size of at most eef_step meters between end
      * effector. configurations of consecutive points in the result trajectory.
      * @param JUMP_THRESHOLD No more than jump_threshold is allowed as change in
      * distance in the configuration space of the robot (this is to prevent
      * 'jumps' in IK solutions).
      */
-    void cartesianMovement(const std::vector<geometry_msgs::Pose> &WAYPOINTS,
-                           const double STEP = 0.01,
-                           const double JUMP_THRESHOLD = 0.0);
+    void waypointsMove(const std::vector<geometry_msgs::Pose> &WAYPOINTS,
+                       const double EEF_STEP = 0.01,
+                       const double JUMP_THRESHOLD = 0.0);
 
 
     /**
-     * @brief Move the arm in cartesian path with target point.
+     * @brief Move the TCP (tool center point) linearly towards the pose.
      *
      * @param POSE The target pose.
-     * @param STEP The step size of at most eef_step meters between end
+     * @param EEF_STEP The step size of at most eef_step meters between end
      * effector. configurations of consecutive points in the result trajectory.
      * @param JUMP_THRESHOLD No more than jump_threshold is allowed as change in
      * distance in the configuration space of the robot (this is to prevent
      * 'jumps' in IK solutions).
      */
-    void cartesianMovement(const geometry_msgs::Pose &POSE,
-                           const double STEP = 0.01,
-                           const double JUMP_THRESHOLD = 0.0);
+    void linearMove(const geometry_msgs::Pose &POSE,
+                    const double EEF_STEP = 0.01,
+                    const double JUMP_THRESHOLD = 0.0);
 
 
     /**
-     * @brief Save in data folder the current pose.
+     * @brief Save in data folder the current TCP (tool center point) pose.
      *
      * @param POSE_NAME pose name.
      */
@@ -129,11 +152,11 @@ class PandaArm {
 
 
     /**
-     * @brief Get from data folder the Pose selected and go to it.
+     * @brief Move the TCP (tool center point) in the saved POSE_NAME .
      *
      * @param POSE_NAME pose name.
      */
-    void gotoPose(const std::string &POSE_NAME);
+    void moveToPose(const std::string &POSE_NAME);
 };
 
 }  // namespace panda_controller

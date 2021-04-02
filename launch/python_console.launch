@@ -1,6 +1,6 @@
 <launch>
 
-      <node name="console_node" 
+      <node name="python_console_node" 
             pkg="panda_controller" 
             type="console.py" 
             respawn="false" 

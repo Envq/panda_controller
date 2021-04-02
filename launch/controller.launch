@@ -1,16 +1,15 @@
 <launch>
 
-  <include file="$(find panda_moveit_config)/launch/panda_control_moveit_rviz.launch">
-    <arg name="robot_ip" value="192.168.1.2"/>
-    <arg name="load_gripper" value="true"/>
-  </include>
+    <include file="$(find panda_moveit_config)/launch/panda_control_moveit_rviz.launch">
+        <arg name="robot_ip" value="192.168.1.2"/>
+        <arg name="load_gripper" value="true"/>
+    </include>
 
-
-  <!-- Note: args is x y z yaw pitch roll -->
-  <!-- <node pkg="tf2_ros" 
-          type="static_transform_publisher" 
-          name="tcp_broadcaster" 
-          args="0.0 0.0 0.1035  -0.7853981633974483 0.0 3.141592653589793 panda_link8 tcp" 
-  /> -->
+    <!-- Note: args is x y z yaw pitch roll -->
+    <node pkg="tf2_ros" 
+            type="static_transform_publisher" 
+            name="tcp_broadcaster" 
+            args="0.0 0.0 0.1035  -0.7853981633974483 0.0 3.141592653589793 panda_link8 tcp" 
+    />
 
 </launch>

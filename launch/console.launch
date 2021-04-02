@@ -1,0 +1,31 @@
+<launch>
+
+      <node name="console_node" 
+            pkg="panda_controller" 
+            type="console" 
+            respawn="false" 
+            output="screen">
+
+
+            <!-- gripper -->
+            <param name="real_robot" type="bool" value="false"/>
+
+            <param name="gripper_speed" type="double" value="0.5"/>
+
+            <param name="grasp_speed" type="double" value="0.5"/>
+            <param name="grasp_force" type="double" value="20.0"/>
+            <param name="grasp_epsilon_inner" type="double" value="0.02"/>
+            <param name="grasp_epsilon_outer" type="double" value="0.02"/>
+            
+
+            <!-- arm-->
+            <param name="arm_adjust_joints" type="bool" value="false"/>
+            <param name="arm_velocity_factor" type="double" value="0.1"/>
+
+
+            <!-- cartesian move -->
+            <param name="eef_step" type="double" value="0.01"/>
+            <param name="jump_threshold" type="double" value="0.0"/>
+      </node>
+
+</launch>
