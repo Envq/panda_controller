@@ -18,11 +18,9 @@ using namespace panda_controller;
 
 
 
-// CONFIGS== ==================================================================
-namespace {
+// CONFIGS ====================================================================
 auto FG_COLOR = Colors::FG_BLUE;
 auto BG_COLOR = Colors::BG_DEFAULT;
-}  // namespace
 
 
 
