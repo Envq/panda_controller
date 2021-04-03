@@ -23,9 +23,9 @@
             <param name="arm_velocity_factor" type="double" value="0.1"/>
 
 
-            <!-- cartesian move -->
+            <!-- linear/waypoints move -->
             <param name="eef_step" type="double" value="0.01"/>
-            <param name="jump_threshold" type="double" value="0.0"/>
+            <param name="jump_threshold" type="double" value="0.00"/>
       </node>
 
 </launch>

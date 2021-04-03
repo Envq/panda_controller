@@ -6,7 +6,8 @@
 #include <tf2/LinearMath/Quaternion.h>  //tf2::Quaternion
 
 // BOOST
-#include <boost/algorithm/string.hpp>  // split()
+#include <boost/algorithm/string.hpp>  // split(), erase_all()
+#include <boost/lexical_cast.hpp>
 #include <boost/shared_ptr.hpp>
 
 // Custom
@@ -37,36 +38,6 @@ auto CHECK_COLOR = Colors::FG_BLACK_BRIGHT;
 
 
 // FUNCTIONS ==================================================================
-// Check if a string is a number
-bool is_number(const std::string &str) {
-    // Check if is empty
-    if (str.empty())
-        return false;
-
-    // Check if the first char is correct
-    if (str.front() == '.' || (str.front() == '-' && str.size() == 1))
-        return false;
-
-    // Check if first and last char are correct
-    if (!std::isdigit(str.back()) ||
-        (str.back() != '-' && !std::isdigit(str.back())))
-        return false;
-
-    // Check the rest
-    bool point_finded = false;
-    for (size_t i = 1; i < str.size() - 1; i++) {
-        if (!std::isdigit(str[i])) {
-            // Check point symbol
-            if (str[i] == '.' && !point_finded)
-                point_finded = true;
-            else
-                return false;
-        }
-    }
-    return true;
-}
-
-
 // Print commands available
 void print_help() {
     std::stringstream help;
@@ -176,9 +147,18 @@ int main(int argc, char **argv) {
             std::getline(std::cin, command);
             std::cout << Colors::RESET;
 
-            // Split of the command string
+            // Command parsing
             std::vector<std::string> cmd_parts;
-            boost::split(cmd_parts, command, [](char c) { return c == ' '; });
+            boost::erase_all(command, ",");
+            boost::split(cmd_parts, command, boost::is_any_of(" "),
+                         boost::token_compress_on);
+            if (cmd_parts[cmd_parts.size() - 1] == "")
+                cmd_parts.pop_back();
+
+            // for (const auto &e : cmd_parts) {
+            //     ROS_INFO_STREAM(e);
+            // }
+
 
             try {
                 // Check if there is a command
@@ -200,10 +180,9 @@ int main(int argc, char **argv) {
 
 
                 } else if (cmd_parts[0] == "set") {
-                    if ((cmd_parts.size() == 3 && cmd_parts[1] == "velocity" &&
-                         is_number(cmd_parts[2]))) {
+                    if (cmd_parts.size() == 3 && cmd_parts[1] == "velocity") {
                         arm.setMaxVelocityScalingFactor(
-                            std::stof(cmd_parts[2]));
+                            boost::lexical_cast<double>(cmd_parts[2]));
                     } else
                         throw std::invalid_argument(command);
 
@@ -248,7 +227,7 @@ int main(int argc, char **argv) {
                         str << "[";
                         for (size_t i = 0; i < joints.size() - 1; i++)
                             str << joints[i] << ", ";
-                        str << joints[joints.size()] << "]";
+                        str << joints[joints.size() - 1] << "]";
                         ROS_COL_INFO(CMD3_COLOR, "Current joints:\n",
                                      str.str());
 
@@ -270,41 +249,52 @@ int main(int argc, char **argv) {
 
 
                 } else if (cmd_parts[0] == "move") {
-                    if (cmd_parts.size() == 9 && is_number(cmd_parts[2]) &&
-                        is_number(cmd_parts[3]) && is_number(cmd_parts[4]) &&
-                        is_number(cmd_parts[5]) && is_number(cmd_parts[6]) &&
-                        is_number(cmd_parts[7]) && is_number(cmd_parts[8])) {
+                    if (cmd_parts.size() == 9) {
                         if (cmd_parts[1] == "joints") {
                             std::vector<double> joints = {
-                                std::stof(cmd_parts[2]),
-                                std::stof(cmd_parts[3]),
-                                std::stof(cmd_parts[4]),
-                                std::stof(cmd_parts[5]),
-                                std::stof(cmd_parts[6]),
-                                std::stof(cmd_parts[7]),
-                                std::stof(cmd_parts[8])};
+                                boost::lexical_cast<double>(cmd_parts[2]),
+                                boost::lexical_cast<double>(cmd_parts[3]),
+                                boost::lexical_cast<double>(cmd_parts[4]),
+                                boost::lexical_cast<double>(cmd_parts[5]),
+                                boost::lexical_cast<double>(cmd_parts[6]),
+                                boost::lexical_cast<double>(cmd_parts[7]),
+                                boost::lexical_cast<double>(cmd_parts[8])};
                             arm.moveToJoints(joints, ARM_ADJUST_JOINTS);
 
                         } else if (cmd_parts[1] == "pose") {
                             geometry_msgs::Pose pose;
-                            pose.position.x = std::stof(cmd_parts[2]);
-                            pose.position.y = std::stof(cmd_parts[3]);
-                            pose.position.z = std::stof(cmd_parts[4]);
-                            pose.orientation.x = std::stof(cmd_parts[5]);
-                            pose.orientation.y = std::stof(cmd_parts[6]);
-                            pose.orientation.z = std::stof(cmd_parts[7]);
-                            pose.orientation.w = std::stof(cmd_parts[8]);
+                            pose.position.x =
+                                boost::lexical_cast<double>(cmd_parts[2]);
+                            pose.position.y =
+                                boost::lexical_cast<double>(cmd_parts[3]);
+                            pose.position.z =
+                                boost::lexical_cast<double>(cmd_parts[4]);
+                            pose.orientation.x =
+                                boost::lexical_cast<double>(cmd_parts[5]);
+                            pose.orientation.y =
+                                boost::lexical_cast<double>(cmd_parts[6]);
+                            pose.orientation.z =
+                                boost::lexical_cast<double>(cmd_parts[7]);
+                            pose.orientation.w =
+                                boost::lexical_cast<double>(cmd_parts[8]);
                             arm.moveToPose(pose);
 
                         } else if (cmd_parts[1] == "linear") {
                             geometry_msgs::Pose pose;
-                            pose.position.x = std::stof(cmd_parts[2]);
-                            pose.position.y = std::stof(cmd_parts[3]);
-                            pose.position.z = std::stof(cmd_parts[4]);
-                            pose.orientation.x = std::stof(cmd_parts[5]);
-                            pose.orientation.y = std::stof(cmd_parts[6]);
-                            pose.orientation.z = std::stof(cmd_parts[7]);
-                            pose.orientation.w = std::stof(cmd_parts[8]);
+                            pose.position.x =
+                                boost::lexical_cast<double>(cmd_parts[2]);
+                            pose.position.y =
+                                boost::lexical_cast<double>(cmd_parts[3]);
+                            pose.position.z =
+                                boost::lexical_cast<double>(cmd_parts[4]);
+                            pose.orientation.x =
+                                boost::lexical_cast<double>(cmd_parts[5]);
+                            pose.orientation.y =
+                                boost::lexical_cast<double>(cmd_parts[6]);
+                            pose.orientation.z =
+                                boost::lexical_cast<double>(cmd_parts[7]);
+                            pose.orientation.w =
+                                boost::lexical_cast<double>(cmd_parts[8]);
                             arm.linearMove(pose);
 
                         } else
@@ -314,17 +304,18 @@ int main(int argc, char **argv) {
 
 
                 } else if (cmd_parts[0] == "rel") {
-                    if (cmd_parts.size() == 5 && is_number(cmd_parts[2]) &&
-                        is_number(cmd_parts[3]) && is_number(cmd_parts[4])) {
+                    if (cmd_parts.size() == 5) {
                         if (cmd_parts[1] == "pos") {
-                            arm.relativeMovePos(std::stof(cmd_parts[2]),
-                                                std::stof(cmd_parts[3]),
-                                                std::stof(cmd_parts[4]));
+                            arm.relativeMovePos(
+                                boost::lexical_cast<double>(cmd_parts[2]),
+                                boost::lexical_cast<double>(cmd_parts[3]),
+                                boost::lexical_cast<double>(cmd_parts[4]));
 
                         } else if (cmd_parts[1] == "rpy") {
-                            arm.relativeMoveRPY(std::stof(cmd_parts[2]),
-                                                std::stof(cmd_parts[3]),
-                                                std::stof(cmd_parts[4]));
+                            arm.relativeMoveRPY(
+                                boost::lexical_cast<double>(cmd_parts[2]),
+                                boost::lexical_cast<double>(cmd_parts[3]),
+                                boost::lexical_cast<double>(cmd_parts[4]));
 
                         } else
                             throw std::invalid_argument(command);
@@ -333,13 +324,13 @@ int main(int argc, char **argv) {
 
 
                 } else if (cmd_parts[0] == "convert") {
-                    if (cmd_parts.size() == 5 && is_number(cmd_parts[1]) &&
-                        is_number(cmd_parts[2]) && is_number(cmd_parts[3]) &&
-                        is_number(cmd_parts[4])) {
+                    if (cmd_parts.size() == 5) {
                         // Get quaternion
                         tf2::Quaternion quat = {
-                            std::stof(cmd_parts[1]), std::stof(cmd_parts[2]),
-                            std::stof(cmd_parts[3]), std::stof(cmd_parts[4])};
+                            boost::lexical_cast<double>(cmd_parts[1]),
+                            boost::lexical_cast<double>(cmd_parts[2]),
+                            boost::lexical_cast<double>(cmd_parts[3]),
+                            boost::lexical_cast<double>(cmd_parts[4])};
                         // Convert into RPY
                         double roll, pitch, yaw;
                         tf2::Matrix3x3 matrix(quat);
@@ -353,16 +344,12 @@ int main(int argc, char **argv) {
                         ROS_COL_INFO(CMD3_COLOR,
                                      "Convert into Eular RPY (Radian):\n",
                                      str.str());
-
-                    } else if (cmd_parts.size() == 4 &&
-                               is_number(cmd_parts[1]) &&
-                               is_number(cmd_parts[2]) &&
-                               is_number(cmd_parts[3])) {
+                    } else if (cmd_parts.size() == 4) {
                         // Get RPY
                         tf2::Quaternion quat;
-                        quat.setRPY(std::stof(cmd_parts[1]),
-                                    std::stof(cmd_parts[2]),
-                                    std::stof(cmd_parts[3]));
+                        quat.setRPY(boost::lexical_cast<double>(cmd_parts[1]),
+                                    boost::lexical_cast<double>(cmd_parts[2]),
+                                    boost::lexical_cast<double>(cmd_parts[3]));
                         // Create string
                         std::stringstream str;
                         str << "[";
@@ -381,72 +368,68 @@ int main(int argc, char **argv) {
                     if (cmd_parts.size() == 2) {
                         if (cmd_parts[1] == "homing") {
                             gripper.homing();
+
                         } else if (cmd_parts[1] == "width") {
                             ROS_COL_INFO(CMD3_COLOR, "gripper width:\n",
                                          gripper.getWidth());
-                        } else if (is_number(cmd_parts[1])) {
-                            gripper.move(std::stod(cmd_parts[1]),
-                                         GRIPPER_SPEED);
-                        } else
-                            throw std::invalid_argument(command);
 
-                    } else if (cmd_parts.size() == 3 &&
-                               is_number(cmd_parts[1]) &&
-                               is_number(cmd_parts[2])) {
-                        gripper.move(std::stod(cmd_parts[1]),
-                                     std::stod(cmd_parts[2]));
+                        } else {
+                            gripper.move(
+                                boost::lexical_cast<double>(cmd_parts[1]),
+                                GRIPPER_SPEED);
+                        }
+
+                    } else if (cmd_parts.size() == 3) {
+                        gripper.move(boost::lexical_cast<double>(cmd_parts[1]),
+                                     boost::lexical_cast<double>(cmd_parts[2]));
+
                     } else
                         throw std::invalid_argument(command);
+
+
                 } else if (cmd_parts[0] == "grasp") {
-                    if (cmd_parts.size() == 2 && is_number(cmd_parts[1])) {
-                        gripper.grasp(std::stod(cmd_parts[1]), GRASP_SPEED,
+                    if (cmd_parts.size() == 2) {
+                        gripper.grasp(boost::lexical_cast<double>(cmd_parts[1]),
+                                      GRASP_SPEED, GRASP_FORCE,
+                                      GRASP_EPSILON_INNER, GRASP_EPSILON_OUTER);
+
+                    } else if (cmd_parts.size() == 3) {
+                        gripper.grasp(boost::lexical_cast<double>(cmd_parts[1]),
+                                      boost::lexical_cast<double>(cmd_parts[2]),
                                       GRASP_FORCE, GRASP_EPSILON_INNER,
                                       GRASP_EPSILON_OUTER);
 
-                    } else if (cmd_parts.size() == 3 &&
-                               is_number(cmd_parts[1]) &&
-                               is_number(cmd_parts[2])) {
-                        gripper.grasp(std::stod(cmd_parts[1]),
-                                      std::stod(cmd_parts[2]), GRASP_FORCE,
+                    } else if (cmd_parts.size() == 4) {
+                        gripper.grasp(boost::lexical_cast<double>(cmd_parts[1]),
+                                      boost::lexical_cast<double>(cmd_parts[2]),
+                                      boost::lexical_cast<double>(cmd_parts[3]),
                                       GRASP_EPSILON_INNER, GRASP_EPSILON_OUTER);
 
-                    } else if (cmd_parts.size() == 4 &&
-                               is_number(cmd_parts[1]) &&
-                               is_number(cmd_parts[2]) &&
-                               is_number(cmd_parts[3])) {
-                        gripper.grasp(std::stod(cmd_parts[1]),
-                                      std::stod(cmd_parts[2]),
-                                      std::stod(cmd_parts[3]),
-                                      GRASP_EPSILON_INNER, GRASP_EPSILON_OUTER);
+                    } else if (cmd_parts.size() == 5) {
+                        gripper.grasp(boost::lexical_cast<double>(cmd_parts[1]),
+                                      boost::lexical_cast<double>(cmd_parts[2]),
+                                      boost::lexical_cast<double>(cmd_parts[3]),
+                                      boost::lexical_cast<double>(cmd_parts[4]),
+                                      GRASP_EPSILON_OUTER);
 
-                    } else if (cmd_parts.size() == 5 &&
-                               is_number(cmd_parts[1]) &&
-                               is_number(cmd_parts[2]) &&
-                               is_number(cmd_parts[3]) &&
-                               is_number(cmd_parts[4])) {
+                    } else if (cmd_parts.size() == 6) {
                         gripper.grasp(
-                            std::stod(cmd_parts[1]), std::stod(cmd_parts[2]),
-                            std::stod(cmd_parts[3]), std::stod(cmd_parts[4]),
-                            GRASP_EPSILON_OUTER);
-
-                    } else if (cmd_parts.size() == 6 &&
-                               is_number(cmd_parts[1]) &&
-                               is_number(cmd_parts[2]) &&
-                               is_number(cmd_parts[3]) &&
-                               is_number(cmd_parts[4]) &&
-                               is_number(cmd_parts[5])) {
-                        gripper.grasp(
-                            std::stod(cmd_parts[1]), std::stod(cmd_parts[2]),
-                            std::stod(cmd_parts[3]), std::stod(cmd_parts[4]),
-                            std::stod(cmd_parts[5]));
+                            boost::lexical_cast<double>(cmd_parts[1]),
+                            boost::lexical_cast<double>(cmd_parts[2]),
+                            boost::lexical_cast<double>(cmd_parts[3]),
+                            boost::lexical_cast<double>(cmd_parts[4]),
+                            boost::lexical_cast<double>(cmd_parts[5]));
                     } else
                         throw std::invalid_argument(command);
                 } else
                     throw std::invalid_argument(command);
-            } catch (const std::invalid_argument &e) {
-                ROS_WARN_STREAM("invalid command: " << e.what());
-            } catch (const DataManagerErr &e) {
-                ROS_WARN_STREAM("invalid command: " << e.what());
+
+            } catch (const std::invalid_argument &err) {
+                ROS_WARN_STREAM("invalid command: " << command);
+            } catch (boost::bad_lexical_cast &err) {
+                ROS_WARN_STREAM("invalid command: " << command);
+            } catch (const PandaControllerErr &err) {
+                ROS_WARN_STREAM(err.what());
             }
         }
     } catch (const PandaControllerErr &err) {

@@ -3,7 +3,7 @@
 # ROS and Moveit
 from moveit_commander.exception import MoveItCommanderException
 import moveit_commander
-from geometry_msgs.msg import PoseStamped, Pose
+from geometry_msgs.msg import Pose
 
 # Other
 from math import pi
@@ -81,15 +81,14 @@ class PandaArm():
         """[px, py, pz, ox, oy, oz, ow]"""
         if len(goal_pose) != 7:
             return False
-        target = PoseStamped()
-        target.header.frame_id = "panda_link0"
-        target.pose.position.x = goal_pose[0]
-        target.pose.position.y = goal_pose[1]
-        target.pose.position.z = goal_pose[2]
-        target.pose.orientation.x = goal_pose[3]
-        target.pose.orientation.y = goal_pose[4]
-        target.pose.orientation.z = goal_pose[5]
-        target.pose.orientation.w = goal_pose[6]
+        target = Pose()
+        target.position.x = goal_pose[0]
+        target.position.y = goal_pose[1]
+        target.position.z = goal_pose[2]
+        target.orientation.x = goal_pose[3]
+        target.orientation.y = goal_pose[4]
+        target.orientation.z = goal_pose[5]
+        target.orientation.w = goal_pose[6]
         try:
             self.arm.set_pose_target(target)
             self.arm.plan()
@@ -178,24 +177,40 @@ def test_tf(arm):
         from utils import quaternion_equals 
 
         # BROADCAST BASE-TO-TCP TRANSFORMATION 
-        broadcaster = tf2_ros.StaticTransformBroadcaster()
-        static_transformStamped = TransformStamped()
-        static_transformStamped.header.stamp = rospy.Time.now()
-        static_transformStamped.header.frame_id = "panda_link8"
-        static_transformStamped.child_frame_id = "tcp"
-        static_transformStamped.transform.translation.x = 0.0
-        static_transformStamped.transform.translation.y = 0.0
-        static_transformStamped.transform.translation.z = 0.1035
-        static_transformStamped.transform.rotation.x = 0.923879533
-        static_transformStamped.transform.rotation.y = -0.382683432
-        static_transformStamped.transform.rotation.z = 0.0
-        static_transformStamped.transform.rotation.w = 0.0
-        broadcaster.sendTransform(static_transformStamped)
+        # broadcaster = tf2_ros.StaticTransformBroadcaster()
+        # static_transformStamped = TransformStamped()
+        # static_transformStamped.header.stamp = rospy.Time.now()
+        # static_transformStamped.header.frame_id = "panda_link8"
+        # static_transformStamped.child_frame_id = "tcp"
+        # static_transformStamped.transform.translation.x = 0.0
+        # static_transformStamped.transform.translation.y = 0.0
+        # static_transformStamped.transform.translation.z = 0.1035
+        # static_transformStamped.transform.rotation.x = 0.923879533
+        # static_transformStamped.transform.rotation.y = -0.382683432
+        # static_transformStamped.transform.rotation.z = 0.0
+        # static_transformStamped.transform.rotation.w = 0.0
+        # broadcaster.sendTransform(static_transformStamped)
 
         # CREATE TF2 LISTENER
         tf_buffer = tf2_ros.Buffer()
         tf_listener = tf2_ros.TransformListener(tf_buffer)
         time.sleep(2)
+
+
+        # TESTO0
+        # generate current pose with TF2
+        world_to_tcp_listened = tf_buffer.lookup_transform("world", "tcp", rospy.Time())
+        world_to_tcp_tf2 = list()
+        world_to_tcp_tf2.append(world_to_tcp_listened.transform.translation.x)
+        world_to_tcp_tf2.append(world_to_tcp_listened.transform.translation.y)
+        world_to_tcp_tf2.append(world_to_tcp_listened.transform.translation.z)
+        world_to_tcp_tf2.append(world_to_tcp_listened.transform.rotation.x)
+        world_to_tcp_tf2.append(world_to_tcp_listened.transform.rotation.y)
+        world_to_tcp_tf2.append(world_to_tcp_listened.transform.rotation.z)
+        world_to_tcp_tf2.append(world_to_tcp_listened.transform.rotation.w)
+        print("current pose with TF2:")
+        print(world_to_tcp_tf2)
+
 
         # TEST1
         # generate transformations with TF2
@@ -352,12 +367,12 @@ if __name__ == '__main__':
         # Inizialize movegroupinterface
         arm = PandaArm(delay=1, velocity_factor=1.0)
 
-        # test_tf(arm)
+        test_tf(arm)
         # test_joints(arm)
         # test_flange(arm)
         # test_tcp(arm)
         # test_waypoints(arm)
-        test_wait(arm)
+        # test_wait(arm)
 
     except rospy.ROSInterruptException:
         print("ROS interrupted")

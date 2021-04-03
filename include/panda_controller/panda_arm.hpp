@@ -2,9 +2,17 @@
 
 // ROS and Moveit
 #include <geometry_msgs/Pose.h>
+#include <geometry_msgs/TransformStamped.h>
 #include <moveit/move_group_interface/move_group_interface.h>
+
+// TF2
 #include <tf2/LinearMath/Quaternion.h>            //tf2::Quaternion
+#include <tf2/convert.h>                          //tf2::conversion
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>  //tf2::conversion
+#include <tf2_ros/transform_listener.h>
+
+// BOOST
+#include <boost/shared_ptr.hpp>
 
 // Custom
 #include "panda_controller/data_manager.hpp"
@@ -32,13 +40,27 @@ const auto READY_JOINTS = std::vector<double>{
 class PandaArm {
   private:
     moveit::planning_interface::MoveGroupInterfacePtr _arm_ptr;
+    std::shared_ptr<tf2_ros::Buffer> _tf_buffer_ptr;
+    std::shared_ptr<tf2_ros::TransformListener> _tf_listener_ptr;
+    tf2::Transform _tcp_to_flange;
+
+
+    /**
+     * @brief get the world->Flange from the world->TCP.
+     *
+     * @param TCP_POSE TCP (tool center point) pose.
+     * @return geometry_msgs::Pose Flange pose.
+     */
+    geometry_msgs::Pose _getFlangeFromTCP(const geometry_msgs::Pose &TCP_POSE);
 
 
   public:
     /**
-     * @brief Construct a new PandaArm object.
+     * @brief Construct a new Panda Arm object
+     *
+     * @param DELAY the seconds of delay for load the TF2
      */
-    explicit PandaArm();
+    explicit PandaArm(const float DELAY = 1.0);
 
 
     /**
@@ -61,8 +83,8 @@ class PandaArm {
      * @brief Move the specified joint in radiants.
      *
      * @param JOINTS target joints value.
-     * @param ADJUST_IN_BOUNDS If the specified values exceed the joint limits,
-     * the maximum bounds are assumed instead.
+     * @param ADJUST_IN_BOUNDS If the specified values exceed the joint
+     * limits, the maximum bounds are assumed instead.
      */
     void moveToJoints(const std::vector<double> &JOINTS,
                       const bool ADJUST_IN_BOUNDS = false);
@@ -118,10 +140,11 @@ class PandaArm {
      *
      * @param WAYPOINTS Poses that the Cartesian path must follow.
      * @param EEF_STEP The step size of at most eef_step meters between end
-     * effector. configurations of consecutive points in the result trajectory.
-     * @param JUMP_THRESHOLD No more than jump_threshold is allowed as change in
-     * distance in the configuration space of the robot (this is to prevent
-     * 'jumps' in IK solutions).
+     * effector. configurations of consecutive points in the result
+     * trajectory.
+     * @param JUMP_THRESHOLD No more than jump_threshold is allowed as
+     * change in distance in the configuration space of the robot (this is
+     * to prevent 'jumps' in IK solutions).
      */
     void waypointsMove(const std::vector<geometry_msgs::Pose> &WAYPOINTS,
                        const double EEF_STEP = 0.01,
@@ -133,10 +156,11 @@ class PandaArm {
      *
      * @param POSE The target pose.
      * @param EEF_STEP The step size of at most eef_step meters between end
-     * effector. configurations of consecutive points in the result trajectory.
-     * @param JUMP_THRESHOLD No more than jump_threshold is allowed as change in
-     * distance in the configuration space of the robot (this is to prevent
-     * 'jumps' in IK solutions).
+     * effector. configurations of consecutive points in the result
+     * trajectory.
+     * @param JUMP_THRESHOLD No more than jump_threshold is allowed as
+     * change in distance in the configuration space of the robot (this is
+     * to prevent 'jumps' in IK solutions).
      */
     void linearMove(const geometry_msgs::Pose &POSE,
                     const double EEF_STEP = 0.01,
@@ -148,7 +172,7 @@ class PandaArm {
      *
      * @param POSE_NAME pose name.
      */
-    void savePose(const std::string &POSE_NAME = "current");
+    void savePose(const std::string &POSE_NAME = "last");
 
 
     /**
