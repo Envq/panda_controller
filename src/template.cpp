@@ -6,9 +6,7 @@
 
 // Custom
 #include "panda_controller/exceptions.hpp"
-#include "panda_controller/panda_arm.hpp"
-#include "panda_controller/panda_gripper.hpp"
-#include "panda_controller/panda_scene.hpp"
+#include "panda_controller/panda.hpp"
 #include "utils/colors.hpp"
 
 
@@ -42,12 +40,17 @@ int main(int argc, char **argv) {
 
     // Start Task
     try {
-        auto arm = PandaArm();
-        auto gripper = PandaGripper(false);
-        auto scene = PandaScene();
+        auto panda = Panda(false, 1.0);
+        auto arm = panda.getArm();
+        auto gripper = panda.getGripper();
+        auto scene = panda.getScene();
 
+        /*
+        **
+        **  Write your code here
+        **
+        */
 
-        // Write your code here
 
     } catch (const PandaControllerErr &err) {
         ROS_FATAL_STREAM(get_err_msg(CURRENT_FILE_NAME, err.what()));

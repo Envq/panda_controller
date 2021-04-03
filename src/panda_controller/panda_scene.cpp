@@ -9,11 +9,12 @@ namespace panda_controller {
 
 
 // CLASSES ====================================================================
-PandaScene::PandaScene() {
+PandaScene::PandaScene(const float DELAY) {
     // Init PlanningSceneInterface
     try {
         _scene_ptr.reset(
             new moveit::planning_interface::PlanningSceneInterface);
+        ros::Duration(DELAY).sleep();
 
     } catch (const std::runtime_error &err) {
         throw PandaSceneErr("PandaScene()",

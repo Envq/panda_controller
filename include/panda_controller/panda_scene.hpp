@@ -26,8 +26,9 @@ class PandaScene {
     /**
      * @brief Construct a new PandaScene object.
      *
+     * @param DELAY the seconds of delay for load the PlanningScene
      */
-    explicit PandaScene();
+    explicit PandaScene(const float DELAY);
 
 
     /**

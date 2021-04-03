@@ -29,7 +29,7 @@ namespace panda_controller {
 // CONFIGS ====================================================================
 /// @brief This namespace contains the configurations of this file.
 namespace panda_gripper {
-const double MIN_WIDTH = 0.00;
+constexpr double MIN_WIDTH = 0.00;
 constexpr double MAX_WIDTH = 0.08;
 const double MIN_FORCE = 0.01;
 const double MAX_FORCE = 50.0;
@@ -83,6 +83,7 @@ class PandaGripper {
 
   public:
     static constexpr double OPEN = panda_gripper::MAX_WIDTH;
+    static constexpr double CLOSE = panda_gripper::MIN_WIDTH;
 
     /**
      * @brief Construct a new PandaGripper object.

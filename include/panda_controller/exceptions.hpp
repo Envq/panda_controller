@@ -72,6 +72,27 @@ class DataManagerErr : public PandaControllerErr {
     }
 };
 
+/// @brief Exceptions for data_manager.
+class PandaErr : public PandaControllerErr {
+  public:
+    /**
+     * @brief Construct a new PandaErr object with variadic
+     * template.
+     *
+     * @tparam Args
+     * @param args Each argument is divided by the DIVIDER (e.g.: \n-->).
+     */
+    template<typename... Args> PandaErr(Args &&... args) {
+        std::stringstream ss;
+        ss << "PandaErr()";
+        using expander = int[];
+        (void)expander{
+            0, (void(ss << exceptions::DIVISOR << std::forward<Args>(args)),
+                0)...};
+        _msg = ss.str();
+    }
+};
+
 /// @brief Exceptions for PandaArm.
 class PandaArmErr : public PandaControllerErr {
   public:
@@ -126,7 +147,7 @@ class PandaSceneErr : public PandaControllerErr {
      */
     template<typename... Args> PandaSceneErr(Args &&... args) {
         std::stringstream ss;
-        ss << "DataManagerErr()";
+        ss << "PandaSceneErr()";
         using expander = int[];
         (void)expander{
             0, (void(ss << exceptions::DIVISOR << std::forward<Args>(args)),
