@@ -1,17 +1,19 @@
 <launch>
 
-      <node name="console_node" 
+      <node name="pick_and_place_node" 
             pkg="panda_controller" 
-            type="console" 
+            type="pick_and_place" 
             respawn="false" 
             output="screen">
 
 
             <!-- gripper -->
             <param name="real_robot"          type="bool" value="false"/>
+            <param name="gripper_homing"      type="bool" value="false"/>
 
             <param name="gripper_speed"       type="double" value="0.5"/>
 
+            <param name="grasp_width"         type="double" value="0.03"/>
             <param name="grasp_speed"         type="double" value="0.5"/>
             <param name="grasp_force"         type="double" value="20.0"/>
             <param name="grasp_epsilon_inner" type="double" value="0.02"/>
@@ -19,13 +21,23 @@
             
 
             <!-- arm-->
-            <param name="arm_adjust_joints"   type="bool" value="false"/>
             <param name="arm_velocity_factor" type="double" value="0.1"/>
 
 
             <!-- linear/waypoints move -->
             <param name="eef_step"       type="double" value="0.01"/>
             <param name="jump_threshold" type="double" value="0.00"/>
+
+
+            <!-- pick and place task -->
+            <param name="env_scene"       type="string" value="altair"/>
+            <param name="task_scene"      type="string" value="pick_and_place1"/>
+
+            <param name="pre_grasp_pose"  type="string" value="pre_grasp1"/>
+            <param name="object_pose"     type="string" value="object1"/>
+            <param name="post_grasp_pose" type="string" value="post_grasp1"/>
+            <param name="goal_pose"       type="string" value="goal1"/>
+            <param name="post_place_pose" type="string" value="post_place1"/>
       </node>
 
 </launch>

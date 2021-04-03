@@ -1,7 +1,0 @@
-<launch>
-    <node name="test_panda" pkg="panda_controller" 
-    type="test_panda" respawn="false" output="screen">
-        <param name="link" value="panda_link8"/>
-        <param name="mode" value="0"/>
-    </node>
-</launch>

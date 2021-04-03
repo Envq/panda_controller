@@ -38,11 +38,10 @@ std::shared_ptr<PandaScene> Panda::getScene() const {
 }
 
 
-void Panda::pick(const geometry_msgs::Pose &OBJ,
-                 const geometry_msgs::Pose &PRE_GRASP_APPROCH,
-                 const double &GRASP_WIDTH, const double &GRASP_FORCE,
-                 const double &GRASP_EPSILON_INNER,
-                 const double &GRASP_EPSILON_OUTER, const double &STEP,
+void Panda::pick(const geometry_msgs::Pose &PRE_GRASP_APPROCH,
+                 const geometry_msgs::Pose &OBJECT, const double &GRASP_WIDTH,
+                 const double &GRASP_FORCE, const double &GRASP_EPSILON_INNER,
+                 const double &GRASP_EPSILON_OUTER, const double &EEF_STEP,
                  const double &JUMP_THRESHOLD) {
     try {
         // Open gripper
@@ -52,7 +51,7 @@ void Panda::pick(const geometry_msgs::Pose &OBJ,
         _panda_arm_ptr->moveToPose(PRE_GRASP_APPROCH);
 
         // Move to pose
-        _panda_arm_ptr->linearMove(OBJ, STEP, JUMP_THRESHOLD);
+        _panda_arm_ptr->linearMove(OBJECT, EEF_STEP, JUMP_THRESHOLD);
 
         // Close gripper
         _panda_gripper_ptr->grasp(GRASP_WIDTH, GRASP_FORCE, GRASP_EPSILON_INNER,
@@ -67,13 +66,14 @@ void Panda::pick(const geometry_msgs::Pose &OBJ,
 }
 
 
-void Panda::place(const geometry_msgs::Pose &GOAL,
-                  const geometry_msgs::Pose &POST_GRASP_RETREAT,
+void Panda::place(const geometry_msgs::Pose &POST_GRASP_RETREAT,
+                  const geometry_msgs::Pose &GOAL,
                   const geometry_msgs::Pose &POST_PLACE_RETREAT,
-                  const double &STEP, const double &JUMP_THRESHOLD) {
+                  const double &EEF_STEP, const double &JUMP_THRESHOLD) {
     try {
         // Move to post-grasp-retrait pose
-        _panda_arm_ptr->linearMove(POST_GRASP_RETREAT, STEP, JUMP_THRESHOLD);
+        _panda_arm_ptr->linearMove(POST_GRASP_RETREAT, EEF_STEP,
+                                   JUMP_THRESHOLD);
 
         // Move arm
         _panda_arm_ptr->moveToPose(GOAL);
@@ -82,7 +82,8 @@ void Panda::place(const geometry_msgs::Pose &GOAL,
         _panda_gripper_ptr->move(PandaGripper::OPEN);
 
         // Move to post-place-retrait pose
-        _panda_arm_ptr->linearMove(POST_PLACE_RETREAT, STEP, JUMP_THRESHOLD);
+        _panda_arm_ptr->linearMove(POST_PLACE_RETREAT, EEF_STEP,
+                                   JUMP_THRESHOLD);
 
     } catch (PandaArmErr &e) {
         throw PandaErr("place()", e.what());

@@ -189,6 +189,15 @@ class PandaArm {
      * @param POSE_NAME pose name.
      */
     void moveToPose(const std::string &POSE_NAME);
+
+
+    /**
+     * @brief Get the TCP (tool center point) in the saved POSE_NAME .
+     *
+     * @param POSE_NAME pose name.
+     * @return geometry_msgs::Pose The Pose object in the saved POSE_NAME.
+     */
+    geometry_msgs::Pose getPose(const std::string &POSE_NAME);
 };
 
 }  // namespace panda_controller

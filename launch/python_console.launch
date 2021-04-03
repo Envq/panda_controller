@@ -7,7 +7,7 @@
             output="screen">
             
             <!-- parameters-->
-            <param name="real_robot" type="bool" value="false"/>
+            <param name="real_robot"          type="bool"   value="false"/>
             <param name="arm_velocity_factor" type="double" value="0.1"/>
 
             <!-- custom -->

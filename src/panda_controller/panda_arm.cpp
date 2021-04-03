@@ -270,4 +270,13 @@ void PandaArm::moveToPose(const std::string &POSE_NAME) {
     moveToPose(target);
 }
 
+
+geometry_msgs::Pose PandaArm::getPose(const std::string &POSE_NAME) {
+    try {
+        return load_pose(POSE_NAME);
+    } catch (const PandaArmErr &err) {
+        throw DataManagerErr("getPose()", err.what());
+    }
+}
+
 }  // namespace panda_controller

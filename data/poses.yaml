@@ -1,18 +1,52 @@
-pick1:
-  position:
-    x: 0.4070195700516106
-    y: -2.367681494438302e-16
-    z: 0.4902695582766445
-  orientation:
-    x: 0.9239556994702721
-    y: -0.3824994972760099
-    z: 8.144228554734631e-17
-    w: 1.362837152789433e-16
-place1:
+pre_grasp1:
   position:
     x: 0.5
     y: 0.0
-    z: 0.01
+    z: 0.20
+  orientation:
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+
+object1:
+  position:
+    x: 0.5
+    y: 0.0
+    z: 0.10
+  orientation:
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+    
+post_grasp1:
+  position:
+    x: 0.5
+    y: 0.0
+    z: 0.20
+  orientation:
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+    
+goal1:
+  position:
+    x: 0.5
+    y: 0.5
+    z: 0.30
+  orientation:
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+
+post_place1:
+  position:
+    x: 0.5
+    y: 0.5
+    z: 0.40
   orientation:
     x: 0.0
     y: 0.0
