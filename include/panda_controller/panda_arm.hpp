@@ -62,6 +62,14 @@ class PandaArm {
      */
     explicit PandaArm(const float DELAY = 1.0);
 
+    /**
+     * @brief Get the MoveGroupInterfacePtrobject. (Remember that this object is
+     * deleted along with this class)
+     *
+     * @return moveit::planning_interface::MoveGroupInterfacePtr move group
+     * "panda_arm"
+     */
+    moveit::planning_interface::MoveGroupInterfacePtr getMoveGroup();
 
     /**
      * @brief Set the maximum velocity scaling factor.

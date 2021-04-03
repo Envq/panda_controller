@@ -67,6 +67,11 @@ PandaArm::_getFlangeFromTCP(const geometry_msgs::Pose &TCP_POSE) {
 }
 
 
+moveit::planning_interface::MoveGroupInterfacePtr PandaArm::getMoveGroup() {
+    return _arm_ptr;
+}
+
+
 void PandaArm::setMaxVelocityScalingFactor(const float VELOCITY_FACTOR) {
     _arm_ptr->setMaxVelocityScalingFactor(VELOCITY_FACTOR);
 }
