@@ -72,15 +72,16 @@ SET(SOURCES
     ${PROJECT_SOURCE_DIR}/src/panda_controller/panda_arm.cpp
     ${PROJECT_SOURCE_DIR}/src/panda_controller/panda_gripper.cpp
     ${PROJECT_SOURCE_DIR}/src/panda_controller/panda_scene.cpp
+    ${PROJECT_SOURCE_DIR}/src/panda_controller/panda.cpp
 )
 
 set(TASK console)
 add_executable(${TASK} src/${TASK}.cpp ${SOURCES})
 target_link_libraries(${TASK} ${catkin_LIBRARIES} yaml-cpp)
 
-# set(TASK pick_and_place)
-# add_executable(${TASK} src/${TASK}.cpp ${SOURCES})
-# target_link_libraries(${TASK} ${catkin_LIBRARIES} yaml-cpp)
+set(TASK pick_and_place)
+add_executable(${TASK} src/${TASK}.cpp ${SOURCES})
+target_link_libraries(${TASK} ${catkin_LIBRARIES} yaml-cpp)
 
 # set(TASK teleop_listener)
 # add_executable(${TASK} src/${TASK}.cpp ${SOURCES})
