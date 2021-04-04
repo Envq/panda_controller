@@ -37,7 +37,7 @@ find_package(yaml-cpp REQUIRED)
 # MSGS ========================================================================
 add_message_files(
     FILES
-    teleop_panda.msg
+    panda_teleop.msg
   )
 
 generate_messages(
@@ -88,7 +88,7 @@ target_link_libraries(${TASK} ${catkin_LIBRARIES} yaml-cpp)
 # add_dependencies(${TASK} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 # target_link_libraries(${TASK} ${catkin_LIBRARIES} yaml-cpp)
 
-# set(TASK teleop_talker)
-# add_executable(${TASK} src/${TASK}.cpp ${SOURCES})
-# add_dependencies(${TASK} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-# target_link_libraries(${TASK} ${catkin_LIBRARIES} yaml-cpp)
+set(TASK teleop_talker)
+add_executable(${TASK} src/${TASK}.cpp ${SOURCES})
+add_dependencies(${TASK} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(${TASK} ${catkin_LIBRARIES} yaml-cpp)

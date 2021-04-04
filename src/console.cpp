@@ -1,4 +1,4 @@
-// ROS and Moveit
+// ROS
 #include <ros/ros.h>
 #include <tf2/LinearMath/Quaternion.h>  //tf2::Quaternion
 
@@ -83,7 +83,7 @@ void print_help() {
     help << "-----------------------------------------------\n";
     help << Colors::RESET;
 
-    ROS_COL_INFO(CMD3_COLOR, help.str());
+    ROS_INFO_STREAM(help.str());
 }
 
 

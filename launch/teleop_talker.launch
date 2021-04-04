@@ -1,20 +1,52 @@
 <launch>
-    <arg name="frequency" default="50"/>
-    <arg name="start_delta_position" default="0.05"/>
-    <arg name="start_delta_orientation" default="10"/>
-    <arg name="start_delta_gripper_width" default="0.01"/>
-    <arg name="resolution_position" default="0.01"/>
-    <arg name="resolution_orientation" default="10"/>
-    <arg name="resolution_gripper_width" default="0.005"/>
 
-    <node name="teleop_talker" pkg="panda_controller" 
-    type="teleop_talker" respawn="false" output="screen">
-        <param name="frequency" value="$(arg frequency)"/>
-        <param name="start_delta_position" value="$(arg start_delta_position)"/>
-        <param name="start_delta_orientation" value="$(arg start_delta_orientation)"/>
-        <param name="start_delta_gripper_width" value="$(arg start_delta_gripper_width)"/>
-        <param name="resolution_position" value="$(arg resolution_position)"/>
-        <param name="resolution_orientation" value="$(arg resolution_orientation)"/>
-        <param name="resolution_gripper_width" value="$(arg resolution_gripper_width)"/>
-    </node>
+      <node name="teleop_talker_node" 
+            pkg="panda_controller" 
+            type="teleop_talker" 
+            respawn="false" 
+            output="screen">
+
+            <!-- settings -->
+            <param name="frequency"               type="double" value="50"/>
+            <param name="start_delta_position"    type="double" value="0.05"/>
+            <param name="start_delta_orientation" type="double" value="10"/>
+            <param name="start_delta_gripper"     type="double" value="0.01"/>
+            
+            <param name="granularity_position"    type="double" value="0.01"/>
+            <param name="granularity_orientation" type="double" value="10"/>
+            <param name="granularity_gripper"     type="double" value="0.005"/>
+
+
+            <!-- key mapping -->
+            <param name="QUIT"           type="int" value="27"/>
+            <param name="HELP"           type="string" value="h"/>
+            <param name="MODE"           type="string" value="m"/>
+
+            <param name="X_POS"          type="string" value="w"/>
+            <param name="X_NEG"          type="string" value="s"/>
+            <param name="Y_POS"          type="string" value="a"/>
+            <param name="Y_NEG"          type="string" value="d"/>
+            <param name="Z_POS"          type="string" value="r"/>
+            <param name="Z_NEG"          type="string" value="f"/>
+            <param name="INC_POS"        type="string" value="e"/>
+            <param name="DEC_POS"        type="string" value="q"/>
+            <param name="READY"          type="string" value="h"/>
+
+            <param name="ROLL_POS"       type="string" value="d"/>
+            <param name="ROLL_NEG"       type="string" value="a"/>
+            <param name="PITCH_POS"      type="string" value="w"/>
+            <param name="PITCH_NEG"      type="string" value="s"/>
+            <param name="YAW_POS"        type="string" value="r"/>
+            <param name="YAW_NEG"        type="string" value="f"/>
+            <param name="INC_ORIE"       type="string" value="e"/>
+            <param name="DEC_ORIE"       type="string" value="q"/>
+
+            <param name="GRIP_HOMING"    type="string" value="h"/>
+            <param name="GRIP_GRASP"     type="string" value="s"/>
+            <param name="GRIP_WIDTH_POS" type="string" value="d"/>
+            <param name="GRIP_WIDTH_NEG" type="string" value="a"/>
+            <param name="INC_GRIP"       type="string" value="e"/>
+            <param name="DEC_GRIP"       type="string" value="q"/>
+      </node>
+
 </launch>

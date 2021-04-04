@@ -1,4 +1,4 @@
-// ROS and Moveit
+// ROS
 #include <ros/ros.h>
 
 // C++
