@@ -6,6 +6,9 @@
 #include <termios.h>
 #include <unistd.h>
 
+// BOOST
+#include <boost/lexical_cast.hpp>
+
 // Custom
 #include "panda_controller/exceptions.hpp"
 #include "panda_controller/panda.hpp"
@@ -60,6 +63,17 @@ int main(int argc, char **argv) {
     ROS_FCOL_INFO(FG_COLOR, BG_COLOR, "START NODE: ", CURRENT_FILE_NAME);
 
 
+    // DEBUG: check key pressed (27 == ESC)
+    // int debug_cmd;
+    // while (debug_cmd != 27) {
+    //     debug_cmd = getch();
+    //     ROS_WARN_STREAM("cmd: " << debug_cmd);
+    //     ros::Duration(0.1).sleep();
+    // }
+    // ros::shutdown();
+    // return 0;
+
+
     // Extract the parameters
     double FREQUENCY;
     double START_DELTA_POSITION, START_DELTA_ORIENTATION, START_DELTA_GRIPPER;
@@ -68,8 +82,7 @@ int main(int argc, char **argv) {
     int X_NEG, X_POS, Y_NEG, Y_POS, Z_NEG, Z_POS, DEC_POS, INC_POS;
     int ROLL_NEG, ROLL_POS, PITCH_NEG, PITCH_POS, YAW_NEG, YAW_POS, DEC_ORIE,
         INC_ORIE;
-    int GRIP_HOMING, GRIP_GRASP, GRIP_WIDTH_NEG, GRIP_WIDTH_POS, DEC_GRIP,
-        INC_GRIP;
+    int GR_HOMING, GR_GRASP, GR_W_NEG, GR_W_POS, DEC_GR, INC_GR;
     if (!(node.getParam("frequency", FREQUENCY) &&
           node.getParam("start_delta_position", START_DELTA_POSITION) &&
           node.getParam("start_delta_orientation", START_DELTA_ORIENTATION) &&
@@ -82,7 +95,7 @@ int main(int argc, char **argv) {
           node.getParam("X_NEG", X_NEG) && node.getParam("Y_POS", Y_POS) &&
           node.getParam("Y_NEG", Y_NEG) && node.getParam("Z_POS", Z_POS) &&
           node.getParam("Z_NEG", Z_NEG) && node.getParam("INC_POS", INC_POS) &&
-          node.getParam("DEC_POS", DEC_POS) &&
+          node.getParam("DEC_POS", DEC_POS) && node.getParam("READY", READY) &&
           node.getParam("ROLL_POS", ROLL_POS) &&
           node.getParam("ROLL_NEG", ROLL_NEG) &&
           node.getParam("PITCH_POS", PITCH_POS) &&
@@ -91,13 +104,11 @@ int main(int argc, char **argv) {
           node.getParam("YAW_NEG", YAW_NEG) &&
           node.getParam("INC_ORIE", INC_ORIE) &&
           node.getParam("DEC_ORIE", DEC_ORIE) &&
-          node.getParam("READY", READY) &&
-          node.getParam("GRIP_HOMING", GRIP_HOMING) &&
-          node.getParam("GRIP_GRASP", GRIP_GRASP) &&
-          node.getParam("GRIP_WIDTH_POS", GRIP_WIDTH_POS) &&
-          node.getParam("GRIP_WIDTH_NEG", GRIP_WIDTH_NEG) &&
-          node.getParam("INC_GRIP", INC_GRIP) &&
-          node.getParam("DEC_GRIP", DEC_GRIP))) {
+          node.getParam("GR_HOMING", GR_HOMING) &&
+          node.getParam("GR_GRASP", GR_GRASP) &&
+          node.getParam("GR_W_POS", GR_W_POS) &&
+          node.getParam("GR_W_NEG", GR_W_NEG) &&
+          node.getParam("INC_GR", INC_GR) && node.getParam("DEC_GR", DEC_GR))) {
         ROS_FATAL_STREAM(
             get_err_msg(CURRENT_FILE_NAME, "Can't get parameters"));
         ros::shutdown();
@@ -188,12 +199,12 @@ int main(int argc, char **argv) {
             help << std::endl;
 
             help << "[Gripper]:" << std::endl;
-            help << "HOMING:     " << static_cast<char>(GRIP_HOMING);
-            help << "GRASP       " << static_cast<char>(GRIP_GRASP);
-            help << "WIDTH POS:  " << static_cast<char>(GRIP_WIDTH_POS);
-            help << "WIDTH NEG:  " << static_cast<char>(GRIP_WIDTH_NEG);
-            help << "[+] DELTA:  " << static_cast<char>(INC_GRIP) << std::endl;
-            help << "[-] DELTA:  " << static_cast<char>(DEC_GRIP) << std::endl;
+            help << "HOMING:     " << static_cast<char>(GR_HOMING) << std::endl;
+            help << "GRASP       " << static_cast<char>(GR_GRASP) << std::endl;
+            help << "WIDTH POS:  " << static_cast<char>(GR_W_POS) << std::endl;
+            help << "WIDTH NEG:  " << static_cast<char>(GR_W_NEG) << std::endl;
+            help << "[+] DELTA:  " << static_cast<char>(INC_GR) << std::endl;
+            help << "[-] DELTA:  " << static_cast<char>(DEC_GR) << std::endl;
 
             help << Colors::RESET;
             ROS_INFO_STREAM(help.str());
@@ -201,7 +212,8 @@ int main(int argc, char **argv) {
 
         } else if (command == MODE) {
             mode = (mode + 1) % 3;
-            ROS_INFO_STREAM("MODE: "
+            ROS_INFO_STREAM(std::endl
+                            << "MODE: "
                             << ((mode == 0)
                                     ? "position"
                                     : (mode == 1) ? "orientation" : "gripper")
@@ -211,13 +223,13 @@ int main(int argc, char **argv) {
             if (command == INC_POS) {
                 delta_position += GRANULARITY_POSITION;
                 ROS_INFO_STREAM("Delta position: " << delta_position
-                                                   << " meters" << std::endl);
+                                                   << " meters");
 
             } else if (command == DEC_POS) {
                 if ((delta_position - GRANULARITY_POSITION) > 0)
                     delta_position -= GRANULARITY_POSITION;
                 ROS_INFO_STREAM("Delta position: " << delta_position
-                                                   << " meters" << std::endl);
+                                                   << " meters");
 
             } else {
                 if (command == READY) {
@@ -252,15 +264,13 @@ int main(int argc, char **argv) {
             if (command == INC_ORIE) {
                 delta_orientation += GRANULARITY_ORIENTATION;
                 ROS_INFO_STREAM("Delta orientation: " << delta_orientation
-                                                      << " degrees"
-                                                      << std::endl);
+                                                      << " degrees");
 
             } else if (command == DEC_ORIE) {
                 if ((delta_orientation - GRANULARITY_ORIENTATION) > 0)
                     delta_orientation -= GRANULARITY_ORIENTATION;
                 ROS_INFO_STREAM("Delta orientation: " << delta_orientation
-                                                      << " degrees"
-                                                      << std::endl);
+                                                      << " degrees");
 
             } else {
                 if (command == READY) {
@@ -292,28 +302,28 @@ int main(int argc, char **argv) {
             }
 
         } else if (mode == 2) {
-            if (command == INC_GRIP) {
+            if (command == INC_GR) {
                 delta_gripper += GRANULARITY_GRIPPER;
-                ROS_INFO_STREAM("Delta gripper width: "
-                                << delta_gripper << " meters" << std::endl);
+                ROS_INFO_STREAM("Delta gripper width: " << delta_gripper
+                                                        << " meters");
 
-            } else if (command == DEC_GRIP) {
+            } else if (command == DEC_GR) {
                 if ((delta_gripper - GRANULARITY_GRIPPER) > 0)
                     delta_gripper -= GRANULARITY_GRIPPER;
-                ROS_INFO_STREAM("Delta gripper width: "
-                                << delta_gripper << " meters" << std::endl);
+                ROS_INFO_STREAM("Delta gripper width: " << delta_gripper
+                                                        << " meters");
 
             } else {
-                if (command == GRIP_GRASP) {
+                if (command == GR_GRASP) {
                     msg.gripper_grasp = delta_gripper;
 
-                } else if (command == GRIP_HOMING) {
+                } else if (command == GR_HOMING) {
                     msg.gripper_homing = true;
 
-                } else if (command == GRIP_WIDTH_POS) {
+                } else if (command == GR_W_POS) {
                     msg.gripper_width += delta_gripper;
 
-                } else if (command == GRIP_WIDTH_NEG) {
+                } else if (command == GR_W_NEG) {
                     msg.gripper_width -= delta_gripper;
 
                 } else {

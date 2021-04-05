@@ -18,35 +18,35 @@
 
 
             <!-- key mapping -->
-            <param name="QUIT"           type="int" value="27"/>
-            <param name="HELP"           type="string" value="h"/>
-            <param name="MODE"           type="string" value="m"/>
+            <param name="QUIT"           type="int" value="27"/>  <!-- esc-->
+            <param name="HELP"           type="int" value="104"/> <!-- h -->
+            <param name="MODE"           type="int" value="109"/> <!-- m -->
 
-            <param name="X_POS"          type="string" value="w"/>
-            <param name="X_NEG"          type="string" value="s"/>
-            <param name="Y_POS"          type="string" value="a"/>
-            <param name="Y_NEG"          type="string" value="d"/>
-            <param name="Z_POS"          type="string" value="r"/>
-            <param name="Z_NEG"          type="string" value="f"/>
-            <param name="INC_POS"        type="string" value="e"/>
-            <param name="DEC_POS"        type="string" value="q"/>
-            <param name="READY"          type="string" value="h"/>
+            <param name="X_POS"          type="int" value="119"/> <!-- w -->
+            <param name="X_NEG"          type="int" value="115"/> <!-- s -->
+            <param name="Y_POS"          type="int" value="97"/>  <!-- a -->
+            <param name="Y_NEG"          type="int" value="100"/> <!-- d -->
+            <param name="Z_POS"          type="int" value="114"/> <!-- r -->
+            <param name="Z_NEG"          type="int" value="102"/> <!-- f -->
+            <param name="INC_POS"        type="int" value="101"/> <!-- e -->
+            <param name="DEC_POS"        type="int" value="113"/> <!-- q -->
+            <param name="READY"          type="int" value="111"/> <!-- o -->
 
-            <param name="ROLL_POS"       type="string" value="d"/>
-            <param name="ROLL_NEG"       type="string" value="a"/>
-            <param name="PITCH_POS"      type="string" value="w"/>
-            <param name="PITCH_NEG"      type="string" value="s"/>
-            <param name="YAW_POS"        type="string" value="r"/>
-            <param name="YAW_NEG"        type="string" value="f"/>
-            <param name="INC_ORIE"       type="string" value="e"/>
-            <param name="DEC_ORIE"       type="string" value="q"/>
+            <param name="ROLL_POS"       type="int" value="100"/> <!-- d -->
+            <param name="ROLL_NEG"       type="int" value="97"/>  <!-- a -->
+            <param name="PITCH_POS"      type="int" value="119"/> <!-- w -->
+            <param name="PITCH_NEG"      type="int" value="115"/> <!-- s -->
+            <param name="YAW_POS"        type="int" value="114"/> <!-- r -->
+            <param name="YAW_NEG"        type="int" value="102"/> <!-- f -->
+            <param name="INC_ORIE"       type="int" value="101"/> <!-- e -->
+            <param name="DEC_ORIE"       type="int" value="113"/> <!-- q -->
 
-            <param name="GRIP_HOMING"    type="string" value="h"/>
-            <param name="GRIP_GRASP"     type="string" value="s"/>
-            <param name="GRIP_WIDTH_POS" type="string" value="d"/>
-            <param name="GRIP_WIDTH_NEG" type="string" value="a"/>
-            <param name="INC_GRIP"       type="string" value="e"/>
-            <param name="DEC_GRIP"       type="string" value="q"/>
+            <param name="GR_HOMING"    type="int" value="111"/> <!-- o -->
+            <param name="GR_GRASP"     type="int" value="115"/> <!-- s -->
+            <param name="GR_W_POS" type="int" value="100"/> <!-- d -->
+            <param name="GR_W_NEG" type="int" value="97"/>  <!-- a -->
+            <param name="INC_GR"       type="int" value="101"/> <!-- e -->
+            <param name="DEC_GR"       type="int" value="113"/> <!-- q -->
       </node>
 
 </launch>
