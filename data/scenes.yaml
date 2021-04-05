@@ -43,131 +43,88 @@ test:
       y: 0.001
       z: 0.001
 
-  - name: object_female
+
+altair:      
+  - name: table
     color:
-      r: 0.0
-      g: 0.0
-      b: 1.0
-      a: 0.5
+      r: 0.6
+      g: 0.4
+      b: 0.2
+      a: 1.0
     position:
-      x: 0.5
-      y: 0.25
-      z: 0.01
+      x: 0.6
+      y: 0.0
+      z: -0.02
     orientation:
       x: 0.0
       y: 0.0
       z: 0.0
       w: 1.0
-    type: mesh
-    file: object_female.stl
-    scale:
-      x: 0.001
-      y: 0.001
-      z: 0.001
+    type: box
+    dimensions:
+      x: 1.0
+      y: 1.0
+      z: 0.04
 
+  - name: shield_bottom
+    color:
+      r: 1.0
+      g: 1.0
+      b: 1.0
+      a: 0.05
+    position:
+      x: -0.35
+      y: 0.0
+      z: 0.5
+    orientation:
+      x: 0.0
+      y: 0.0
+      z: 0.0
+      w: 1.0
+    type: box
+    dimensions:
+      x: 0.02
+      y: 1.4
+      z: 1.0
 
-altair:
-  # - name: table1
-  #   color:
-  #     r: 0.7
-  #     g: 0.4
-  #     b: 0.2
-  #     a: 1.0
-  #   position:
-  #     x: 0.1
-  #     y: 0.0
-  #     z: -0.02
-  #   orientation:
-  #     x: 0.0
-  #     y: 0.0
-  #     z: 0.0
-  #     w: 1.0
-  #   type: box
-  #   dimensions:
-  #     x: 0.6
-  #     y: 0.8
-  #     z: 0.04
-      
-  # - name: table2
-  #   color:
-  #     r: 0.6
-  #     g: 0.4
-  #     b: 0.2
-  #     a: 1.0
-  #   position:
-  #     x: 0.9
-  #     y: 0.0
-  #     z: -0.02
-  #   orientation:
-  #     x: 0.0
-  #     y: 0.0
-  #     z: 0.0
-  #     w: 1.0
-  #   type: box
-  #   dimensions:
-  #     x: 1.0
-  #     y: 1.0
-  #     z: 0.04
+  - name: shield_left
+    color:
+      r: 1.0
+      g: 1.0
+      b: 1.0
+      a: 0.05
+    position:
+      x: 0.35
+      y: 0.7
+      z: 0.5
+    orientation:
+      x: 0.0
+      y: 0.0
+      z: 0.0
+      w: 1.0
+    type: box
+    dimensions:
+      x: 1.3
+      y: 0.02
+      z: 1.0
 
-  # - name: shield_bottom
-  #   color:
-  #     r: 1.0
-  #     g: 1.0
-  #     b: 1.0
-  #     a: 0.05
-  #   position:
-  #     x: -0.25
-  #     y: 0.0
-  #     z: 0.5
-  #   orientation:
-  #     x: 0.0
-  #     y: 0.0
-  #     z: 0.0
-  #     w: 1.0
-  #   type: box
-  #   dimensions:
-  #     x: 0.02
-  #     y: 1.0
-  #     z: 1.0
-
-  # - name: shield_left
-  #   color:
-  #     r: 1.0
-  #     g: 1.0
-  #     b: 1.0
-  #     a: 0.05
-  #   position:
-  #     x: 0.35
-  #     y: 0.5
-  #     z: 0.5
-  #   orientation:
-  #     x: 0.0
-  #     y: 0.0
-  #     z: 0.0
-  #     w: 1.0
-  #   type: box
-  #   dimensions:
-  #     x: 1.2
-  #     y: 0.02
-  #     z: 1.0
-
-  # - name: shield_right
-  #   color:
-  #     r: 1.0
-  #     g: 1.0
-  #     b: 1.0
-  #     a: 0.05
-  #   position:
-  #     x: 0.35
-  #     y: -0.5
-  #     z: 0.5
-  #   orientation:
-  #     x: 0.0
-  #     y: 0.0
-  #     z: 0.0
-  #     w: 1.0
-  #   type: box
-  #   dimensions:
-  #     x: 1.2
-  #     y: 0.02
-  #     z: 1.0
+  - name: shield_right
+    color:
+      r: 1.0
+      g: 1.0
+      b: 1.0
+      a: 0.05
+    position:
+      x: 0.35
+      y: -0.7
+      z: 0.5
+    orientation:
+      x: 0.0
+      y: 0.0
+      z: 0.0
+      w: 1.0
+    type: box
+    dimensions:
+      x: 1.3
+      y: 0.02
+      z: 1.0
