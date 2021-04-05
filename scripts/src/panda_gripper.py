@@ -101,7 +101,7 @@ class PandaGripper():
         self._current_width = width_normalized
       
 
-    def graspGripper(self, width, speed=0.5, force=10, epsilon_inner=0.02, epsilon_outer=0.02):
+    def graspGripper(self, width, speed=0.5, force=10, epsilon_inner=0.002, epsilon_outer=0.002):
         width_normalized = self._normalize(width, self._MIN_WIDTH, self._MAX_WIDTH)
         force_normalized = self._normalize(force, self._MIN_FORCE, self._MAX_FORCE)
         if self._real_robot:
@@ -141,8 +141,8 @@ def test_gripper(gripper):
     rospy.sleep(1)
     print("Current gripper width: {}\n".format(gripper.getGripperWidth()))
 
-    print("graspGripper(width=0.02, epsilon_inner=0.02, epsilon_outer=0.02, speed=0.01, force=10)")
-    gripper.graspGripper(width=0.02, epsilon_inner=0.02, epsilon_outer=0.02, speed=0.01, force=10)
+    print("graspGripper(width=0.02, epsilon_inner=0.002, epsilon_outer=0.002, speed=0.01, force=10)")
+    gripper.graspGripper(width=0.02, epsilon_inner=0.002, epsilon_outer=0.002, speed=0.01, force=10)
     rospy.sleep(1)
     print("Current gripper width: {}\n".format(gripper.getGripperWidth()))
 

@@ -16,8 +16,8 @@
             <param name="grasp_width"         type="double" value="0.03"/>
             <param name="grasp_speed"         type="double" value="0.5"/>
             <param name="grasp_force"         type="double" value="20.0"/>
-            <param name="grasp_epsilon_inner" type="double" value="0.02"/>
-            <param name="grasp_epsilon_outer" type="double" value="0.02"/>
+            <param name="grasp_epsilon_inner" type="double" value="0.002"/>
+            <param name="grasp_epsilon_outer" type="double" value="0.002"/>
             
 
             <!-- arm-->

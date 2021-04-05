@@ -135,8 +135,8 @@ class PandaGripper {
      * @param EPSILON_OUTER The value of epsilon outer.
      */
     void grasp(const double WIDTH, const double SPEED = 0.5,
-               const double FORCE = 20, const double EPSILON_INNER = 0.02,
-               const double EPSILON_OUTER = 0.02);
+               const double FORCE = 20, const double EPSILON_INNER = 0.002,
+               const double EPSILON_OUTER = 0.002);
 };
 
 }  // namespace panda_controller
