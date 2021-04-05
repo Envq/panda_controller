@@ -122,6 +122,21 @@ class PandaArm {
 
 
     /**
+     * @brief move the TCP (tool center point) relative current pose (in
+     * degree).
+     *
+     * @param X offset on X axis.
+     * @param Y offset on Y axis.
+     * @param Z offset on Z axis.
+     * @param ROLL offset around X axis.
+     * @param PITCH offset around Y axis.
+     * @param YAW offset around Z axis.
+     */
+    void relativeMove(const double X, const double Y, const double Z,
+                      const double ROLL, const double PITCH, const double YAW);
+
+
+    /**
      * @brief move the TCP (tool center point) relative current pose.
      *
      * @param X offset on X axis.

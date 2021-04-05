@@ -2,7 +2,6 @@
 #include <ros/ros.h>
 
 // C++
-#include <iostream>
 #include <termios.h>
 #include <unistd.h>
 
@@ -11,7 +10,6 @@
 
 // Custom
 #include "panda_controller/exceptions.hpp"
-#include "panda_controller/panda.hpp"
 #include "panda_controller/panda_teleop.h"  // msg
 #include "utils/colors.hpp"
 
@@ -25,8 +23,7 @@ using namespace panda_controller;
 // CONFIGS ====================================================================
 auto FG_COLOR = Colors::FG_BLUE;
 auto BG_COLOR = Colors::BG_DEFAULT;
-auto CMD1_COLOR = Colors::FG_GREEN;
-auto INFO_COLOR = Colors::FG_CYAN;
+auto INFO_COLOR = Colors::FG_GREEN;
 
 
 
@@ -40,9 +37,9 @@ int getch() {
     newt = oldt;                     // copy old settings to new settings
     newt.c_lflag &=                  //
         ~(ICANON | ECHO);  // make one change to old settings in new settings
-    tcsetattr(STDIN_FILENO, TCSANOW,  //
-              &newt);                 // apply the new settings immediatly
-    ch = getchar();                   // standard getchar call
+    tcsetattr(STDIN_FILENO, TCSANOW,          //
+              &newt);                         // apply the new settings immediatly
+    ch = getchar();                           // standard getchar call
     tcsetattr(STDIN_FILENO, TCSANOW, &oldt);  // reapply the old settings
     return ch;                                // return received char
 }
@@ -100,25 +97,22 @@ int main(int argc, char **argv) {
           node.getParam("ROLL_NEG", ROLL_NEG) &&
           node.getParam("PITCH_POS", PITCH_POS) &&
           node.getParam("PITCH_NEG", PITCH_NEG) &&
-          node.getParam("YAW_POS", YAW_POS) &&
-          node.getParam("YAW_NEG", YAW_NEG) &&
+          node.getParam("YAW_POS", YAW_POS) && node.getParam("YAW_NEG", YAW_NEG) &&
           node.getParam("INC_ORIE", INC_ORIE) &&
           node.getParam("DEC_ORIE", DEC_ORIE) &&
           node.getParam("GR_HOMING", GR_HOMING) &&
           node.getParam("GR_GRASP", GR_GRASP) &&
           node.getParam("GR_W_POS", GR_W_POS) &&
-          node.getParam("GR_W_NEG", GR_W_NEG) &&
-          node.getParam("INC_GR", INC_GR) && node.getParam("DEC_GR", DEC_GR))) {
-        ROS_FATAL_STREAM(
-            get_err_msg(CURRENT_FILE_NAME, "Can't get parameters"));
+          node.getParam("GR_W_NEG", GR_W_NEG) && node.getParam("INC_GR", INC_GR) &&
+          node.getParam("DEC_GR", DEC_GR))) {
+        ROS_FATAL_STREAM(get_err_msg(CURRENT_FILE_NAME, "Can't get parameters"));
         ros::shutdown();
         return 0;
     }
 
 
     // Create publisher
-    ROS_FCOL_INFO(FG_COLOR, BG_COLOR,
-                  "PUBLICATION TO THE TOPIC: teleoperation");
+    ROS_FCOL_INFO(FG_COLOR, BG_COLOR, "PUBLICATION TO THE TOPIC: teleoperation");
     ros::Publisher pub = node.advertise<panda_controller::panda_teleop>(
         "/panda_controller/teleoperation", 1000);
 
@@ -131,14 +125,15 @@ int main(int argc, char **argv) {
     int command;
     int mode = 0;
     panda_controller::panda_teleop msg;
-    ROS_INFO_STREAM(
-        "START INFO:\n"
-        << "- Mode: "
-        << ((mode == 0) ? "position" : (mode == 1) ? "orientation" : "gripper")
-        << "\n"
-        << "- Delta position:      " << delta_position << " meters\n"
-        << "- Delta orientation:   " << delta_orientation << " degrees\n"
-        << "- Delta gripper width: " << delta_gripper << " meters\n");
+    ROS_INFO_STREAM("START INFO:\n"
+                    << "- Mode: "
+                    << ((mode == 0) ? "position"
+                                    : (mode == 1) ? "orientation" : "gripper")
+                    << "\n"
+                    << "- Delta position:      " << delta_position << " meters\n"
+                    << "- Delta orientation:   " << delta_orientation << " degrees\n"
+                    << "- Delta gripper width: " << delta_gripper << " meters\n"
+                    << "----------------------------");
 
     while (ros::ok()) {
         // Get command
@@ -167,44 +162,44 @@ int main(int argc, char **argv) {
             help << Colors::BOLD << FG_COLOR << BG_COLOR;
             help << "Commands available:\n";
             help << Colors::RESET;
-            help << CMD1_COLOR;
+            help << INFO_COLOR;
             help << "[Other]:" << std::endl;
-            help << "QUIT:       ESC" << std::endl;
-            help << "HELP:       " << static_cast<char>(HELP) << std::endl;
-            help << "MODE:       " << static_cast<char>(MODE) << std::endl;
+            help << "   QUIT:       ESC" << std::endl;
+            help << "   HELP:       " << static_cast<char>(HELP) << std::endl;
+            help << "   MODE:       " << static_cast<char>(MODE) << std::endl;
             help << std::endl;
 
             help << "[Position]:" << std::endl;
-            help << "X POS:      " << static_cast<char>(X_POS) << std::endl;
-            help << "X NEG:      " << static_cast<char>(X_NEG) << std::endl;
-            help << "Y NEG:      " << static_cast<char>(Y_NEG) << std::endl;
-            help << "Y POS:      " << static_cast<char>(Y_POS) << std::endl;
-            help << "Z POS:      " << static_cast<char>(Z_POS) << std::endl;
-            help << "Z NEG:      " << static_cast<char>(Z_NEG) << std::endl;
-            help << "[+] DELTA:  " << static_cast<char>(INC_POS) << std::endl;
-            help << "[-] DELTA:  " << static_cast<char>(DEC_POS) << std::endl;
-            help << "READY:      " << static_cast<char>(READY) << std::endl;
+            help << "   X POS:      " << static_cast<char>(X_POS) << std::endl;
+            help << "   X NEG:      " << static_cast<char>(X_NEG) << std::endl;
+            help << "   Y NEG:      " << static_cast<char>(Y_NEG) << std::endl;
+            help << "   Y POS:      " << static_cast<char>(Y_POS) << std::endl;
+            help << "   Z POS:      " << static_cast<char>(Z_POS) << std::endl;
+            help << "   Z NEG:      " << static_cast<char>(Z_NEG) << std::endl;
+            help << "   [+] DELTA:  " << static_cast<char>(INC_POS) << std::endl;
+            help << "   [-] DELTA:  " << static_cast<char>(DEC_POS) << std::endl;
+            help << "   READY:      " << static_cast<char>(READY) << std::endl;
             help << std::endl;
 
             help << "[Orientation]:" << std::endl;
-            help << "ROLL POS:   " << static_cast<char>(ROLL_POS) << std::endl;
-            help << "ROLL NEG:   " << static_cast<char>(ROLL_NEG) << std::endl;
-            help << "PITCH POS:  " << static_cast<char>(PITCH_POS) << std::endl;
-            help << "PITCH NEG:  " << static_cast<char>(PITCH_NEG) << std::endl;
-            help << "YAW POS:    " << static_cast<char>(YAW_POS) << std::endl;
-            help << "YAW NEG:    " << static_cast<char>(YAW_NEG) << std::endl;
-            help << "[+] DELTA:  " << static_cast<char>(INC_ORIE) << std::endl;
-            help << "[-] DELTA:  " << static_cast<char>(DEC_ORIE) << std::endl;
-            help << "READY:      " << static_cast<char>(READY) << std::endl;
+            help << "   ROLL POS:   " << static_cast<char>(ROLL_POS) << std::endl;
+            help << "   ROLL NEG:   " << static_cast<char>(ROLL_NEG) << std::endl;
+            help << "   PITCH POS:  " << static_cast<char>(PITCH_POS) << std::endl;
+            help << "   PITCH NEG:  " << static_cast<char>(PITCH_NEG) << std::endl;
+            help << "   YAW POS:    " << static_cast<char>(YAW_POS) << std::endl;
+            help << "   YAW NEG:    " << static_cast<char>(YAW_NEG) << std::endl;
+            help << "   [+] DELTA:  " << static_cast<char>(INC_ORIE) << std::endl;
+            help << "   [-] DELTA:  " << static_cast<char>(DEC_ORIE) << std::endl;
+            help << "   READY:      " << static_cast<char>(READY) << std::endl;
             help << std::endl;
 
             help << "[Gripper]:" << std::endl;
-            help << "HOMING:     " << static_cast<char>(GR_HOMING) << std::endl;
-            help << "GRASP       " << static_cast<char>(GR_GRASP) << std::endl;
-            help << "WIDTH POS:  " << static_cast<char>(GR_W_POS) << std::endl;
-            help << "WIDTH NEG:  " << static_cast<char>(GR_W_NEG) << std::endl;
-            help << "[+] DELTA:  " << static_cast<char>(INC_GR) << std::endl;
-            help << "[-] DELTA:  " << static_cast<char>(DEC_GR) << std::endl;
+            help << "   HOMING:     " << static_cast<char>(GR_HOMING) << std::endl;
+            help << "   GRASP       " << static_cast<char>(GR_GRASP) << std::endl;
+            help << "   WIDTH POS:  " << static_cast<char>(GR_W_POS) << std::endl;
+            help << "   WIDTH NEG:  " << static_cast<char>(GR_W_NEG) << std::endl;
+            help << "   [+] DELTA:  " << static_cast<char>(INC_GR) << std::endl;
+            help << "   [-] DELTA:  " << static_cast<char>(DEC_GR) << std::endl;
 
             help << Colors::RESET;
             ROS_INFO_STREAM(help.str());
@@ -212,24 +207,20 @@ int main(int argc, char **argv) {
 
         } else if (command == MODE) {
             mode = (mode + 1) % 3;
-            ROS_INFO_STREAM(std::endl
-                            << "MODE: "
-                            << ((mode == 0)
-                                    ? "position"
-                                    : (mode == 1) ? "orientation" : "gripper")
-                            << std::endl);
+            std::cout << std::endl;
+            ROS_INFO_STREAM(
+                "MODE: " << ((mode == 0) ? "position"
+                                         : (mode == 1) ? "orientation" : "gripper"));
 
         } else if (mode == 0) {
             if (command == INC_POS) {
                 delta_position += GRANULARITY_POSITION;
-                ROS_INFO_STREAM("Delta position: " << delta_position
-                                                   << " meters");
+                ROS_INFO_STREAM("Delta position: " << delta_position << " meters");
 
             } else if (command == DEC_POS) {
                 if ((delta_position - GRANULARITY_POSITION) > 0)
                     delta_position -= GRANULARITY_POSITION;
-                ROS_INFO_STREAM("Delta position: " << delta_position
-                                                   << " meters");
+                ROS_INFO_STREAM("Delta position: " << delta_position << " meters");
 
             } else {
                 if (command == READY) {

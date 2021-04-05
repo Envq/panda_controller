@@ -40,14 +40,13 @@ PandaGripper::PandaGripper(const bool REAL_ROBOT) {
         // Init MoveGroupInterface with hand
         std::string move_group_name = "hand";
         try {
-            _hand_ptr.reset(new moveit::planning_interface::MoveGroupInterface(
-                move_group_name));
+            _hand_ptr.reset(
+                new moveit::planning_interface::MoveGroupInterface(move_group_name));
 
         } catch (const std::runtime_error &err) {
-            throw PandaGripperErr(
-                "PandaGripper()",
-                "Impossible initialize MoveGroupInterface with '" +
-                    move_group_name + "'");
+            throw PandaGripperErr("PandaGripper()",
+                                  "Impossible initialize MoveGroupInterface with '" +
+                                      move_group_name + "'");
         }
     }
 }
@@ -98,7 +97,9 @@ void PandaGripper::homing() {
         // Wait for result
         if (!_homing_client_ptr->waitForResult(ros::Duration(_timeout)))
             throw PandaGripperErr("homing()", "waitForResult()", "Timeout");
-    }
+
+    } else
+        _moveHand(PandaGripper::OPEN);
 
     // Update current width
     _current_width = OPEN;
@@ -128,9 +129,8 @@ void PandaGripper::move(const double WIDTH, const double SPEED) {
 }
 
 
-void PandaGripper::grasp(const double WIDTH, const double SPEED,
-                         const double FORCE, const double EPSILON_INNER,
-                         const double EPSILON_OUTER) {
+void PandaGripper::grasp(const double WIDTH, const double SPEED, const double FORCE,
+                         const double EPSILON_INNER, const double EPSILON_OUTER) {
     double width_normalized =
         _normalize(WIDTH, panda_gripper::MIN_WIDTH, panda_gripper::MAX_WIDTH);
     double force_normalized =

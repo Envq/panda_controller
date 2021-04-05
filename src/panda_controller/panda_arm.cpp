@@ -155,20 +155,41 @@ void PandaArm::moveToPose(const geometry_msgs::Pose &POSE) {
 }
 
 
-void PandaArm::relativeMovePos(const double X, const double Y, const double Z) {
+void PandaArm::relativeMove(const double X, const double Y, const double Z,
+                            const double ROLL, const double PITCH,
+                            const double YAW) {
     try {
         // Get current pose
         auto pose = getPose();
 
-        // Update pose
+        // Update position
         pose.position.x += X;
         pose.position.y += Y;
         pose.position.z += Z;
 
+        // Get quaternion
+        tf2::Quaternion quat1;
+        tf2::convert(pose.orientation, quat1);
+        tf2::Quaternion quat2;
+        quat2.setRPY(ROLL * M_PI / 180.0, PITCH * M_PI / 180.0,
+                     YAW * M_PI / 180.0);
+
+        // Update orientation
+        pose.orientation = tf2::toMsg((quat1 * quat2).normalize());
+
         // Move to target
         linearMove(pose);
     } catch (const PandaArmErr &err) {
-        throw PandaArmErr("moveRelPosition()", err.what());
+        throw PandaArmErr("relativeMove()", err.what());
+    }
+}
+
+
+void PandaArm::relativeMovePos(const double X, const double Y, const double Z) {
+    try {
+        relativeMove(X, Y, Z, 0.0, 0.0, 0.0);
+    } catch (const PandaArmErr &err) {
+        throw PandaArmErr("relativeMovePos()", err.what());
     }
 }
 
@@ -176,23 +197,9 @@ void PandaArm::relativeMovePos(const double X, const double Y, const double Z) {
 void PandaArm::relativeMoveRPY(const double ROLL, const double PITCH,
                                const double YAW) {
     try {
-        // Get current pose
-        auto pose = getPose();
-        tf2::Quaternion quat1;
-        tf2::convert(pose.orientation, quat1);
-
-        // Get quaternion
-        tf2::Quaternion quat2;
-        quat2.setRPY(ROLL * M_PI / 180.0, PITCH * M_PI / 180.0,
-                     YAW * M_PI / 180.0);
-
-        // Update pose orientation
-        pose.orientation = tf2::toMsg((quat1 * quat2).normalize());
-
-        // Move to target
-        linearMove(pose);
+        relativeMove(0.0, 0.0, 0.0, ROLL, PITCH, YAW);
     } catch (const PandaArmErr &err) {
-        throw PandaArmErr("moveRelPosition()", err.what());
+        throw PandaArmErr("relativeMoveRPY()", err.what());
     }
 }
 

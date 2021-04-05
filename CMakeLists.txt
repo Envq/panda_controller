@@ -83,12 +83,12 @@ set(TASK pick_and_place)
 add_executable(${TASK} src/${TASK}.cpp ${SOURCES})
 target_link_libraries(${TASK} ${catkin_LIBRARIES} yaml-cpp)
 
-# set(TASK teleop_listener)
-# add_executable(${TASK} src/${TASK}.cpp ${SOURCES})
-# add_dependencies(${TASK} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-# target_link_libraries(${TASK} ${catkin_LIBRARIES} yaml-cpp)
-
 set(TASK teleop_talker)
+add_executable(${TASK} src/${TASK}.cpp ${SOURCES})
+add_dependencies(${TASK} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(${TASK} ${catkin_LIBRARIES} yaml-cpp)
+
+set(TASK teleop_listener)
 add_executable(${TASK} src/${TASK}.cpp ${SOURCES})
 add_dependencies(${TASK} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(${TASK} ${catkin_LIBRARIES} yaml-cpp)
