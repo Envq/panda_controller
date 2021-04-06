@@ -43,7 +43,6 @@ int main(int argc, char **argv) {
         auto panda = Panda(false, 1.0);
         auto arm = panda.getArm();
         auto gripper = panda.getGripper();
-        auto scene = panda.getScene();
 
         /*
         **

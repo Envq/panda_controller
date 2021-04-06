@@ -105,7 +105,6 @@ int main(int argc, char **argv) {
         auto panda = Panda(REAL_ROBOT, 1.0);
         auto arm = panda.getArm();
         auto gripper = panda.getGripper();
-        auto scene = panda.getScene();
         arm->setMaxVelocityScalingFactor(ARM_VELOCITY_FACTOR);
         if (GRIPPER_HOMING)
             gripper->homing();
@@ -113,9 +112,9 @@ int main(int argc, char **argv) {
 
         // Init scene
         ROS_FCOL_INFO(FG_COLOR, BG_COLOR, "SCENE INITIALIZATION");
-        scene->resetScene();
-        scene->setScene(ENV_SCENE);
-        scene->setScene(TASK_SCENE);
+        panda.resetScene();
+        panda.setScene(ENV_SCENE);
+        panda.setScene(TASK_SCENE);
 
 
         // Perform tasks:

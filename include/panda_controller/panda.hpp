@@ -2,6 +2,7 @@
 
 // Moveit
 #include <geometry_msgs/Pose.h>
+#include <moveit/planning_scene_interface/planning_scene_interface.h>
 #include <moveit_msgs/Grasp.h>
 #include <moveit_msgs/PlaceLocation.h>
 
@@ -9,7 +10,6 @@
 #include "panda_controller/exceptions.hpp"
 #include "panda_controller/panda_arm.hpp"
 #include "panda_controller/panda_gripper.hpp"
-#include "panda_controller/panda_scene.hpp"
 #include "utils/colors.hpp"
 
 // BOOST
@@ -27,10 +27,9 @@ namespace panda_controller {
 /// @brief The Panda robot arm management class.
 class Panda {
   private:
-    moveit::planning_interface::MoveGroupInterfacePtr _arm_ptr;
-    std::shared_ptr<PandaArm> _panda_arm_ptr;
-    std::shared_ptr<PandaGripper> _panda_gripper_ptr;
-    std::shared_ptr<PandaScene> _panda_scene_ptr;
+    std::shared_ptr<PandaArm> _arm_ptr;
+    std::shared_ptr<PandaGripper> _gripper_ptr;
+    moveit::planning_interface::PlanningSceneInterfacePtr _scene_ptr;
 
   public:
     /**
@@ -59,11 +58,26 @@ class Panda {
 
 
     /**
-     * @brief Get the PandaScene object
+     * @brief Get the  moveit::planning_interface::PlanningSceneInterfacePtr objet
      *
-     * @return std::shared_ptr<PandaScene> PandaScene
+     * @return moveit::planning_interface::PlanningSceneInterfacePtr
      */
-    std::shared_ptr<PandaScene> getScene() const;
+    moveit::planning_interface::PlanningSceneInterfacePtr getPlanningScene() const;
+
+
+    /**
+     * @brief Load the scene.
+     *
+     * @param SCENE_NAME The scene to use.
+     */
+    void setScene(const std::string &SCENE_NAME);
+
+
+    /**
+     * @brief Load a empty scene.
+     *
+     */
+    void resetScene();
 
 
     /**
@@ -91,6 +105,7 @@ class Panda {
               const double &GRASP_EPSILON_OUTER = 0.02, const double &STEP = 0.01,
               const double &JUMP_THRESHOLD = 0.0);
 
+
     /**
      * @brief Place the object with post-grasp-retreat and post-place-retreat.
      * Moves the arm linearly to post-grasp-pose and then move to the desired
@@ -108,18 +123,6 @@ class Panda {
                const geometry_msgs::Pose &GOAL,
                const geometry_msgs::Pose &POST_PLACE_RETREAT,
                const double &EEF_STEP = 0.01, const double &JUMP_THRESHOLD = 0.0);
-
-
-    void pick(const std::string &OBJECT, const double OBJECT_WIDTH,
-              const geometry_msgs::Pose &PRE_GRASP_APPROCH,
-              const geometry_msgs::Pose &GRASP,
-              const geometry_msgs::Pose &POST_GRASP_RETREAT);
-
-
-    void place(const std::string &OBJECT,
-               const geometry_msgs::Pose &PRE_PLACE_APPROCH,
-               const geometry_msgs::Pose &PLACE,
-               const geometry_msgs::Pose &POST_PLACE_RETREAT);
 };
 
 }  // namespace panda_controller

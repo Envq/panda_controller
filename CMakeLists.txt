@@ -71,7 +71,6 @@ SET(SOURCES
     ${PROJECT_SOURCE_DIR}/src/panda_controller/data_manager.cpp
     ${PROJECT_SOURCE_DIR}/src/panda_controller/panda_arm.cpp
     ${PROJECT_SOURCE_DIR}/src/panda_controller/panda_gripper.cpp
-    ${PROJECT_SOURCE_DIR}/src/panda_controller/panda_scene.cpp
     ${PROJECT_SOURCE_DIR}/src/panda_controller/panda.cpp
 )
 

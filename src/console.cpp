@@ -120,8 +120,7 @@ int main(int argc, char **argv) {
           node.getParam("grasp_epsilon_outer", GRASP_EPSILON_OUTER) &&
           node.getParam("eef_step", EEF_STEP) &&
           node.getParam("jump_threshold", JUMP_THRESHOLD))) {
-        ROS_FATAL_STREAM(
-            get_err_msg(CURRENT_FILE_NAME, "Can't get parameters"));
+        ROS_FATAL_STREAM(get_err_msg(CURRENT_FILE_NAME, "Can't get parameters"));
         ros::shutdown();
         return 0;
     }
@@ -134,8 +133,6 @@ int main(int argc, char **argv) {
         auto panda = Panda(REAL_ROBOT, 1.0);
         auto arm = panda.getArm();
         auto gripper = panda.getGripper();
-        auto scene = panda.getScene();
-
 
         // Read command and performe task
         ROS_FCOL_INFO(FG_COLOR, BG_COLOR, "INSERT COMMANDS: ");
@@ -188,14 +185,14 @@ int main(int argc, char **argv) {
 
                 } else if (cmd_parts[0] == "reset") {
                     if ((cmd_parts.size() == 2 && cmd_parts[1] == "scene")) {
-                        scene->resetScene();
+                        panda.resetScene();
                     } else
                         throw std::invalid_argument(command);
 
 
                 } else if (cmd_parts[0] == "scene") {
                     if (cmd_parts.size() == 2) {
-                        scene->setScene(cmd_parts[1]);
+                        panda.setScene(cmd_parts[1]);
                     } else
                         throw std::invalid_argument(command);
 
@@ -227,8 +224,7 @@ int main(int argc, char **argv) {
                         for (size_t i = 0; i < joints.size() - 1; i++)
                             str << joints[i] << ", ";
                         str << joints[joints.size() - 1] << "]";
-                        ROS_COL_INFO(CMD3_COLOR, "Current joints:\n",
-                                     str.str());
+                        ROS_COL_INFO(CMD3_COLOR, "Current joints:\n", str.str());
 
                     } else if (cmd_parts[1] == "pose") {
                         auto pose = arm->getPose();
@@ -241,8 +237,7 @@ int main(int argc, char **argv) {
                         str << pose.orientation.y << ", ";
                         str << pose.orientation.z << ", ";
                         str << pose.orientation.w << "]\n";
-                        ROS_COL_INFO(CMD3_COLOR, "Current pose:\n", str.str(),
-                                     pose);
+                        ROS_COL_INFO(CMD3_COLOR, "Current pose:\n", str.str(), pose);
                     } else
                         throw std::invalid_argument(command);
 
@@ -373,15 +368,13 @@ int main(int argc, char **argv) {
                                          gripper->getWidth());
 
                         } else {
-                            gripper->move(
-                                boost::lexical_cast<double>(cmd_parts[1]),
-                                GRIPPER_SPEED);
+                            gripper->move(boost::lexical_cast<double>(cmd_parts[1]),
+                                          GRIPPER_SPEED);
                         }
 
                     } else if (cmd_parts.size() == 3) {
-                        gripper->move(
-                            boost::lexical_cast<double>(cmd_parts[1]),
-                            boost::lexical_cast<double>(cmd_parts[2]));
+                        gripper->move(boost::lexical_cast<double>(cmd_parts[1]),
+                                      boost::lexical_cast<double>(cmd_parts[2]));
 
                     } else
                         throw std::invalid_argument(command);
@@ -389,40 +382,35 @@ int main(int argc, char **argv) {
 
                 } else if (cmd_parts[0] == "grasp") {
                     if (cmd_parts.size() == 2) {
-                        gripper->grasp(
-                            boost::lexical_cast<double>(cmd_parts[1]),
-                            GRASP_SPEED, GRASP_FORCE, GRASP_EPSILON_INNER,
-                            GRASP_EPSILON_OUTER);
+                        gripper->grasp(boost::lexical_cast<double>(cmd_parts[1]),
+                                       GRASP_SPEED, GRASP_FORCE, GRASP_EPSILON_INNER,
+                                       GRASP_EPSILON_OUTER);
 
                     } else if (cmd_parts.size() == 3) {
-                        gripper->grasp(
-                            boost::lexical_cast<double>(cmd_parts[1]),
-                            boost::lexical_cast<double>(cmd_parts[2]),
-                            GRASP_FORCE, GRASP_EPSILON_INNER,
-                            GRASP_EPSILON_OUTER);
+                        gripper->grasp(boost::lexical_cast<double>(cmd_parts[1]),
+                                       boost::lexical_cast<double>(cmd_parts[2]),
+                                       GRASP_FORCE, GRASP_EPSILON_INNER,
+                                       GRASP_EPSILON_OUTER);
 
                     } else if (cmd_parts.size() == 4) {
-                        gripper->grasp(
-                            boost::lexical_cast<double>(cmd_parts[1]),
-                            boost::lexical_cast<double>(cmd_parts[2]),
-                            boost::lexical_cast<double>(cmd_parts[3]),
-                            GRASP_EPSILON_INNER, GRASP_EPSILON_OUTER);
+                        gripper->grasp(boost::lexical_cast<double>(cmd_parts[1]),
+                                       boost::lexical_cast<double>(cmd_parts[2]),
+                                       boost::lexical_cast<double>(cmd_parts[3]),
+                                       GRASP_EPSILON_INNER, GRASP_EPSILON_OUTER);
 
                     } else if (cmd_parts.size() == 5) {
-                        gripper->grasp(
-                            boost::lexical_cast<double>(cmd_parts[1]),
-                            boost::lexical_cast<double>(cmd_parts[2]),
-                            boost::lexical_cast<double>(cmd_parts[3]),
-                            boost::lexical_cast<double>(cmd_parts[4]),
-                            GRASP_EPSILON_OUTER);
+                        gripper->grasp(boost::lexical_cast<double>(cmd_parts[1]),
+                                       boost::lexical_cast<double>(cmd_parts[2]),
+                                       boost::lexical_cast<double>(cmd_parts[3]),
+                                       boost::lexical_cast<double>(cmd_parts[4]),
+                                       GRASP_EPSILON_OUTER);
 
                     } else if (cmd_parts.size() == 6) {
-                        gripper->grasp(
-                            boost::lexical_cast<double>(cmd_parts[1]),
-                            boost::lexical_cast<double>(cmd_parts[2]),
-                            boost::lexical_cast<double>(cmd_parts[3]),
-                            boost::lexical_cast<double>(cmd_parts[4]),
-                            boost::lexical_cast<double>(cmd_parts[5]));
+                        gripper->grasp(boost::lexical_cast<double>(cmd_parts[1]),
+                                       boost::lexical_cast<double>(cmd_parts[2]),
+                                       boost::lexical_cast<double>(cmd_parts[3]),
+                                       boost::lexical_cast<double>(cmd_parts[4]),
+                                       boost::lexical_cast<double>(cmd_parts[5]));
                     } else
                         throw std::invalid_argument(command);
                 } else

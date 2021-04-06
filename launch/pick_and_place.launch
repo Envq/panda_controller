@@ -30,7 +30,7 @@
 
             <!-- pick and place task -->
             <param name="env_scene"       type="string" value="altair"/>
-            <param name="task_scene"      type="string" value="assembly"/>
+            <param name="task_scene"      type="string" value="altair"/>
 
 
             <param name="   object_width_1" type="double" value="0.05"/>
