@@ -13,7 +13,6 @@
 
             <param name="gripper_speed"       type="double" value="0.5"/>
 
-            <param name="grasp_width"         type="double" value="0.03"/>
             <param name="grasp_speed"         type="double" value="0.5"/>
             <param name="grasp_force"         type="double" value="20.0"/>
             <param name="grasp_epsilon_inner" type="double" value="0.002"/>
@@ -33,6 +32,8 @@
             <param name="env_scene"       type="string" value="altair"/>
             <param name="task_scene"      type="string" value="assembly"/>
 
+
+            <param name="   object_width_1" type="double" value="0.05"/>
             <param name=" pre_grasp_name_1" type="string" value="assemblyA_1"/>
             <param name="    object_name_1" type="string" value="assemblyB_1"/>
             <param name="post_grasp_name_1" type="string" value="assemblyC_1"/>
@@ -42,6 +43,7 @@
             <param name="post_place_name_1" type="string" value="assemblyF_1"/>
 
 
+            <param name="   object_width_2" type="double" value="0.05"/>
             <param name=" pre_grasp_name_2" type="string" value="assemblyA_2"/>
             <param name="    object_name_2" type="string" value="assemblyB_2"/>
             <param name="post_grasp_name_2" type="string" value="assemblyC_2"/>

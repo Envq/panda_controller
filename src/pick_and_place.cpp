@@ -44,6 +44,7 @@ int main(int argc, char **argv) {
         std::string pre_grasp;
         std::string object;
         std::string post_grasp;
+        double object_width;
 
         std::string pre_place;
         std::string goal;
@@ -56,8 +57,7 @@ int main(int argc, char **argv) {
     // Extract the parameters
     bool REAL_ROBOT, GRIPPER_HOMING;
     double ARM_VELOCITY_FACTOR;
-    double GRASP_WIDTH, GRASP_SPEED, GRASP_FORCE, GRASP_EPSILON_INNER,
-        GRASP_EPSILON_OUTER;
+    double GRASP_SPEED, GRASP_FORCE, GRASP_EPSILON_INNER, GRASP_EPSILON_OUTER;
     double GRIPPER_SPEED;
     double EEF_STEP, JUMP_THRESHOLD;
     std::string ENV_SCENE, TASK_SCENE;
@@ -65,7 +65,6 @@ int main(int argc, char **argv) {
           node.getParam("real_robot", REAL_ROBOT) &&
           node.getParam("gripper_homing", GRIPPER_HOMING) &&
           node.getParam("gripper_speed", GRIPPER_SPEED) &&
-          node.getParam("grasp_width", GRASP_WIDTH) &&
           node.getParam("grasp_speed", GRASP_SPEED) &&
           node.getParam("grasp_force", GRASP_FORCE) &&
           node.getParam("grasp_epsilon_inner", GRASP_EPSILON_INNER) &&
@@ -73,6 +72,7 @@ int main(int argc, char **argv) {
           node.getParam("eef_step", EEF_STEP) &&
           node.getParam("jump_threshold", JUMP_THRESHOLD) &&
 
+          node.getParam("object_width_1", TASKS[0].object_width) &&
           node.getParam("pre_grasp_name_1", TASKS[0].pre_grasp) &&
           node.getParam("object_name_1", TASKS[0].object) &&
           node.getParam("post_grasp_name_1", TASKS[0].post_grasp) &&
@@ -80,6 +80,7 @@ int main(int argc, char **argv) {
           node.getParam("goal_name_1", TASKS[0].goal) &&
           node.getParam("post_place_name_1", TASKS[0].post_place) &&
 
+          node.getParam("object_width_2", TASKS[0].object_width) &&
           node.getParam("pre_grasp_name_2", TASKS[1].pre_grasp) &&
           node.getParam("object_name_2", TASKS[1].object) &&
           node.getParam("post_grasp_name_2", TASKS[1].post_grasp) &&
@@ -137,9 +138,9 @@ int main(int argc, char **argv) {
             auto post_grasp_pose = arm->getPose(task.post_grasp);
             ROS_INFO_STREAM("pose:\n" << post_grasp_pose);
 
-            panda.pick(pre_grasp_pose, object_pose, post_grasp_pose, GRASP_WIDTH,
-                       GRASP_FORCE, GRASP_EPSILON_INNER, GRASP_EPSILON_OUTER,
-                       EEF_STEP, JUMP_THRESHOLD);
+            panda.pick(pre_grasp_pose, object_pose, post_grasp_pose,
+                       task.object_width, GRASP_FORCE, GRASP_EPSILON_INNER,
+                       GRASP_EPSILON_OUTER, EEF_STEP, JUMP_THRESHOLD);
             ros::WallDuration(1.0).sleep();
 
 
