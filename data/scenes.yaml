@@ -66,6 +66,72 @@ assembly:
   #     z: 0.001
 
 
+tutorial:
+  - name: table1
+    color:
+      r: 1.0
+      g: 1.0
+      b: 1.0
+      a: 1.0
+    position:
+      x:  0.50
+      y:  0.00
+      z:  0.20
+    orientation:
+      x:  0.0
+      y:  0.0
+      z:  0.0
+      w:  1.0
+    type: box
+    dimensions:
+      x: 0.2
+      y: 0.4
+      z: 0.4
+
+  - name: table2
+    color:
+      r: 1.0
+      g: 1.0
+      b: 1.0
+      a: 1.0
+    position:
+      x:  0.00
+      y:  0.50
+      z:  0.20
+    orientation:
+      x:  0.0
+      y:  0.0
+      z:  0.0
+      w:  1.0
+    type: box
+    dimensions:
+      x: 0.4
+      y: 0.2
+      z: 0.4
+
+  - name: bastoncino
+    color:
+      r: 1.0
+      g: 1.0
+      b: 1.0
+      a: 1.0
+    position:
+      x:  0.50
+      y:  0.00
+      z:  0.50
+    orientation:
+      x:  0.0
+      y:  0.0
+      z:  0.0
+      w:  1.0
+    type: box
+    dimensions:
+      x: 0.02
+      y: 0.02
+      z: 0.20
+
+
+
 
 containers:
   - name: container1

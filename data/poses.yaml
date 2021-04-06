@@ -134,3 +134,53 @@ assemblyF_2:
     y:  0.0
     z:  0.382499
     w:  0.923956
+
+
+
+
+
+grasp:
+  position:
+    x: 0.5185
+    y: 0
+    z: 0.5
+  orientation: 
+    x: 1.3873e-07
+    y: -0.707107
+    z: -1.3873e-07
+    w: 0.707107
+
+place: 
+  position: 
+    x: 0
+    y: 0.5
+    z: 0.6035
+  orientation: 
+    x: 0.92388
+    y: 0.382683
+    z: 0
+    w: 0
+
+
+
+grasp_f:
+  position:
+    x:  0.415
+    y:  0.00
+    z:  0.50
+  orientation:  
+    x: -0.653281
+    y: 0.270598
+    z: -0.653281
+    w: 0.270598
+
+place_f:
+  position:  
+    x: 0
+    y: 0.5
+    z: 0.5
+  orientation: 
+    x: 0
+    y: 0
+    z: 0.707107
+    w: 0.707107

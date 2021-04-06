@@ -1,5 +1,10 @@
 #pragma once
 
+// Moveit
+#include <geometry_msgs/Pose.h>
+#include <moveit_msgs/Grasp.h>
+#include <moveit_msgs/PlaceLocation.h>
+
 // Custom
 #include "panda_controller/exceptions.hpp"
 #include "panda_controller/panda_arm.hpp"
@@ -86,7 +91,6 @@ class Panda {
               const double &GRASP_EPSILON_OUTER = 0.02, const double &STEP = 0.01,
               const double &JUMP_THRESHOLD = 0.0);
 
-
     /**
      * @brief Place the object with post-grasp-retreat and post-place-retreat.
      * Moves the arm linearly to post-grasp-pose and then move to the desired
@@ -104,6 +108,18 @@ class Panda {
                const geometry_msgs::Pose &GOAL,
                const geometry_msgs::Pose &POST_PLACE_RETREAT,
                const double &EEF_STEP = 0.01, const double &JUMP_THRESHOLD = 0.0);
+
+
+    void pick(const std::string &OBJECT, const double OBJECT_WIDTH,
+              const geometry_msgs::Pose &PRE_GRASP_APPROCH,
+              const geometry_msgs::Pose &GRASP,
+              const geometry_msgs::Pose &POST_GRASP_RETREAT);
+
+
+    void place(const std::string &OBJECT,
+               const geometry_msgs::Pose &PRE_PLACE_APPROCH,
+               const geometry_msgs::Pose &PLACE,
+               const geometry_msgs::Pose &POST_PLACE_RETREAT);
 };
 
 }  // namespace panda_controller

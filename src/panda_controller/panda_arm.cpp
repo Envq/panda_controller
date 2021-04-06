@@ -15,8 +15,8 @@ PandaArm::PandaArm(const float DELAY) {
     // Init MoveGroupInterface with arm
     std::string move_group_name = "panda_arm";
     try {
-        _arm_ptr.reset(new moveit::planning_interface::MoveGroupInterface(
-            move_group_name));
+        _arm_ptr.reset(
+            new moveit::planning_interface::MoveGroupInterface(move_group_name));
 
     } catch (const std::runtime_error &err) {
         throw PandaArmErr("PandaArm()",
@@ -35,14 +35,28 @@ PandaArm::PandaArm(const float DELAY) {
             _tf_buffer_ptr->lookupTransform("tcp", "panda_link8", ros::Time(0));
 
         // Convert from geometry_msgs::TransformStamped -> tf2::Transform
-        _tcp_to_flange = tf2::Transform(
-            tf2::Quaternion{tcp_to_flange_msg.transform.rotation.x,
-                            tcp_to_flange_msg.transform.rotation.y,
-                            tcp_to_flange_msg.transform.rotation.z,
-                            tcp_to_flange_msg.transform.rotation.w},
-            tf2::Vector3{tcp_to_flange_msg.transform.translation.x,
-                         tcp_to_flange_msg.transform.translation.y,
-                         tcp_to_flange_msg.transform.translation.z});
+        _tcp_to_flange =
+            tf2::Transform(tf2::Quaternion{tcp_to_flange_msg.transform.rotation.x,
+                                           tcp_to_flange_msg.transform.rotation.y,
+                                           tcp_to_flange_msg.transform.rotation.z,
+                                           tcp_to_flange_msg.transform.rotation.w},
+                           tf2::Vector3{tcp_to_flange_msg.transform.translation.x,
+                                        tcp_to_flange_msg.transform.translation.y,
+                                        tcp_to_flange_msg.transform.translation.z});
+
+        // flange -> tcp transformation
+        auto flange_to_tcp_msg =
+            _tf_buffer_ptr->lookupTransform("panda_link8", "tcp", ros::Time(0));
+
+        // Convert from geometry_msgs::TransformStamped -> tf2::Transform
+        _flange_to_tcp =
+            tf2::Transform(tf2::Quaternion{flange_to_tcp_msg.transform.rotation.x,
+                                           flange_to_tcp_msg.transform.rotation.y,
+                                           flange_to_tcp_msg.transform.rotation.z,
+                                           flange_to_tcp_msg.transform.rotation.w},
+                           tf2::Vector3{flange_to_tcp_msg.transform.translation.x,
+                                        flange_to_tcp_msg.transform.translation.y,
+                                        flange_to_tcp_msg.transform.translation.z});
 
     } catch (tf2::TransformException &err) {
         throw PandaArmErr("PandaArm()", "lookupTransform()",
@@ -51,8 +65,7 @@ PandaArm::PandaArm(const float DELAY) {
 }
 
 
-geometry_msgs::Pose
-PandaArm::_getFlangeFromTCP(const geometry_msgs::Pose &TCP_POSE) {
+geometry_msgs::Pose PandaArm::getFlangeFromTCP(const geometry_msgs::Pose &TCP_POSE) {
     // get TCP trasform
     tf2::Transform world_to_tcp;
     tf2::fromMsg(TCP_POSE, world_to_tcp);
@@ -65,6 +78,23 @@ PandaArm::_getFlangeFromTCP(const geometry_msgs::Pose &TCP_POSE) {
     geometry_msgs::Pose flange_pose;
     tf2::toMsg(world_to_flange, flange_pose);
     return flange_pose;
+}
+
+
+geometry_msgs::Pose
+PandaArm::getTCPFromFlange(const geometry_msgs::Pose &FLANGE_POSE) {
+    // get TCP trasform
+    tf2::Transform world_to_flange;
+    tf2::fromMsg(FLANGE_POSE, world_to_flange);
+
+    // Calculate the Flange transform
+    tf2::Transform world_to_tcp;
+    world_to_tcp = world_to_flange * _flange_to_tcp;
+
+    // return the Flange pose
+    geometry_msgs::Pose tcp_pose;
+    tf2::toMsg(world_to_tcp, tcp_pose);
+    return tcp_pose;
 }
 
 
@@ -128,8 +158,7 @@ geometry_msgs::Pose PandaArm::getPose() {
         return current_pose;
 
     } catch (tf2::TransformException &err) {
-        throw PandaArmErr("getPose()", "lookupTransform()",
-                          "transformation error");
+        throw PandaArmErr("getPose()", "lookupTransform()", "transformation error");
     }
 }
 
@@ -138,7 +167,7 @@ void PandaArm::moveToPose(const geometry_msgs::Pose &POSE) {
     // Get flange pose
     geometry_msgs::Pose target;
     try {
-        target = _getFlangeFromTCP(POSE);
+        target = getFlangeFromTCP(POSE);
     } catch (const PandaArmErr &err) {
         throw PandaArmErr("moveToPose()", err.what());
     }
@@ -171,8 +200,7 @@ void PandaArm::relativeMove(const double X, const double Y, const double Z,
         tf2::Quaternion quat1;
         tf2::convert(pose.orientation, quat1);
         tf2::Quaternion quat2;
-        quat2.setRPY(ROLL * M_PI / 180.0, PITCH * M_PI / 180.0,
-                     YAW * M_PI / 180.0);
+        quat2.setRPY(ROLL * M_PI / 180.0, PITCH * M_PI / 180.0, YAW * M_PI / 180.0);
 
         // Update orientation
         pose.orientation = tf2::toMsg((quat1 * quat2).normalize());
@@ -205,13 +233,12 @@ void PandaArm::relativeMoveRPY(const double ROLL, const double PITCH,
 
 
 void PandaArm::waypointsMove(const std::vector<geometry_msgs::Pose> &WAYPOINTS,
-                             const double EEF_STEP,
-                             const double JUMP_THRESHOLD) {
+                             const double EEF_STEP, const double JUMP_THRESHOLD) {
     // Convert TCP waypoints into Flange waypoints
     std::vector<geometry_msgs::Pose> targets;
     try {
         for (const auto point : WAYPOINTS) {
-            targets.push_back(_getFlangeFromTCP(point));
+            targets.push_back(getFlangeFromTCP(point));
         }
     } catch (const PandaArmErr &err) {
         throw PandaArmErr("moveToPose()", err.what());
@@ -224,13 +251,11 @@ void PandaArm::waypointsMove(const std::vector<geometry_msgs::Pose> &WAYPOINTS,
 
     // Check Errors
     if (progress_percentage == -1)
-        throw PandaArmErr("waypointsMove()", "computeCartesianPath()",
-                          "Failure");
+        throw PandaArmErr("waypointsMove()", "computeCartesianPath()", "Failure");
 
     // Abort if the progress percentage is not 100%
     if (progress_percentage != 1)
-        throw PandaArmErr("waypointsMove()", "computeCartesianPath()",
-                          "Failure:",
+        throw PandaArmErr("waypointsMove()", "computeCartesianPath()", "Failure:",
                           "Only " + std::to_string(progress_percentage * 100) +
                               "% completed");
 
@@ -245,8 +270,8 @@ void PandaArm::waypointsMove(const std::vector<geometry_msgs::Pose> &WAYPOINTS,
 }
 
 
-void PandaArm::linearMove(const geometry_msgs::Pose &POSE,
-                          const double EEF_STEP, const double JUMP_THRESHOLD) {
+void PandaArm::linearMove(const geometry_msgs::Pose &POSE, const double EEF_STEP,
+                          const double JUMP_THRESHOLD) {
     std::vector<geometry_msgs::Pose> waypoint;
     waypoint.push_back(POSE);
     try {

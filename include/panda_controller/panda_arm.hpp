@@ -43,15 +43,7 @@ class PandaArm {
     std::shared_ptr<tf2_ros::Buffer> _tf_buffer_ptr;
     std::shared_ptr<tf2_ros::TransformListener> _tf_listener_ptr;
     tf2::Transform _tcp_to_flange;
-
-
-    /**
-     * @brief get the world->Flange from the world->TCP.
-     *
-     * @param TCP_POSE TCP (tool center point) pose.
-     * @return geometry_msgs::Pose Flange pose.
-     */
-    geometry_msgs::Pose _getFlangeFromTCP(const geometry_msgs::Pose &TCP_POSE);
+    tf2::Transform _flange_to_tcp;
 
 
   public:
@@ -61,6 +53,24 @@ class PandaArm {
      * @param DELAY the seconds of delay for load the TF2
      */
     explicit PandaArm(const float DELAY = 1.0);
+
+
+    /**
+     * @brief get the world->Flange from the world->TCP.
+     *
+     * @param TCP_POSE TCP (tool center point) pose.
+     * @return geometry_msgs::Pose Flange pose.
+     */
+    geometry_msgs::Pose getFlangeFromTCP(const geometry_msgs::Pose &TCP_POSE);
+
+
+    /**
+     * @brief get the world->TCP from the world->FLANGE.
+     *
+     * @param FLANGE_POSE flange pose.
+     * @return geometry_msgs::Pose TCP (tool center point) pose.
+     */
+    geometry_msgs::Pose getTCPFromFlange(const geometry_msgs::Pose &FLANGE_POSE);
 
     /**
      * @brief Get the MoveGroupInterfacePtrobject. (Remember that this object is
@@ -154,8 +164,7 @@ class PandaArm {
      * @param PITCH offset around Y axis.
      * @param YAW offset around Z axis.
      */
-    void relativeMoveRPY(const double ROLL, const double PITCH,
-                         const double YAW);
+    void relativeMoveRPY(const double ROLL, const double PITCH, const double YAW);
 
 
     /**
@@ -185,8 +194,7 @@ class PandaArm {
      * change in distance in the configuration space of the robot (this is
      * to prevent 'jumps' in IK solutions).
      */
-    void linearMove(const geometry_msgs::Pose &POSE,
-                    const double EEF_STEP = 0.01,
+    void linearMove(const geometry_msgs::Pose &POSE, const double EEF_STEP = 0.01,
                     const double JUMP_THRESHOLD = 0.0);
 
 
