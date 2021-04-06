@@ -1,25 +1,25 @@
 assembly:
-  - name: bracket_down
-    color:
-      r: 0.9
-      g: 0.9
-      b: 0.9
-      a: 1.0
-    position:
-      x:  0.50
-      y:  0.00
-      z:  0.00
-    orientation:
-      x:  0.0
-      y:  0.0
-      z:  0.0
-      w:  1.0
-    type: mesh
-    file: bracket_down.stl
-    scale:
-      x: 0.001
-      y: 0.001
-      z: 0.001
+  # - name: bracket_down
+  #   color:
+  #     r: 0.9
+  #     g: 0.9
+  #     b: 0.9
+  #     a: 1.0
+  #   position:
+  #     x:  0.50
+  #     y:  0.00
+  #     z:  0.00
+  #   orientation:
+  #     x:  0.0
+  #     y:  0.0
+  #     z:  0.0
+  #     w:  1.0
+  #   type: mesh
+  #   file: bracket_down.stl
+  #   scale:
+  #     x: 0.001
+  #     y: 0.001
+  #     z: 0.001
 
   # - name: bracket_up
   #   color:
@@ -210,7 +210,7 @@ altair:
     position:
       x:  0.60
       y:  0.00
-      z: -0.02
+      z: -0.04
     orientation:
       x:  0.0
       y:  0.0

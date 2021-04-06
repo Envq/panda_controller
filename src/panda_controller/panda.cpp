@@ -39,8 +39,10 @@ std::shared_ptr<PandaScene> Panda::getScene() const {
 
 
 void Panda::pick(const geometry_msgs::Pose &PRE_GRASP_APPROCH,
-                 const geometry_msgs::Pose &OBJECT, const double &GRASP_WIDTH,
-                 const double &GRASP_FORCE, const double &GRASP_EPSILON_INNER,
+                 const geometry_msgs::Pose &OBJECT,
+                 const geometry_msgs::Pose &POST_GRASP_RETREAT,
+                 const double &GRASP_WIDTH, const double &GRASP_FORCE,
+                 const double &GRASP_EPSILON_INNER,
                  const double &GRASP_EPSILON_OUTER, const double &EEF_STEP,
                  const double &JUMP_THRESHOLD) {
     try {
@@ -57,6 +59,9 @@ void Panda::pick(const geometry_msgs::Pose &PRE_GRASP_APPROCH,
         _panda_gripper_ptr->grasp(GRASP_WIDTH, GRASP_FORCE, GRASP_EPSILON_INNER,
                                   GRASP_EPSILON_OUTER);
 
+        // Move to post-grasp-retrait pose
+        _panda_arm_ptr->linearMove(POST_GRASP_RETREAT, EEF_STEP, JUMP_THRESHOLD);
+
     } catch (PandaArmErr &e) {
         throw PandaErr("pick()", e.what());
 
@@ -66,24 +71,22 @@ void Panda::pick(const geometry_msgs::Pose &PRE_GRASP_APPROCH,
 }
 
 
-void Panda::place(const geometry_msgs::Pose &POST_GRASP_RETREAT,
+void Panda::place(const geometry_msgs::Pose &PRE_PLACE_APPROCH,
                   const geometry_msgs::Pose &GOAL,
                   const geometry_msgs::Pose &POST_PLACE_RETREAT,
                   const double &EEF_STEP, const double &JUMP_THRESHOLD) {
     try {
-        // Move to post-grasp-retrait pose
-        _panda_arm_ptr->linearMove(POST_GRASP_RETREAT, EEF_STEP,
-                                   JUMP_THRESHOLD);
+        // Move to pre-place-approch pose
+        _panda_arm_ptr->moveToPose(PRE_PLACE_APPROCH);
 
         // Move arm
-        _panda_arm_ptr->moveToPose(GOAL);
+        _panda_arm_ptr->linearMove(GOAL);
 
         // Open gripper
         _panda_gripper_ptr->move(PandaGripper::OPEN);
 
         // Move to post-place-retrait pose
-        _panda_arm_ptr->linearMove(POST_PLACE_RETREAT, EEF_STEP,
-                                   JUMP_THRESHOLD);
+        _panda_arm_ptr->linearMove(POST_PLACE_RETREAT, EEF_STEP, JUMP_THRESHOLD);
 
     } catch (PandaArmErr &e) {
         throw PandaErr("place()", e.what());

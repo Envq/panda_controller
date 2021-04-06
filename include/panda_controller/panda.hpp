@@ -69,6 +69,8 @@ class Panda {
      * @param PRE_GRASP_APPROCH The pose of grasp-pre-approch. It contains the
      * offset from target pose in meters.
      * @param OBJECT The pose where the robot grasp object.
+     * @param POST_GRASP_RETREAT The Pose of post-grasp-retreat. It contains
+     * the offset from current pose in meters.
      * @param GRASP_WIDTH The width value for gripperGrasp().
      * @param GRASP_FORCE The force value for gripperGrasp().
      * @param GRASP_EPSILON_INNER The epsilon_inner value for gripperGrasp().
@@ -77,11 +79,12 @@ class Panda {
      * @param JUMP_THRESHOLD Jumpo threshold value for linerMove().
      */
     void pick(const geometry_msgs::Pose &PRE_GRASP_APPROCH,
-              const geometry_msgs::Pose &OBJECT, const double &GRASP_WIDTH,
-              const double &GRASP_FORCE = 20.0,
+              const geometry_msgs::Pose &OBJECT,
+              const geometry_msgs::Pose &POST_GRASP_RETREAT,
+              const double &GRASP_WIDTH, const double &GRASP_FORCE = 20.0,
               const double &GRASP_EPSILON_INNER = 0.02,
-              const double &GRASP_EPSILON_OUTER = 0.02,
-              const double &STEP = 0.01, const double &JUMP_THRESHOLD = 0.0);
+              const double &GRASP_EPSILON_OUTER = 0.02, const double &STEP = 0.01,
+              const double &JUMP_THRESHOLD = 0.0);
 
 
     /**
@@ -89,19 +92,18 @@ class Panda {
      * Moves the arm linearly to post-grasp-pose and then move to the desired
      * position. After that proceeds moving linearly in the post-place-pose.
      *
-     * @param POST_GRASP_RETREAT The Pose of post-grasp-retreat. It contains
-     * the offset from current pose in meters.
+     * @param PRE_PLACE_APPROCH The pose of place-pre-approch. It contains the
+     * offset from target pose in meters.
      * @param GOAL The Pose where place the object.
      * @param POST_PLACE_RETREAT The Pose of post-place-retreat. It contains
      * the offset from target pose in meters.
      * @param EEF_STEP Step value for cartesianMovement().
      * @param JUMP_THRESHOLD Jumpo threshold value for cartesianMovement().
      */
-    void place(const geometry_msgs::Pose &POST_GRASP_RETREAT,
+    void place(const geometry_msgs::Pose &PRE_PLACE_APPROCH,
                const geometry_msgs::Pose &GOAL,
                const geometry_msgs::Pose &POST_PLACE_RETREAT,
-               const double &EEF_STEP = 0.01,
-               const double &JUMP_THRESHOLD = 0.0);
+               const double &EEF_STEP = 0.01, const double &JUMP_THRESHOLD = 0.0);
 };
 
 }  // namespace panda_controller

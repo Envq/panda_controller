@@ -1,54 +1,136 @@
 assemblyA_1:
   position:
-    x: 0.50
-    y: 0.20
-    z: 0.28
+    x:  0.50
+    y:  0.20
+    z:  0.17     # 10cm adove
   orientation:
     x:  0.0
     y:  0.0
     z:  0.0
     w:  1.0
+
+assemblyB_1:
+  position:
+    x:  0.50
+    y:  0.20
+    z:  0.07     # object (gripper 3cm below)
+  orientation:
+    x:  0.0
+    y:  0.0
+    z:  0.0
+    w:  1.0
+
+assemblyC_1:
+  position:
+    x:  0.50
+    y:  0.20
+    z:  0.12     # 5cm adove
+  orientation:
+    x:  0.0
+    y:  0.0
+    z:  0.0
+    w:  1.0
+
+
+assemblyD_1:
+  position:
+    x:  0.50
+    y:  0.00
+    z:  0.18     # 10cm adove
+  orientation:
+    x:  0.0
+    y:  0.0
+    z:  0.0
+    w:  1.0
+
+assemblyE_1:
+  position:
+    x:  0.50
+    y:  0.00
+    z:  0.08     # goal (1 cm adove)
+  orientation:
+    x:  0.0
+    y:  0.0
+    z:  0.0
+    w:  1.0
+
+assemblyF_1:
+  position:
+    x:  0.50
+    y:  0.00
+    z:  0.13     # 5cm adove
+  orientation:
+    x:  0.0
+    y:  0.0
+    z:  0.0
+    w:  1.0
+
+
+
 
 assemblyA_2:
   position:
-    x: 0.50
-    y: 0.20
-    z: 0.08
+    x:  0.50
+    y: -0.20
+    z:  0.135     # 10cm adove
   orientation:
     x:  0.0
     y:  0.0
     z:  0.0
     w:  1.0
 
-assemblyA_3:
+assemblyB_2:
   position:
-    x: 0.50
-    y: 0.20
-    z: 0.18
+    x:  0.50
+    y: -0.20
+    z:  0.035     # object (gripper 1.5 below)
   orientation:
     x:  0.0
     y:  0.0
     z:  0.0
     w:  1.0
 
-assemblyA_4:
+assemblyC_2:
   position:
-    x: 0.50
-    y: 0.00
-    z: 0.18
+    x:  0.50
+    y: -0.20
+    z:  0.085     # 5cm adove
   orientation:
     x:  0.0
     y:  0.0
     z:  0.0
     w:  1.0
 
-assemblyA_5:
+
+assemblyD_2:
   position:
-    x: 0.50
-    y: 0.00
-    z: 0.28
+    x:  0.50
+    y:  0.00
+    z:  0.145     # 10cm adove
   orientation:
     x:  0.0
     y:  0.0
-    z:  0.0
-    w:  1.0
+    z:  0.382499
+    w:  0.923956
+
+assemblyE_2:
+  position:
+    x:  0.50
+    y:  0.00
+    z:  0.135     # goal (1cm adove)
+  orientation:
+    x:  0.0
+    y:  0.0
+    z:  0.382499
+    w:  0.923956
+
+assemblyF_2:
+  position:
+    x:  0.50
+    y:  0.00
+    z:  0.150     # 5cm adove
+  orientation:
+    x:  0.0
+    y:  0.0
+    z:  0.382499
+    w:  0.923956

@@ -33,11 +33,22 @@
             <param name="env_scene"       type="string" value="altair"/>
             <param name="task_scene"      type="string" value="assembly"/>
 
-            <param name="pre_grasp_pose"  type="string" value="assemblyA_1"/>
-            <param name="object_pose"     type="string" value="assemblyA_2"/>
-            <param name="post_grasp_pose" type="string" value="assemblyA_3"/>
-            <param name="goal_pose"       type="string" value="assemblyA_4"/>
-            <param name="post_place_pose" type="string" value="assemblyA_5"/>
+            <param name=" pre_grasp_name_1" type="string" value="assemblyA_1"/>
+            <param name="    object_name_1" type="string" value="assemblyB_1"/>
+            <param name="post_grasp_name_1" type="string" value="assemblyC_1"/>
+
+            <param name=" pre_place_name_1" type="string" value="assemblyD_1"/>
+            <param name="      goal_name_1" type="string" value="assemblyE_1"/>
+            <param name="post_place_name_1" type="string" value="assemblyF_1"/>
+
+
+            <param name=" pre_grasp_name_2" type="string" value="assemblyA_2"/>
+            <param name="    object_name_2" type="string" value="assemblyB_2"/>
+            <param name="post_grasp_name_2" type="string" value="assemblyC_2"/>
+
+            <param name=" pre_place_name_2" type="string" value="assemblyD_2"/>
+            <param name="      goal_name_2" type="string" value="assemblyE_2"/>
+            <param name="post_place_name_2" type="string" value="assemblyF_2"/>
       </node>
 
 </launch>
