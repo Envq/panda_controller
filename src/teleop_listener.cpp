@@ -92,8 +92,8 @@ void teleopCallback(const panda_controller::panda_teleop::ConstPtr &msg) {
         }
 
     } catch (const PandaControllerErr &err) {
-        ROS_FATAL_STREAM(get_err_msg(CURRENT_FILE_NAME, err.what()));
-        ros::shutdown();
+        ROS_WARN_STREAM(get_err_msg(CURRENT_FILE_NAME, err.what()));
+        // ros::shutdown();
     }
 }
 

@@ -1,50 +1,206 @@
-pick_and_place1:
-  - name: box
+assembly:
+  - name: bracket_down
+    color:
+      r: 0.9
+      g: 0.9
+      b: 0.9
+      a: 1.0
+    position:
+      x:  0.50
+      y:  0.00
+      z:  0.00
+    orientation:
+      x:  0.0
+      y:  0.0
+      z:  0.0
+      w:  1.0
+    type: mesh
+    file: bracket_down.stl
+    scale:
+      x: 0.001
+      y: 0.001
+      z: 0.001
+
+  # - name: bracket_up
+  #   color:
+  #     r: 0.9
+  #     g: 0.9
+  #     b: 0.9
+  #     a: 1.0
+  #   position:
+  #     x:  0.50
+  #     y:  0.20
+  #     z:  0.00
+  #   orientation:
+  #     x:  0.0
+  #     y:  0.0
+  #     z:  0.0
+  #     w:  1.0
+  #   type: mesh
+  #   file: bracket_up.stl
+  #   scale:
+  #     x: 0.001
+  #     y: 0.001
+  #     z: 0.001
+  
+  # - name: cube_bracket
+  #   color:
+  #     r: 0.9
+  #     g: 0.9
+  #     b: 0.9
+  #     a: 1.0
+  #   position:
+  #     x:  0.50
+  #     y: -0.20
+  #     z:  0.00
+  #   orientation:
+  #     x:  0.0
+  #     y:  0.0
+  #     z:  0.0
+  #     w:  1.0
+  #   type: mesh
+  #   file: cube_bracket.stl
+  #   scale:
+  #     x: 0.001
+  #     y: 0.001
+  #     z: 0.001
+
+
+
+containers:
+  - name: container1
+    color:
+      r: 1.0
+      g: 1.0
+      b: 1.0
+      a: 0.9
+    position:
+      x:  0.50
+      y:  0.10
+      z:  0.00
+    orientation:
+      x:  0.0
+      y:  0.0
+      z:  0.0
+      w:  1.0
+    type: mesh
+    file: container1.stl
+    scale:
+      x: 0.001
+      y: 0.001
+      z: 0.001
+
+  - name: container2
+    color:
+      r: 1.0
+      g: 0.5
+      b: 0.0
+      a: 0.9
+    position:
+      x:  0.60
+      y:  0.10
+      z:  0.00
+    orientation:
+      x:  0.0
+      y:  0.0
+      z:  0.0
+      w:  1.0
+    type: mesh
+    file: container2.stl
+    scale:
+      x: 0.001
+      y: 0.001
+      z: 0.001
+      
+  - name: container3
+    color:
+      r: 1.0
+      g: 0.0
+      b: 0.0
+      a: 0.9
+    position:
+      x:  0.60
+      y:  0.00
+      z:  0.00
+    orientation:
+      x:  0.0
+      y:  0.0
+      z:  0.0
+      w:  1.0
+    type: mesh
+    file: container3.stl
+    scale:
+      x: 0.001
+      y: 0.001
+      z: 0.001
+
+  - name: box1
     color:
       r: 1.0
       g: 1.0
       b: 1.0
       a: 1.0
     position:
-      x: 0.60
-      y: 0.30
-      z: 0.055
+      x:  0.50
+      y:  0.00
+      z:  0.01
     orientation:
-      x: 0.0
-      y: 0.0
-      z: 0.0
-      w: 1.0
+      x:  0.0
+      y:  0.0
+      z:  0.0
+      w:  1.0
     type: box
     dimensions:
-      x: 0.335
-      y: 0.240
-      z: 0.110
+      x: 0.02
+      y: 0.02
+      z: 0.02
 
-test:
-  - name: object_male
+  - name: box2
+    color:
+      r: 1.0
+      g: 0.5
+      b: 0.0
+      a: 1.0
+    position:
+      x:  0.50
+      y:  0.00
+      z:  0.03
+    orientation:
+      x:  0.0
+      y:  0.0
+      z:  0.0
+      w:  1.0
+    type: box
+    dimensions:
+      x: 0.02
+      y: 0.02
+      z: 0.02
+
+  - name: box3
     color:
       r: 1.0
       g: 0.0
       b: 0.0
-      a: 0.5
+      a: 1.0
     position:
-      x: 0.5
-      y: -0.25
-      z: 0.01
+      x:  0.50
+      y:  0.00
+      z:  0.05
     orientation:
-      x: 0.0
-      y: 0.0
-      z: 0.0
-      w: 1.0
-    type: mesh
-    file: object_male.stl
-    scale:
-      x: 0.001
-      y: 0.001
-      z: 0.001
+      x:  0.0
+      y:  0.0
+      z:  0.0
+      w:  1.0
+    type: box
+    dimensions:
+      x: 0.02
+      y: 0.02
+      z: 0.02
 
 
-altair:      
+
+
+altair:
   - name: table
     color:
       r: 0.6
@@ -52,18 +208,18 @@ altair:
       b: 0.2
       a: 1.0
     position:
-      x: 0.6
-      y: 0.0
+      x:  0.60
+      y:  0.00
       z: -0.02
     orientation:
-      x: 0.0
-      y: 0.0
-      z: 0.0
-      w: 1.0
+      x:  0.0
+      y:  0.0
+      z:  0.0
+      w:  1.0
     type: box
     dimensions:
-      x: 1.0
-      y: 1.0
+      x: 1.00
+      y: 1.00
       z: 0.04
 
   - name: shield_bottom
@@ -74,18 +230,18 @@ altair:
       a: 0.05
     position:
       x: -0.35
-      y: 0.0
-      z: 0.5
+      y:  0.00
+      z:  0.50
     orientation:
-      x: 0.0
-      y: 0.0
-      z: 0.0
-      w: 1.0
+      x:  0.0
+      y:  0.0
+      z:  0.0
+      w:  1.0
     type: box
     dimensions:
       x: 0.02
-      y: 1.4
-      z: 1.0
+      y: 1.40
+      z: 1.00
 
   - name: shield_left
     color:
@@ -94,19 +250,19 @@ altair:
       b: 1.0
       a: 0.05
     position:
-      x: 0.35
-      y: 0.7
-      z: 0.5
+      x:  0.35
+      y:  0.70
+      z:  0.50
     orientation:
-      x: 0.0
-      y: 0.0
-      z: 0.0
-      w: 1.0
+      x:  0.0
+      y:  0.0
+      z:  0.0
+      w:  1.0
     type: box
     dimensions:
-      x: 1.3
+      x: 1.30
       y: 0.02
-      z: 1.0
+      z: 1.00
 
   - name: shield_right
     color:
@@ -115,16 +271,16 @@ altair:
       b: 1.0
       a: 0.05
     position:
-      x: 0.35
-      y: -0.7
-      z: 0.5
+      x:  0.35
+      y: -0.70
+      z:  0.50
     orientation:
-      x: 0.0
-      y: 0.0
-      z: 0.0
-      w: 1.0
+      x:  0.0
+      y:  0.0
+      z:  0.0
+      w:  1.0
     type: box
     dimensions:
-      x: 1.3
+      x: 1.30
       y: 0.02
-      z: 1.0
+      z: 1.00

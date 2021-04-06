@@ -67,8 +67,7 @@ int main(int argc, char **argv) {
           node.getParam("post_grasp_pose", POST_GRASP_POSE_NAME) &&
           node.getParam("goal_pose", GOAL_POSE_NAME) &&
           node.getParam("post_place_pose", POST_PLACE_POSE_NAME))) {
-        ROS_FATAL_STREAM(
-            get_err_msg(CURRENT_FILE_NAME, "Can't get parameters"));
+        ROS_FATAL_STREAM(get_err_msg(CURRENT_FILE_NAME, "Can't get parameters"));
         ros::shutdown();
         return 0;
     }
@@ -89,6 +88,7 @@ int main(int argc, char **argv) {
 
         // Init scene
         ROS_FCOL_INFO(FG_COLOR, BG_COLOR, "SCENE INITIALIZATION");
+        scene->resetScene();
         scene->setScene(ENV_SCENE);
         scene->setScene(TASK_SCENE);
 

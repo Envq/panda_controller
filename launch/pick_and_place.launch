@@ -31,13 +31,13 @@
 
             <!-- pick and place task -->
             <param name="env_scene"       type="string" value="altair"/>
-            <param name="task_scene"      type="string" value="pick_and_place1"/>
+            <param name="task_scene"      type="string" value="assembly"/>
 
-            <param name="pre_grasp_pose"  type="string" value="pre_grasp1"/>
-            <param name="object_pose"     type="string" value="object1"/>
-            <param name="post_grasp_pose" type="string" value="post_grasp1"/>
-            <param name="goal_pose"       type="string" value="goal1"/>
-            <param name="post_place_pose" type="string" value="post_place1"/>
+            <param name="pre_grasp_pose"  type="string" value="assemblyA_1"/>
+            <param name="object_pose"     type="string" value="assemblyA_2"/>
+            <param name="post_grasp_pose" type="string" value="assemblyA_3"/>
+            <param name="goal_pose"       type="string" value="assemblyA_4"/>
+            <param name="post_place_pose" type="string" value="assemblyA_5"/>
       </node>
 
 </launch>
