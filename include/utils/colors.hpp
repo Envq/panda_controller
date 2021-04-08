@@ -98,8 +98,7 @@ class Colors {
      * @param color
      * @return std::ostream&
      */
-    friend std::ostream &operator<<(std::ostream &stream,
-                                    const Colors::Code &COLOR);
+    friend std::ostream &operator<<(std::ostream &stream, const Colors::Code &COLOR);
 };
 
 

@@ -9,13 +9,19 @@ This is a set of utilities and examples for control Panda Franka Emika using Mov
 * [Files](#files)
     * [data_manager](#data_manager)
     * [panda](#panda)
+        * [panda_arm](#panda_arm)
+        * [panda_gripper](#panda_gripper)
+        * [panda](#panda)
     * [exceptions](#exceptions)
     * [colors](#colors)
+    * [python](#python)
 * [Data](#data)
 * [Examples](#examples)
     * [console](#console)
     * [pick_place](#pick_place)
-    * [teleop](#teleop)
+    * [teleoperation](#teleoperation)
+        * [teleop_talker](#teleop_talker)
+        * [teleop_listener](#teleop_listener)
 * [Visual Studio Code](#vscode)
 * [Author](#author)
 * [License](#license)
@@ -135,29 +141,51 @@ source ~/.bashrc
 
 ---
 ## **Files:**
+Use this command for genere the doxygen documentation:
+~~~
+cd ~/panda_ws/
+
+doxygen doxygen.cfg
+~~~
 
 ### **data_manager**
-- This file contains all the functions to communicate with the stored data.
+This file contains the functions necessary to save and read the data in the appropriate yaml files.
+
 
 ### **panda**
-- This file is a wrapper for easy use of moveit to control the Panda robot.
+This file is a wrapper for easy use of moveit to control the Panda robot, designed for pick and place tasks. 
+
+- #### **panda_arm**
+    In this file are defined all the method for control the arm.
+
+- #### **panda_gripper**
+    In this file are defined all methods for controlling the gripper with client action for franka_gripper. If you set REAL_ROBOT=False Then you will be able to see in simulation (without having the robot connected) the movement of the gripper.
+
+- #### **panda**
+    This file contains panda_arm and panda_gripper providing getters to use them. It also adds the ability to create and reset scenes and pick and place. Note: the collision area of the robot hand is too large, so it is not possible to see in RVIZ the pick and place with the stl of the object.
+
 
 ### **exceptions**
-- All exceptions used are defined in this file.
+A try catch system has been implemented to get more information about possible errors and exceptions are defined in this file.
+
 
 ### **colors**
-- This file contains the definitions to modify the colors and format of the stdout. Wrap your output string with them.
+This file contains the definitions to modify the colors and format of the stdout. Wrap your output string with them.
+
+
+### **python**
+The same files are also available for python3 with a console that can be launched using python_console.launch. Here a scripts utils is provided which contains the definition of functions for transformations.
 
 
 
 ---
 ## **Data**
 This folder contains:
-- poses.json: 
-    - **Description**: A Collection of position and orientation of a reference link.
-    - **Formant**: "name_pose" : {eef, orientation, position}.
+- **poses.json**:
+    - **Description**: A collection of TCP (tool center point) poses, referring to the world frame
+    - **Formant**: "name_pose" : {position : {x,y,z}, orientation : {x,y,z,w}}.
     - **Doc**: Look [here](http://docs.ros.org/melodic/api/geometry_msgs/html/msg/Pose.html) for more informations on **Pose**.
-- scenes.json:
+- **scenes.json**:
     - **Description**: A collection of Scene.
     - **Formant1**: "name_scene" : {name, color, position, orientation, type, dimensions}.
     - **Formant2**: "name_scene" : {name, color, position, orientation, type=mesh, file, scale}. 
@@ -167,109 +195,138 @@ This folder contains:
     - **Doc**:
         - Click [here](http://docs.ros.org/melodic/api/shape_msgs/html/msg/SolidPrimitive.html) for more informations on **SolidPrimite**.
         - Click [here](http://docs.ros.org/kinetic/api/std_msgs/html/msg/ColorRGBA.html) for more informations on **ColorRGBA**.
+- **meshes/**: In this folder are contained the stl files
+
+
 
 ---
 ## **Examples**
-A brief description of the example files available:
+These files have been created to easily set up pick and place tasks. There is the **template.cpp** file with the skeletron to create your custom task.
 
-Note: all launch files contain the "gripper_is_active" parameter which, if set to false, disables the gripper_action_client allowing to work without the real robot
-![simulation](screenshot/simulation.png?raw=true "simulation")
+Note: all launch files containe the "real_robot" parameter which, if set to false, disables the gripper_action_client allowing to work without the real robot.
+
+- Use **simulation.launch** file for launch simulation with real_robot=False.
+- Use **controller.launch** file for control the real robot with real_robot=True.
+![simulation](screenshot/simulation.png "simulation")
+
 
 
 ### **console**
 This node is a console for performing these simple tasks:
-- **quit:** to close the node.
-- **help:** to see the list of commands.
-- **info:** to print robot info.
-- **scene [name:str]:** to load specified scene.
-- **scene reset:** to reset scene.
-- **speed arm [speed:float]:** to set the arm speed value.
-- **eef set [name:str]:** to set end effector link name.
-- **eef get:** to get end effector link name.
-- **speed gripper [speed:float]:** to set the gripper speed value.
-- **save [(name:str)]:** to save the current pose with the specified name.
-- **move joint [joint:int, val:double]:** to move the specified joint by an integer of the specified degree.
-- **move offset [x:double y:double z:double]:** to move the arm along the x,y,z specified directions in meters.
-- **move pose [name:str]:** to move the arm on the specified pose saved in database.
-- **move gripper [width:double]:** to move the gripper fingers with the specified speed on the specified width from center.
-- **homing arm:** to perform the homing of the arm.
-- **homing gripper:** to perform the homing of the gripper.
-- **grasp [width:double (force:double epsilon_inner:double epsilon_outer:double)]:** to perform the grasping.
+- **gripper homing**: homing the gripper
+- **gripper width**: shows the gripper width. Remeber to use homing before to initiliaze.
+- **gripper 'width' 'speed'**: moves the gripper with the specified speed on the specified width. Default speed value is setted in launch file.
+- **grasp 'width' 'speed' 'force' 'epsilon_inner' 'epsilon_outer'**: performs the grasping. Default speed,force,epsilon values are setted in launch file.
 
-**Leggends:**
-- [] indicates a parameter.
-- () indicates a optional parameter with default.
+- **get joints**: shows the joints values.
+- **get pose**:  shows the TCP(tool center point) pose, referring to the world frame.
 
-![console](screenshot/console.png?raw=true "console")
+- **move joints 'j0' 'j1' 'j2' 'j3' 'j4' 'j5' 'j6'**: moves the arm joints in the specified configurations in Radian.
+- **move pose   'px' 'py' 'pz' 'ox' 'oy' 'oz' 'ow'**: moves the TCP in the specified pose.
+- **move linear 'px' 'py' 'pz' 'ox' 'oy' 'oz' 'ow'**: moves the TCP in the specified pose traveling in a straight line.
+- **ready:** moves the arm in ready configuration.
+
+- **rel pos 'px' 'py' 'pz'**: moves the arm TCP along the x,y,z directions in Meters.
+- **rel rpy 'roll' 'pitch' 'yaw'**: rotates the arm TCP along the x,y,z axis in Degree.
+
+- **convert 'x' 'y' 'z' 'w'**: converts the quaternion in RPY (Radian).
+- **convert 'roll' 'pitch' 'yaw'**: converts the RPY (Radian) in quaternion.
+
+- **reset scene:** resets scene.
+- **scene 'name':** loads specified scene.
+- **save 'name':** saves the current pose with the specified name. Default name is "last".
+- **goto 'name':** moves the TCP in the saved pose named 'name'.
+
+- **set velocity 'vel':** sets the arm max velocity scaling factor.
+- **quit:** closes the node.
+- **help:** shows the commands list.
+
+Note: ',' are automatically ignored
+
+![console](screenshot/console.png "console")
 
 
+### **pick_place**
+This node execute the "pick and place" task. Two objects are moved in this example.
 
- ### **pick_place**
-This node execute the "pick and place" task. Two objects are moved in this task.
 In the launch file you can modify the following parameters:
-- **[ scene:=string ]:** to specify the name of scene to load. (Is always loaded also "base" scene)
-- **[ object1:=string ]:** to specify the name of object1 to pick.
-- **[ pick_pose1:=string ]:** to specify the name of the pick pose 1.
-- **[ place_pose1:=string ]:** to specify the name of the place pose 1.
-- **[ object2:=string ]:** to specify the name of object2 to pick.
-- **[ pick_pose2:=string ]:** to specify the name of the pick pose 2.
-- **[ place_pose2:=string ]:** to specify the name of the place pose 2.
-- **[ arm_speed:=float ]:** to specify the factor scale of the arm speed.
-- **[ gripper_speed:=float ]:** to specify the gripper speed.
-Values for grasp:
-- **[ grasp_width:=float ]:** to specify the width of the grasp.
-- **[ grasp_force:=float ]:** to specify the force of the grasp.
-- **[ grasp_epsilon_inner:=float ]:** to specify the epsilon inner of the grasp.
-- **[ grasp_epsilon_outer:=float ]:** to specify the epsilon outer of the grasp.
 
-![pick_place](screenshot/pick_place.png?raw=true "pick_place")
+Parameters for startup:
+- **real_robot**: if you want control the real robot set it to True to enable franka_gripper action client.
+- **gripper_homing**: if you want to do the homing of the gripper on startup set it to True.
+
+Parameters for gripper move:
+- **gripper_speed**: sets the gripper speed.
+
+Parameters for grasp:
+- **grasp_speed**: sets the grasp speed.
+- **grasp_force**: sets the grasp force.
+- **grasp_epsilon_inner**: sets the grasp epsilon inner.
+- **grasp_epsilon_outer**: sets the grasp epsilon outer.
+
+Parameters for arm:
+- **arm_velocity_factor**: sets the arm max velocity scaling factor.
+- **eef_step**: sets the end-effector-step for linear motion.
+- **jump_threshould**: sets the jump threshould for linear motion.
+
+Parameters for pick and place:
+- **object_width_I**: sets the grasp width for the I-th grasp
+- **pre_grasp_name_I**: sets the name of the TCP pose saved for the I-th pre-grasp pose
+- **grasp_name_I**: sets the name of the TCP pose saved for the I-th grasp pose
+- **post_grasp_name_I**: sets the name of the TCP pose saved for the I-th post-grasp pose
+- **pre_place_name_I**: sets the name of the TCP pose saved for the I-th pre-place pose
+- **place_name_I**: sets the name of the TCP pose saved for the I-th place pose
+- **post_place_name_I**: sets the name of the TCP pose saved for the I-th post-place pose
+Add this parameters for each task you want.
+
+![pick_and_place](screenshot/pick_and_place.png "pick and place")
 
 
-### **teleop**
-The "teleop_listener" node read from the topic "teleop" a vector message for moving the arm in cartesian mode.
-The "teleop_talker" node read stdin for sending a vector message on the topic "teleop".
+### **teleoperation**
+These nodes performs a simple teleoperation.
 
-For control "teleop_talker":
-- **GENERIC COMMANDS:**
-    - **QUIT:** ESC
-    - **HELP:** 'h'
-    - **MODE:** 'm' There are 3 modes: position, orientation, gripper
-- **POSITIONAL COMMANDS:**
-    -  **X_POS:** 'w'
-    -  **X_NEG:** 's'
-    -  **Y_POS:** 'a'
-    -  **Y_NEG:** 'd'
-    -  **Z_POS:** 'i'
-    -  **Z_NEG:** 'k'
-    -  **INCREASE_POSITION:** 'l'
-    -  **DECREASE_POSITION:** 'j'
-- **ORIENTATION COMMANDS:**
-    -  **ROLL_POS:** 'd'
-    -  **ROLL_NEG:** 'a'
-    -  **PITCH_POS:** 'w'
-    -  **PITCH_NEG:** 's'
-    -  **YAW_POS:** 'q'
-    -  **YAW_NEG:** 'e'
-    -  **INCREASE_ORIENTATION:** 'l'
-    -  **DECREASE_ORIENTATION:** 'j'
-- **GRIPPER COMMANDS:**
-    -  **GRIPPER_HOMING:** 'o'
-    -  **GRIPPER_GRASP:** 's'
-    -  **GRIPPER_WIDTH_POS:** 'd'
-    -  **GRIPPER_WIDTH_NEG:** 'a'
-    -  **INCREASE_GRIPPER_WIDTH:** 'l'
-    -  **DECREASE_GRIPPER_WIDTH:** 'j'
-- **HOMING:**
-    -  **const int GRIPPER_HOMING:** 'o';
-    -  **const int ARM_HOMING:** 'o';
+#### **teleop_talker**
+This node read stdin for sending a message on the topic "panda_controller/teleoperation".
 
-Behavior:
-- Use Mode to switch mode.
-- Use INCREASE and DESCREASE KEYS to change the value of DELTA (= displacement to be applied upon reception of the command).
-- Use launch file for set the START_DELTA and the RESOLUTION (= the variation of the DELTA value).
-- When your DELTA is the desired value, press the key to active the move.
+Use Mode to switch mode and INCREASE and DESCREASE KEYS to change the value of DELTA.
 
-![teleop](screenshot/teleop.png?raw=true "teleop")
+In the launch file you can modify the following parameters:
+- **frequency**: sets the frequency of the read and send cycle.
+- **start_delta_position**: sets the start delta in position value.
+- **start_delta_orientation**: sets the start delta in orientation value.
+- **start_delta_gripper**: sets the start delta in gripper value.
+- **granularity_position**: sets the granularity for position.
+- **granularity_orientation**: sets the granularity for orientation.
+- **granularity_gripper**: sets the granularity for gripper width.
+Then are available the parameters to modify the mapping of the commands.
+
+
+#### **teleop_listener**
+This node read from the topic "panda_controller/teleoperation" a message for moving the arm, and moves it.
+
+In the launch file you can modify the following parameters:
+
+Parameters for startup:
+- **real_robot**: if you want control the real robot set it to True to enable franka_gripper action client.
+- **gripper_homing**: if you want to do the homing of the gripper on startup set it to True.
+
+Parameters for gripper move:
+- **gripper_speed**: sets the gripper speed.
+
+Parameters for grasp:
+- **grasp_speed**: sets the grasp speed.
+- **grasp_force**: sets the grasp force.
+- **grasp_epsilon_inner**: sets the grasp epsilon inner.
+- **grasp_epsilon_outer**: sets the grasp epsilon outer.
+
+Parameters for arm:
+- **arm_velocity_factor**: sets the arm max velocity scaling factor.
+- **eef_step**: sets the end-effector-step for linear motion.
+- **jump_threshould**: sets the jump threshould for linear motion.
+
+![teleoperation](screenshot/teleoperation.png "teleoperation")
+
+
 
 ---
 ## **VSCode**
@@ -285,6 +342,12 @@ I used these extensions:
 - **gruvbox mirror** by adamsome
 - **vscode-icons** by icons for visual studio code
 - **git graph** by mhutchie
+
+
+Are available the following tasks:
+- **doxygen**: generates the documentation.
+- **format**: formats all files.
+- **cloc**: returns code statistics.
 
 
 ---

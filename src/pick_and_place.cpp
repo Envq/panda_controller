@@ -42,12 +42,12 @@ int main(int argc, char **argv) {
     // Creat pick_and_place structure
     struct pick_and_place {
         std::string pre_grasp;
-        std::string object;
+        std::string grasp;
         std::string post_grasp;
         double object_width;
 
         std::string pre_place;
-        std::string goal;
+        std::string place;
         std::string post_place;
     };
     size_t SIZE = 2;  // MODIFY THIS: change the number of tasks here.
@@ -74,18 +74,18 @@ int main(int argc, char **argv) {
 
           node.getParam("object_width_1", TASKS[0].object_width) &&
           node.getParam("pre_grasp_name_1", TASKS[0].pre_grasp) &&
-          node.getParam("object_name_1", TASKS[0].object) &&
+          node.getParam("grasp_name_1", TASKS[0].grasp) &&
           node.getParam("post_grasp_name_1", TASKS[0].post_grasp) &&
           node.getParam("pre_place_name_1", TASKS[0].pre_place) &&
-          node.getParam("goal_name_1", TASKS[0].goal) &&
+          node.getParam("place_name_1", TASKS[0].place) &&
           node.getParam("post_place_name_1", TASKS[0].post_place) &&
 
           node.getParam("object_width_2", TASKS[0].object_width) &&
           node.getParam("pre_grasp_name_2", TASKS[1].pre_grasp) &&
-          node.getParam("object_name_2", TASKS[1].object) &&
+          node.getParam("grasp_name_2", TASKS[1].grasp) &&
           node.getParam("post_grasp_name_2", TASKS[1].post_grasp) &&
           node.getParam("pre_place_name_2", TASKS[1].pre_place) &&
-          node.getParam("goal_name_2", TASKS[1].goal) &&
+          node.getParam("place_name_2", TASKS[1].place) &&
           node.getParam("post_place_name_2", TASKS[1].post_place) &&
 
           // MODIFY THIS: add other task here.
@@ -129,8 +129,8 @@ int main(int argc, char **argv) {
             auto pre_grasp_pose = arm->getPose(task.pre_grasp);
             ROS_INFO_STREAM("pose:\n" << pre_grasp_pose);
 
-            ROS_COL_INFO(INFO_COLOR, "Object pose: ", task.object);
-            auto object_pose = arm->getPose(task.object);
+            ROS_COL_INFO(INFO_COLOR, "Object pose: ", task.grasp);
+            auto object_pose = arm->getPose(task.grasp);
             ROS_INFO_STREAM("pose:\n" << object_pose);
 
             ROS_COL_INFO(INFO_COLOR, "Post-Grasp pose: ", task.post_grasp);
@@ -150,8 +150,8 @@ int main(int argc, char **argv) {
             auto pre_place_pose = arm->getPose(task.pre_place);
             ROS_INFO_STREAM("pose:\n" << pre_place_pose);
 
-            ROS_COL_INFO(INFO_COLOR, "Goal pose: ", task.goal);
-            auto goal_pose = arm->getPose(task.goal);
+            ROS_COL_INFO(INFO_COLOR, "Goal pose: ", task.place);
+            auto goal_pose = arm->getPose(task.place);
             ROS_INFO_STREAM("pose:\n" << goal_pose);
 
             ROS_COL_INFO(INFO_COLOR, "Post-place pose: ", task.post_place);

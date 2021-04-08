@@ -1,0 +1,53 @@
+{
+    "version": "2.0.0",
+    "tasks": [        
+        {
+            "label": "format",
+            "type": "shell",
+            "command": "clang-format",
+            "args": [
+                "-i",
+                "${workspaceFolder}/include/panda_controller/*.hpp",
+                "${workspaceFolder}/include/utils/*.hpp",
+                "${workspaceFolder}/src/*.cpp",
+                "${workspaceFolder}/src/panda_controller/*.cpp",
+                "${workspaceFolder}/src/utils/*.cpp",
+            ],
+            "problemMatcher": [],
+            "group": "none",
+            "presentation": {
+                "reveal": "never"
+            }
+        },
+        {
+            "label": "cloc",
+            "type": "shell",
+            "command": "cloc",
+            "args": [
+                "${workspaceFolder}/include/panda_controller/*.hpp",
+                "${workspaceFolder}/include/utils/*.hpp",
+                "${workspaceFolder}/src/*.cpp",
+                "${workspaceFolder}/src/panda_controller/*.cpp",
+                "${workspaceFolder}/src/utils/*.cpp",
+            ],
+            "problemMatcher": [],
+            "group": "none",
+            "presentation": {
+                "focus": true
+            }
+        },
+        {
+            "label": "doxygen",
+            "type": "shell",
+            "command": "doxygen",
+            "args": [
+                "${workspaceFolder}/doxygen.cfg"
+            ],
+            "problemMatcher": [],
+            "group": "none",
+            "presentation": {
+                "focus": true
+            }
+        }
+    ]
+}

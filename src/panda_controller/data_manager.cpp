@@ -118,8 +118,7 @@ scene_object _create_scene_object(const YAML::Node &OBJECT) {
                 OBJECT["dimensions"]["r"].as<double>();
 
         } else {
-            throw DataManagerErr("create_scene_object()",
-                                 "Invalid type selected");
+            throw DataManagerErr("create_scene_object()", "Invalid type selected");
         }
 
         // Push information in collision object
@@ -169,8 +168,8 @@ geometry_msgs::Pose load_pose(const std::string &NAME) {
                                                 FILE_PATH);
 
     } catch (const YAML::BadConversion &e) {
-        throw DataManagerErr(
-            "load_pose()", "YAML:", "Conversion failed while reading: " + NAME);
+        throw DataManagerErr("load_pose()",
+                             "YAML:", "Conversion failed while reading: " + NAME);
     }
 }
 
@@ -250,8 +249,8 @@ moveit_msgs::PlanningScene load_scene(const std::string &NAME) {
                              "YAML:", "Badly formed file: " + FILE_PATH);
 
     } catch (const YAML::BadConversion &e) {
-        throw DataManagerErr("load_scene()", "YAML:",
-                             "Conversion failed while reading: " + NAME);
+        throw DataManagerErr("load_scene()",
+                             "YAML:", "Conversion failed while reading: " + NAME);
     }
 }
 

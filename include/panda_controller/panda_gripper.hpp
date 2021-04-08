@@ -42,8 +42,7 @@ const double MAX_FORCE = 50.0;
 typedef actionlib::SimpleActionClient<franka_gripper::HomingAction>
     GripperHomingClient;
 /// @brief ROS action client for gripper move.
-typedef actionlib::SimpleActionClient<franka_gripper::MoveAction>
-    GripperMoveClient;
+typedef actionlib::SimpleActionClient<franka_gripper::MoveAction> GripperMoveClient;
 /// @brief ROS action client for gripper grasp.
 typedef actionlib::SimpleActionClient<franka_gripper::GraspAction>
     GripperGraspClient;
@@ -134,8 +133,8 @@ class PandaGripper {
      * @param EPSILON_INNER The value of epsilon inner.
      * @param EPSILON_OUTER The value of epsilon outer.
      */
-    void grasp(const double WIDTH, const double SPEED = 0.5,
-               const double FORCE = 20, const double EPSILON_INNER = 0.002,
+    void grasp(const double WIDTH, const double SPEED = 0.5, const double FORCE = 20,
+               const double EPSILON_INNER = 0.002,
                const double EPSILON_OUTER = 0.002);
 };
 

@@ -66,8 +66,7 @@ class DataManagerErr : public PandaControllerErr {
         ss << "DataManagerErr()";
         using expander = int[];
         (void)expander{
-            0, (void(ss << exceptions::DIVISOR << std::forward<Args>(args)),
-                0)...};
+            0, (void(ss << exceptions::DIVISOR << std::forward<Args>(args)), 0)...};
         _msg = ss.str();
     }
 };
@@ -87,8 +86,7 @@ class PandaErr : public PandaControllerErr {
         ss << "PandaErr()";
         using expander = int[];
         (void)expander{
-            0, (void(ss << exceptions::DIVISOR << std::forward<Args>(args)),
-                0)...};
+            0, (void(ss << exceptions::DIVISOR << std::forward<Args>(args)), 0)...};
         _msg = ss.str();
     }
 };
@@ -108,8 +106,7 @@ class PandaArmErr : public PandaControllerErr {
         ss << "PandaArmErr()";
         using expander = int[];
         (void)expander{
-            0, (void(ss << exceptions::DIVISOR << std::forward<Args>(args)),
-                0)...};
+            0, (void(ss << exceptions::DIVISOR << std::forward<Args>(args)), 0)...};
         _msg = ss.str();
     }
 };
@@ -129,8 +126,7 @@ class PandaGripperErr : public PandaControllerErr {
         ss << "PandaGripperErr()";
         using expander = int[];
         (void)expander{
-            0, (void(ss << exceptions::DIVISOR << std::forward<Args>(args)),
-                0)...};
+            0, (void(ss << exceptions::DIVISOR << std::forward<Args>(args)), 0)...};
         _msg = ss.str();
     }
 };
@@ -150,8 +146,7 @@ class PandaSceneErr : public PandaControllerErr {
         ss << "PandaSceneErr()";
         using expander = int[];
         (void)expander{
-            0, (void(ss << exceptions::DIVISOR << std::forward<Args>(args)),
-                0)...};
+            0, (void(ss << exceptions::DIVISOR << std::forward<Args>(args)), 0)...};
         _msg = ss.str();
     }
 };

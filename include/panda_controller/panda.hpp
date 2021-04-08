@@ -95,7 +95,7 @@ class Panda {
      * @param GRASP_EPSILON_INNER The epsilon_inner value for gripperGrasp().
      * @param GRASP_EPSILON_OUTER The epsilon_outer value for gripperGrasp().
      * @param EEF_STEP Step value for linerMove().
-     * @param JUMP_THRESHOLD Jumpo threshold value for linerMove().
+     * @param JUMP_THRESHOLD Jump threshold value for linerMove().
      */
     void pick(const geometry_msgs::Pose &PRE_GRASP_APPROCH,
               const geometry_msgs::Pose &OBJECT,
@@ -116,8 +116,8 @@ class Panda {
      * @param GOAL The Pose where place the object.
      * @param POST_PLACE_RETREAT The Pose of post-place-retreat. It contains
      * the offset from target pose in meters.
-     * @param EEF_STEP Step value for cartesianMovement().
-     * @param JUMP_THRESHOLD Jumpo threshold value for cartesianMovement().
+     * @param EEF_STEP Step value for linerMove().
+     * @param JUMP_THRESHOLD Jump threshold value for linerMove().
      */
     void place(const geometry_msgs::Pose &PRE_PLACE_APPROCH,
                const geometry_msgs::Pose &GOAL,
