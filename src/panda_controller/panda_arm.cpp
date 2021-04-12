@@ -206,7 +206,8 @@ void PandaArm::relativeMove(const double X, const double Y, const double Z,
         pose.orientation = tf2::toMsg((quat1 * quat2).normalize());
 
         // Move to target
-        linearMove(pose);
+        // linearMove(pose);
+        moveToPose(pose);
     } catch (const PandaArmErr &err) {
         throw PandaArmErr("relativeMove()", err.what());
     }

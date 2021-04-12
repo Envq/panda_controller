@@ -8,7 +8,7 @@
 
 
             <!-- gripper -->
-            <param name="real_robot"          type="bool" value="false"/>
+            <param name="real_robot"          type="bool" value="true"/>
             <param name="gripper_homing"      type="bool" value="false"/>
 
             <param name="gripper_speed"       type="double" value="0.5"/>
@@ -33,24 +33,24 @@
             <param name="task_scene"      type="string" value="altair"/>
 
 
-            <param name="   object_width_1" type="double" value="0.05"/>
+            <param name="   object_width_1" type="double" value="0.02"/>
+            <param name=" pre_grasp_name_1" type="string" value="pick_pre"/>
+            <param name="     grasp_name_1" type="string" value="pick"/>
+            <param name="post_grasp_name_1" type="string" value="pick_post"/>
+
+            <param name=" pre_place_name_1" type="string" value="place_pre"/>
+            <param name="     place_name_1" type="string" value="place"/>
+            <param name="post_place_name_1" type="string" value="place_post"/>
+
+
+            <!-- <param name="   object_width_1" type="double" value="0.05"/>
             <param name=" pre_grasp_name_1" type="string" value="assemblyA_1"/>
             <param name="     grasp_name_1" type="string" value="assemblyB_1"/>
             <param name="post_grasp_name_1" type="string" value="assemblyC_1"/>
 
             <param name=" pre_place_name_1" type="string" value="assemblyD_1"/>
             <param name="     place_name_1" type="string" value="assemblyE_1"/>
-            <param name="post_place_name_1" type="string" value="assemblyF_1"/>
-
-
-            <param name="   object_width_2" type="double" value="0.05"/>
-            <param name=" pre_grasp_name_2" type="string" value="assemblyA_2"/>
-            <param name="     grasp_name_2" type="string" value="assemblyB_2"/>
-            <param name="post_grasp_name_2" type="string" value="assemblyC_2"/>
-
-            <param name=" pre_place_name_2" type="string" value="assemblyD_2"/>
-            <param name="     place_name_2" type="string" value="assemblyE_2"/>
-            <param name="post_place_name_2" type="string" value="assemblyF_2"/>
+            <param name="post_place_name_1" type="string" value="assemblyF_1"/> -->
       </node>
 
 </launch>

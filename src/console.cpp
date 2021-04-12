@@ -73,7 +73,7 @@ void print_help() {
     help << "[data:]\n";
     help << "   reset scene\n";
     help << "   scene 'scene_name'\n";
-    help << "   save 'pose_name'\n";
+    help << "   save 'pose_name' Note: 'last' is the default name\n";
     help << "   goto 'pose_name'\n\n";
 
     help << "[other:]\n";

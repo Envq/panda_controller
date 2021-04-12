@@ -65,7 +65,6 @@ void teleopCallback(const panda_controller::panda_teleop::ConstPtr &msg) {
         if (GR_HOMING != 0) {
             ROS_INFO("Gripper Homing");
             gripper_ptr->homing();
-            throw PandaGripperErr("test");
 
 
         } else if (GR_GRASP != 0) {

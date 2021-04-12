@@ -8,7 +8,7 @@
 
 
             <!-- gripper -->
-            <param name="real_robot"          type="bool" value="false"/>
+            <param name="real_robot"          type="bool" value="true"/>
             <param name="gripper_homing"      type="bool" value="false"/>
 
             <param name="gripper_speed"       type="double" value="0.5"/>

@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
         std::string place;
         std::string post_place;
     };
-    size_t SIZE = 2;  // MODIFY THIS: change the number of tasks here.
+    size_t SIZE = 1;  // MODIFY THIS: change the number of tasks here.
     pick_and_place TASKS[SIZE];
 
 
@@ -79,14 +79,6 @@ int main(int argc, char **argv) {
           node.getParam("pre_place_name_1", TASKS[0].pre_place) &&
           node.getParam("place_name_1", TASKS[0].place) &&
           node.getParam("post_place_name_1", TASKS[0].post_place) &&
-
-          node.getParam("object_width_2", TASKS[0].object_width) &&
-          node.getParam("pre_grasp_name_2", TASKS[1].pre_grasp) &&
-          node.getParam("grasp_name_2", TASKS[1].grasp) &&
-          node.getParam("post_grasp_name_2", TASKS[1].post_grasp) &&
-          node.getParam("pre_place_name_2", TASKS[1].pre_place) &&
-          node.getParam("place_name_2", TASKS[1].place) &&
-          node.getParam("post_place_name_2", TASKS[1].post_place) &&
 
           // MODIFY THIS: add other task here.
 
