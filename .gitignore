@@ -1,4 +1,4 @@
 note.txt
-doc/
+doc/doxygen/
 __pycache__
 panda_test.cpp

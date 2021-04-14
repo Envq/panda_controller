@@ -18,7 +18,7 @@ This is a set of utilities and examples for control Panda Franka Emika using Mov
 * [Data](#data)
 * [Examples](#examples)
     * [console](#console)
-    * [pick_place](#pick_place)
+    * [pick_and_place](#pick_and_place)
     * [teleoperation](#teleoperation)
         * [teleop_talker](#teleop_talker)
         * [teleop_listener](#teleop_listener)
@@ -143,7 +143,7 @@ source ~/.bashrc
 ## **Files:**
 Use this command for genere the doxygen documentation:
 ~~~
-cd ~/panda_ws/
+roscd panda_controller
 
 doxygen doxygen.cfg
 ~~~
@@ -207,7 +207,7 @@ Note: all launch files containe the "real_robot" parameter which, if set to fals
 
 - Use **simulation.launch** file for launch simulation with real_robot=False.
 - Use **controller.launch** file for control the real robot with real_robot=True.
-![simulation](screenshot/simulation.png "simulation")
+![simulation](doc/simulation.png "simulation")
 
 
 
@@ -243,10 +243,10 @@ This node is a console for performing these simple tasks:
 
 Note: ',' are automatically ignored
 
-![console](screenshot/console.png "console")
+![console](doc/console.png "console")
 
 
-### **pick_place**
+### **pick_and_place**
 This node execute the "pick and place" task. Two objects are moved in this example.
 
 In the launch file you can modify the following parameters:
@@ -279,7 +279,8 @@ Parameters for pick and place:
 - **post_place_name_I**: sets the name of the TCP pose saved for the I-th post-place pose
 Add this parameters for each task you want.
 
-![pick_and_place](screenshot/pick_and_place.png "pick and place")
+![pick_and_place](doc/pick_and_place.png "pick and place")
+![pick_and_place_video](doc/pick_and_place.gif "pick and place video")
 
 
 ### **teleoperation**
@@ -324,7 +325,7 @@ Parameters for arm:
 - **eef_step**: sets the end-effector-step for linear motion.
 - **jump_threshould**: sets the jump threshould for linear motion.
 
-![teleoperation](screenshot/teleoperation.png "teleoperation")
+![teleoperation](doc/teleoperation.png "teleoperation")
 
 
 
